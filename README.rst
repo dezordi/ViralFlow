@@ -39,13 +39,13 @@ bash sars2_assembly.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> 
     * <MIN_LEN>         -   Minimum length to trimm sequences
     * <ADAPTERS>        -   Fasta file with adapters used in the sequencing analysis
 
-**Sugestion to paired-end reads with 150 of length:**
+**Suggestion to paired-end reads with 150 of length:**
 
 .. code:: bash
     
     bash sars2_assembly.sh reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa
 
-**Sugestion to paired-end reads with 75 of length:**
+**Suggestion to paired-end reads with 75 of length:**
 
 .. code:: bash
 
@@ -54,6 +54,6 @@ bash sars2_assembly.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> 
 =====
 Disclaimer
 =====
-
-* If you use this workflow for academic pourposes, please cite this repository;
+* The fastq files should have in the same directory of sars2_assembly.sh and the python scripts.
+* If you use this workflow for academic  purposes, please cite this repository;
 * More information `Here <https://dezordi.github.io/>`_;
