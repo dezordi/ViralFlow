@@ -29,7 +29,7 @@ Usage
 
 bash sars2_assembly.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS>
 
-*OPTIONS
+* Arguments
     #. <REFERENCEGENOME> -   Fasta file with reference genome
     #. <001.fastq.gz>    -   Fasqt file with positive sense reads (R1)
     #. <002.fastq.gz>    -   Fastq file with negative sense reads (R2)
