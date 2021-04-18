@@ -29,15 +29,15 @@ Usage
 
 bash sars2_assembly.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS>
 
-OPTIONS
-#. <REFERENCEGENOME> -   Fasta file with reference genome
-#. <001.fastq.gz>    -   Fasqt file with positive sense reads (R1)
-#. <002.fastq.gz>    -   Fastq file with negative sense reads (R2)
-#. <PREFIX>          -   Prefix string to store results and to rename consensus genome
-#. <NUM_THREADS>     -   Number of threads
-#. <DEPTH>           -   Minimum depth to mask unanssembled regions
-#. <MIN_LEN>         -   Minimum length to trimm sequences
-#. <ADAPTERS>        -   Fasta file with adapters used in the sequencing analysis
+*OPTIONS
+    #. <REFERENCEGENOME> -   Fasta file with reference genome
+    #. <001.fastq.gz>    -   Fasqt file with positive sense reads (R1)
+    #. <002.fastq.gz>    -   Fastq file with negative sense reads (R2)
+    #. <PREFIX>          -   Prefix string to store results and to rename consensus genome
+    #. <NUM_THREADS>     -   Number of threads
+    #. <DEPTH>           -   Minimum depth to mask unanssembled regions
+    #. <MIN_LEN>         -   Minimum length to trimm sequences
+    #. <ADAPTERS>        -   Fasta file with adapters used in the sequencing analysis
 
 **Sugestion to paired-end reads with 150 of length:**
 
