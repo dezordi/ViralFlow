@@ -29,6 +29,18 @@ Usage
 
 bash sars2_assembly.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS>
 
+.. code-block:: text
+
+    current_directory/
+    ├-sars2_assembly.sh
+    ├-major_minor.py
+    ├-minor_finder.py
+    ├-put_minor.py
+    ├-reference.fasta
+    ├-code_R1.fastq.gz
+    ├-code_R2.fastq.gz
+    └-adapters.fasta
+
 * Arguments
     * <REFERENCEGENOME> -   Fasta file with reference genome
     * <001.fastq.gz>    -   Fasqt file with positive sense reads (R1)
