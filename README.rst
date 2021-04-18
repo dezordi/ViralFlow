@@ -78,26 +78,26 @@ Both of those examples will generate the following results:
     ├-code_R2.fastq.gz
     ├-adapters.fasta
     └-prefix_name.results/
-     ├-chromosomes.report #tsv file with genomic metrics
-     ├-coverage.report #txt file with all assembly metrics
-     ├-prefix_name.<R1/R2>.fq.gz #trimmed fastq files
-     ├-prefix_name.depthX.fa #consensus defined with iVar
-     ├-prefix_name.depthX.all.fa #in case of minor variant detection, this file contain the 2 genome versions (major and minor consensus)
-     ├-prefix_name.depthX.fa.nextclade.csv or prefix_name.depthX.all.fa.nextclade.csv #in case of minor variant detection #nextclade csv output
-     ├-prefix_name.depthX.fa.pango.csv or prefix_name.depthX.all.fa.pango.csv #in case of minor variant detection #pangolin lineages information
-     ├-prefix_name.depthX.fa.bc #bamreadcount output, with all nucleotide frequencies by genomic position
-     ├-prefix_name.depth5.fa.bc.fmt.minors.tsv.fmt #tsv file with minor variant informations
-     ├-prefix_name.depth5.minor.fa #fasta file with minor consensus genome
-     ├-prefix_name.quality.html #html file with quality controll informations
-     ├-prefix_name.sorted.bam #sorted bam file
-     ├-prefix_name.sorted.bam.bai #index of sorted bam file
-     ├-prefix_name.time.txt #time in minutes of each step of analysis.
-     └-prefix_name.tsv #tsv output from iVar with the frequencies of iSNVs
+     ├-chromosomes.report                          ### tsv file with genomic metrics
+     ├-coverage.report                             ### txt file with all assembly metrics
+     ├-prefix_name.<R1/R2>.fq.gz                   ### trimmed fastq files
+     ├-prefix_name.depthX.fa                       ### consensus defined with iVar
+     ├-prefix_name.depthX.all.fa                   ### in case of minor variant detection, this file contain the 2 genome versions (major and minor consensus)
+     ├-prefix_name.depthX.fa.nextclade.csv         ### or prefix_name.depthX.all.fa.nextclade.csv in case of minor variant detection, nextclade csv output
+     ├-prefix_name.depthX.fa.pango.csv             ### or prefix_name.depthX.all.fa.pango.csv in case of minor variant detection, pangolin lineages information
+     ├-prefix_name.depthX.fa.bc                    ### bamreadcount output, with all nucleotide frequencies by genomic position
+     ├-prefix_name.depth5.fa.bc.fmt.minors.tsv.fmt ### tsv file with minor variant informations
+     ├-prefix_name.depth5.minor.fa                 ### fasta file with minor consensus genome
+     ├-prefix_name.quality.html                    ### html file with quality controll informations
+     ├-prefix_name.sorted.bam                      ### sorted bam file
+     ├-prefix_name.sorted.bam.bai                  ### index of sorted bam file
+     ├-prefix_name.time.txt                        ### time in minutes of each step of analysis.
+     └-prefix_name.tsv                             ### tsv output from iVar with the frequencies of iSNVs
 
 =====
 Disclaimer
 =====
 * The fastq files should have in the same directory of sars2_assembly.sh and the python scripts.
-* The minor consensus version is only based on minor allele frequencies throught the genome mapping, without any statistical method to reconstruct quasispecies genomic populations.
+* The minor consensus version is based only minor allele frequencies throught the genome mapping, without any statistical method to reconstruct quasispecies genomic populations.
 * If you use this workflow for academic  purposes, please cite this repository;
 * More information `Here <https://dezordi.github.io/>`_;
