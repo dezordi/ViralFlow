@@ -63,6 +63,24 @@ bash sars2_assembly.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> 
 
     bash sars2_assembly.sh reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 35 adapters.fa
 
+Both of those examples will generate the following results:
+
+
+.. code-block:: text
+
+    current_directory/
+    ├-sars2_assembly.sh
+    ├-major_minor.py
+    ├-minor_finder.py
+    ├-put_minor.py
+    ├-reference.fasta
+    ├-code_R1.fastq.gz
+    ├-code_R2.fastq.gz
+    ├-adapters.fasta
+    └-prefix_name.results/
+     ├-result
+     └-...
+
 =====
 Disclaimer
 =====
