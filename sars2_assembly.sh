@@ -118,7 +118,7 @@ else
         nextclade -i $PREFIXOUT.depth$DEPTH.all.fa -c $PREFIXOUT.depth$DEPTH.all.fa.nextclade.csv --jobs $THREADS
         pangolin $PREFIXOUT.depth$DEPTH.all.fa -t $THREADS --outfile $PREFIXOUT.depth$DEPTH.all.fa.pango.csv
     else
-        nextclade -i $PREFIXOUT.depth$DEPTH.fa -c $PREFIXOUT.depth$DEPTH.all.fa.nextclade.csv --jobs $THREADS
+        nextclade -i $PREFIXOUT.depth$DEPTH.fa -c $PREFIXOUT.depth$DEPTH.nextclade.csv --jobs $THREADS
         pangolin $PREFIXOUT.depth$DEPTH.fa -t $THREADS --outfile $PREFIXOUT.depth$DEPTH.fa.pango.csv
     fi
     ##GET ASSEMBLY METRICS
