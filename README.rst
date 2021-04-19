@@ -100,7 +100,7 @@ Both of those examples will generate the following results:
 =====
 Disclaimer
 =====
-* The fastq files should have in the same directory of sars2_assembly.sh and the python scripts.
-* The minor consensus version is based only minor allele frequencies throught the genome mapping, without any statistical method to reconstruct quasispecies genomic populations.
+* The fastq files should be in the same directory of sars2_assembly.sh and the python scripts.
+* The minor consensus version is based only on replacing the nucleotide from from the consensus (majority consensus) with the minor allele (supported by 5 to 49% of the reads), without any statistical method to reconstruct quasispecies genomic populations.
 * If you use this workflow for academic  purposes, please cite this repository;
 * More information `Here <https://dezordi.github.io/>`_;
