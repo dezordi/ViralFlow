@@ -85,7 +85,7 @@ else
     #QUALITY CHECK
     echo "FASTP:" > $PREFIXOUT.time.txt
     start=$(date +%s%3N)
-    fastp -i ../$FASTQ1 -I ../$FASTQ2 -o $PREFIXOUT.R1.fq.gz -O $PREFIXOUT.R2.fq.gz --detect_adapter_for_pe --cut_front --cut_tail --qualified_quality_phred 20 -l $MIN_LEN -h $PREFIXOUT.quality.html --thread $THREADS --adapter_fasta ../$ADAPTERS
+    fastp -i ../$FASTQ1 -I ../$FASTQ2 -o $PREFIXOUT.R1.fq.gz -O $PREFIXOUT.R2.fq.gz --cut_front --cut_tail --qualified_quality_phred 20 -l $MIN_LEN -h $PREFIXOUT.quality.html --thread $THREADS --adapter_fasta ../$ADAPTERS
     end=$(date +%s%3N)
     analysis_in_miliseconds=$(expr $end - $start)
     analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
