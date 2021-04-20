@@ -42,10 +42,10 @@ As soon as possible, a Dockerfile will be available. For a while, you can create
     cd home/IAM_SARSCOV2
 
 * Arguments docker run
-    * -tdi      -   -t and -i create an iteractive enviroment simillar to terminal connection session, -d run the container in brackground;
-    * --name    -   container name;
-    * --cpus    -   number maximum of threads;
-    * --memory  -   ram memory limit;
+    * tdi     -   -t and -i create an iteractive enviroment simillar to terminal connection session, -d run the container in brackground;
+    * name    -   container name;
+    * cpus    -   number maximum of threads;
+    * memory  -   ram memory limit;
 
 =====
 Usage
