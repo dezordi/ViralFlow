@@ -113,8 +113,7 @@ else
         mafft --thread $THREADS --keeplength --add $PREFIXOUT.depth$DEPTH.fa ../$FASTA > $PREFIXOUT.depth$DEPTH.fa.algn
         python ../put_minor.py -in $PREFIXOUT.depth$DEPTH.fa.algn -mv $PREFIXOUT.depth$DEPTH.fa.bc.fmt.minors.tsv.fmt
         mv $PREFIXOUT.depth$DEPTH.fa.algn.minor.fa $PREFIXOUT.depth$DEPTH.minor.fa
-        mv $PREFIXOUT.depth$DEPTH.fa.algn.major.fa $PREFIXOUT.depth$DEPTH.major.fa
-        cat $PREFIXOUT.depth$DEPTH.fa $PREFIXOUT.depth$DEPTH.minor.fa $PREFIXOUT.depth$DEPTH.major.fa > $PREFIXOUT.depth$DEPTH.all.fa
+        cat $PREFIXOUT.depth$DEPTH.fa $PREFIXOUT.depth$DEPTH.minor.fa > $PREFIXOUT.depth$DEPTH.all.fa
         nextclade -i $PREFIXOUT.depth$DEPTH.all.fa -c $PREFIXOUT.depth$DEPTH.all.fa.nextclade.csv --jobs $THREADS
         pangolin $PREFIXOUT.depth$DEPTH.all.fa -t $THREADS --outfile $PREFIXOUT.depth$DEPTH.all.fa.pango.csv
     else
