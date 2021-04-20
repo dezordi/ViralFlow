@@ -27,6 +27,27 @@ Dependencies
 * bamdst 1.0.6
 
 =====
+Docker
+=====
+
+A docker image with all tools and libraries can be found `here <https://hub.docker.com/repository/docker/dezordi/iam_sarscov2/>`_.
+As soon as possible, a Dockerfile will be available. For a while, you can create a container and run the sars2_assembly.sh following:
+
+.. code:: bash
+    
+    docker run -tdi --name iam_sarscov2 --cpus <number> --memory <number> dezordi/iam_sarscov2:latest /bin/bash
+    docker cp IAM_SARSCOV2 iam_sarscov2:home
+    docker attach iam_sarscov2
+    conda activate pangolin
+    cd home/IAM_SARSCOV2
+
+* Arguments docker run
+    * -tdi      -   -t and -i create an iteractive enviroment simillar to terminal connection session, -d run the container in brackground;
+    * --name    -   container name;
+    * --cpus    -   number maximum of threads;
+    * --memory  -   ram memory limit;
+
+=====
 Usage
 =====
 
