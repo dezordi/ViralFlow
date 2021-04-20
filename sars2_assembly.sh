@@ -76,8 +76,8 @@ cd $PREFIXOUT.results
 
 #If the usar want to re-assembly the genome with a different depth treshold, only the consensus generation run will be performed
 if [ -f "$PREFIXOUT.sorted.bam" ]; then
-    samtools mpileup -aa -A -d 50000 --reference ../$FASTA -B -Q 0 $PREFIXOUT.sorted.bam | ivar variants -p $PREFIXOUT -q 30 -t 0.05 -r ../$FASTA
-    samtools mpileup -d 50000 -A -Q 0 $PREFIXOUT.sorted.bam | ivar consensus -p  $PREFIXOUT -q 30 -t 0 -m $DEPTH -n N
+    samtools mpileup -aa -A -d 50000 --reference ../$FASTA $PREFIXOUT.sorted.bam  -Q 0 | ivar variants -p $PREFIXOUT -q 30 -t 0.05
+    samtools mpileup -d 50000 -aa -A --reference ../$FASTA $PREFIXOUT.sorted.bam  -Q 0 | ivar consensus -p  $PREFIXOUT -q 30 -t 0 -m $DEPTH -n N
     mv $PREFIXOUT.fa $PREFIXOUT.depth$DEPTH.fa
     sed -i -e 's/>.*/>'$PREFIXOUT'/g' ./$PREFIXOUT.depth$DEPTH.fa
     sed -i -e 's/__/\//g' -e 's/--/|/g' ./$PREFIXOUT.depth$DEPTH.fa
@@ -96,8 +96,8 @@ else
     bwa mem -t $THREADS ../$FASTA $PREFIXOUT.R1.fq.gz $PREFIXOUT.R2.fq.gz | samtools sort -o $PREFIXOUT.sorted.bam
     samtools index $PREFIXOUT.sorted.bam
     #GENERATING CONSENSUS WITH MAJOR ALLELE FREQUENCIES
-    samtools mpileup -aa -A -d 50000 --reference ../$FASTA -Q 30 -q 30 $PREFIXOUT.sorted.bam | ivar variants -p $PREFIXOUT -q 30 -t 0.05
-    samtools mpileup -d 50000 -A --reference ../$FASTA -Q 30 -q 30 $PREFIXOUT.sorted.bam | ivar consensus -p  $PREFIXOUT -q 30 -t 0 -m $DEPTH -n N
+    samtools mpileup -aa -A -d 50000 --reference ../$FASTA $PREFIXOUT.sorted.bam  -Q 0 | ivar variants -p $PREFIXOUT -q 30 -t 0.05
+    samtools mpileup -d 50000 -aa -A --reference ../$FASTA $PREFIXOUT.sorted.bam  -Q 0 | ivar consensus -p  $PREFIXOUT -q 30 -t 0 -m $DEPTH -n N
     mv $PREFIXOUT.fa $PREFIXOUT.depth$DEPTH.fa
     sed -i -e 's/>.*/>'$PREFIXOUT'/g' ./$PREFIXOUT.depth$DEPTH.fa
     sed -i -e 's/__/\//g' -e 's/--/|/g' ./$PREFIXOUT.depth$DEPTH.fa
