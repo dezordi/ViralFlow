@@ -108,6 +108,7 @@ Both of those examples will generate the following results:
      ├-coverage.report                             ### txt file with all assembly metrics
      ├-prefix_name.<R1/R2>.fq.gz                   ### trimmed fastq files
      ├-prefix_name.depthX.fa                       ### consensus defined with iVar
+     ├-prefix_name.depthX.amb.fa                   ### consensus defined with iVar with ambiguous nucleotideos on positions where major allele frequencies correspond at least 60% of depth.
      ├-prefix_name.depthX.all.fa                   ### in case of minor variant detection, this file contain the 2 genome versions (major and minor consensus)
      ├-prefix_name.depthX.fa.nextclade.csv         ### or prefix_name.depthX.all.fa.nextclade.csv in case of minor variant detection, nextclade csv output
      ├-prefix_name.depthX.fa.pango.csv             ### or prefix_name.depthX.all.fa.pango.csv in case of minor variant detection, pangolin lineages information
