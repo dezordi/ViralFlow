@@ -35,10 +35,8 @@ As soon as possible, a Dockerfile will be available. For a while, you can create
 
 .. code:: bash
     
-    docker run -tdi --name iam_sarscov2 --cpus <number> --memory <number> dezordi/iam_sarscov2:latest /bin/bash
-    docker cp IAM_SARSCOV2 iam_sarscov2:home
+    docker run -tdi --name iam_sarscov2 --cpus <number> --memory <number> dezordi/iam_sarscov2:0.0.2 /bin/bash
     docker attach iam_sarscov2
-    conda activate pangolin
     cd home/IAM_SARSCOV2
 
 
