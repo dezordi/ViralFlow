@@ -55,6 +55,13 @@ Or you can use the Dockerfile and sars2_assembly_docker_run.sh to run the docker
 
 Using the Dockerfile and sars2_assembly_docker_run.sh a directory named 'results' will be created in the current directory storing the results.
 
+**Suggestion to paired-end reads with 150 of length using Dockerfile:**
+
+.. code:: bash
+    
+    docker build -t iam_sarscov2:0.0.3 .
+    bash sars2_assembly_docker_run.sh reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa iam_sarscov2:0.0.3
+
 =====
 Usage
 =====
