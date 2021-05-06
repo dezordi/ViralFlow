@@ -31,7 +31,7 @@ Docker
 =====
 
 A docker image with all tools and libraries can be found `here <https://hub.docker.com/repository/docker/dezordi/iam_sarscov2/>`_.
-As soon as possible, a Dockerfile will be available. For a while, you can create a container and run the sars2_assembly.sh following:
+You can create a container and run as an interactive session the sars2_assembly.sh following:
 
 .. code:: bash
     
@@ -41,11 +41,19 @@ As soon as possible, a Dockerfile will be available. For a while, you can create
 
 
 * Arguments docker run
-    * tdi     -   t and i create an iteractive enviroment simillar to terminal connection session, d run the container in brackground;
+    * tdi     -   t and i create an interactive environment similar to terminal connection session, d run the container in background;
     * name    -   container name;
     * cpus    -   number maximum of threads;
     * memory  -   ram memory limit;
 
+Or you can use the Dockerfile and sars2_assembly_docker_run.sh to run the docker without the interactive mode:
+
+.. code:: bash
+    
+    docker build -t <image>:<version> .
+    bash sars2_assembly_docker_run.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS> <image>:<version>
+
+Using the Dockerfile and sars2_assembly_docker_run.sh a directory named 'results' will be created in the current directory storing the results.
 
 =====
 Usage
@@ -123,6 +131,8 @@ Both of those examples will generate the following results:
 Disclaimer
 =====
 * The fastq files should be in the same directory of sars2_assembly.sh and the python scripts.
-* The minor consensus version is based only on replacing the nucleotide from from the consensus (majority consensus) with the minor allele (supported by 5 to 49% of the reads), without any statistical method to reconstruct quasispecies genomic populations.
+* The minor consensus version is based only on replacing the nucleotide from the consensus (majority consensus) with the minor allele (supported by 5 to 49% of the reads), without any statistical method to reconstruct quasispecies genomic populations.
+* In the interactive container with Docker, a pangolin update is strongly recommended (pangolin --update);
+* Using Dockerfile a pangolin update will be performed automatically, but periodical updates are recommended (re-building the docker image);
 * If you use this workflow for academic  purposes, please cite this repository;
 * More information `Here <https://dezordi.github.io/>`_;
