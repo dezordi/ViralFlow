@@ -50,8 +50,8 @@ Or you can use the Dockerfile and sars2_assembly_docker_run.sh to run the docker
 
 .. code:: bash
     
-    docker build -t <image>:<version> .
-    bash sars2_assembly_docker_run.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS> <image>:<version>
+    docker build -t <image>:<tag> .
+    bash sars2_assembly_docker_run.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS> <image>:<tag>
 
 Using the Dockerfile and sars2_assembly_docker_run.sh a directory named 'results' will be created in the current directory storing the results.
 
