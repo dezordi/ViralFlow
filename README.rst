@@ -74,7 +74,7 @@ The recipe file and following steps were tested for singularity version 3.7.1.
     singularity build --fakeroot <imagename> Singularityfile
     bash sars2_assembly_singularity_run.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS> <imagename>
 
-**Suggestion to paired-end reads with 150 of length using Dockerfile:**
+**Suggestion to paired-end reads with 150 of length using Singularity:**
 
 .. code:: bash
     
