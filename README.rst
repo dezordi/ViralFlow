@@ -63,6 +63,24 @@ Using the Dockerfile and sars2_assembly_docker_run.sh a directory named 'results
     bash sars2_assembly_docker_run.sh reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa iam_sarscov2:0.0.3
 
 =====
+Singularity
+=====
+
+For environments with non-root privileges, you can run the analysis using singularity. A recipe file was create using the same docker image.
+The recipe file and following steps were tested for singularity version 3.7.1.
+
+.. code:: bash
+    
+    singularity build --fakeroot <imagename> Singularityfile
+    bash sars2_assembly_singularity_run.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS> <imagename>
+
+**Suggestion to paired-end reads with 150 of length using Dockerfile:**
+
+.. code:: bash
+    
+    singularity build --fakeroot iam_sarscov2.0.0.3 Singularityfile
+    bash sars2_assembly_singularity_run.sh reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa iam_sarscov2:0.0.3
+=====
 Usage
 =====
 
