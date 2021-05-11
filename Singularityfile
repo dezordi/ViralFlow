@@ -1,0 +1,20 @@
+Bootstrap: docker
+From: dezordi/iam_sarscov2:0.0.3
+Stage: spython-base
+
+%environment
+        export REFERENCE=''
+        export FASTQ1=''
+        export FASTQ2=''
+        export PREFIXOUT=''
+        export THREADS=''
+        export DEPTH=''
+        export MIN_LEN=''
+        export ADAPTERS=''
+
+
+%post
+	/bin/bash -c "source /home/IAM_SARSCOV2/pango_update" 
+
+%runscript
+	/bin/bash -c "source $(pwd)/sars2_assembly $(pwd)/$REFERENCE $(pwd)/$FASTQ1 $(pwd)/$FASTQ2 $PREFIXOUT $THREADS $DEPTH $MIN_LEN $(pwd)/$ADAPTERS" 

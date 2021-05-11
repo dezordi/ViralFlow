@@ -27,17 +27,15 @@ ADAPTERS=$8 #fasta file with adapters
 #================================================================
 # WORKFLOW
 #================================================================
-cd /home/IAM_SARSCOV2/
 #Creating index of reference genome
-bwa index $FASTA
+python ./python_scripts/bwa_index.py -in $FASTA
 #Creating directory to store results
-mkdir /home/IAM_SARSCOV2/$PREFIXOUT.results/
+mkdir $PREFIXOUT.results
 cd $PREFIXOUT.results
-pwd
 #QUALITY CHECK
 echo "FASTP:" > $PREFIXOUT.time.txt
 start=$(date +%s%3N)
-fastp -i $FASTQ1 -I $FASTQ2 -o $PREFIXOUT.R1.fq.gz -O $PREFIXOUT.R2.fq.gz --cut_front --cut_tail --qualified_quality_phred 20 -l $MIN_LEN -h $PREFIXOUT.quality.html --thread $THREADS --adapter_fasta $ADAPTERS
+python ../python_scripts/fastp.py -f1 $FASTQ1 -f2 $FASTQ2 -pr $PREFIXOUT -mi $MIN_LEN -p $THREADS -a $ADAPTERS
 end=$(date +%s%3N)
 analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
@@ -45,36 +43,17 @@ echo $analysis_in_minutes >> $PREFIXOUT.time.txt
 #MAPPING
 echo "BWA and ivar:" >> $PREFIXOUT.time.txt
 start=$(date +%s%3N)
-bwa mem -t $THREADS $FASTA $PREFIXOUT.R1.fq.gz $PREFIXOUT.R2.fq.gz | samtools sort -o $PREFIXOUT.sorted.bam
-samtools index $PREFIXOUT.sorted.bam
+python ../python_scripts/bwa_mem.py -f $FASTA -pr $PREFIXOUT -p $THREADS 
 #GENERATING CONSENSUS WITH MAJOR ALLELE FREQUENCIES
-samtools mpileup -aa -A -d 50000 --reference $FASTA -Q 30 -q 30 $PREFIXOUT.sorted.bam | ivar variants -p $PREFIXOUT -q 30 -t 0.05
-samtools mpileup -d 50000 -A --reference $FASTA -Q 30 -q 30 $PREFIXOUT.sorted.bam | ivar consensus -p  $PREFIXOUT -q 30 -t 0 -m $DEPTH -n N
-mv $PREFIXOUT.fa $PREFIXOUT.depth$DEPTH.fa
-sed -i -e 's/>.*/>'$PREFIXOUT'/g' ./$PREFIXOUT.depth$DEPTH.fa
-sed -i -e 's/__/\//g' -e 's/--/|/g' ./$PREFIXOUT.depth$DEPTH.fa
+python ../python_scripts/ivar.py -f $FASTA -pr $PREFIXOUT -dp $DEPTH
 echo $analysis_in_minutes >> $PREFIXOUT.time.txt
 ##GET PUTATIVE MINOR VARIANTS STEP
 echo "Minor Variant Analysis:" >> $PREFIXOUT.time.txt
-echo "bam-redcount"
-bam-readcount -d 50000 -b 30 -q 30 -w 0 -f $FASTA $PREFIXOUT.sorted.bam > $PREFIXOUT.depth$DEPTH.fa.bc
-python /home/IAM_SARSCOV2/minor_finder.py -in $PREFIXOUT.depth$DEPTH.fa.bc
-sed -i -e 's/__/\//g' -e 's/--/|/g' $PREFIXOUT.depth$DEPTH.fa.bc.fmt.minors.tsv
-python /home/IAM_SARSCOV2/major_minor.py -in $PREFIXOUT.depth$DEPTH.fa.bc.fmt.minors.tsv
-#If the library contain minor variants
-mafft --thread $THREADS --keeplength --add $PREFIXOUT.depth$DEPTH.fa $FASTA > $PREFIXOUT.depth$DEPTH.fa.algn
-python /home/IAM_SARSCOV2/put_minor.py -in $PREFIXOUT.depth$DEPTH.fa.algn -mv $PREFIXOUT.depth$DEPTH.fa.bc.fmt.minors.tsv.fmt
-mv $PREFIXOUT.depth$DEPTH.fa.algn.minor.fa $PREFIXOUT.depth$DEPTH.minor.fa
-cat $PREFIXOUT.depth$DEPTH.fa $PREFIXOUT.depth$DEPTH.minor.fa > $PREFIXOUT.depth$DEPTH.all.fa
-nextclade -i $PREFIXOUT.depth$DEPTH.all.fa -c $PREFIXOUT.depth$DEPTH.all.fa.nextclade.csv --jobs $THREADS
-pangolin $PREFIXOUT.depth$DEPTH.all.fa -t $THREADS --outfile $PREFIXOUT.depth$DEPTH.all.fa.pango.csv
+python ../python_scripts/get_mvs.py -f $FASTA -pr $PREFIXOUT -dp $DEPTH -p $THREADS
+##GET LINEAGE AND MUTATION PROFILE
+python ../python_scripts/pango_nextclade.py -pr $PREFIXOUT -dp $DEPTH -p $THREADS
 ##GET ASSEMBLY METRICS
-bedtools bamtobed -i $PREFIXOUT.sorted.bam > $PREFIXOUT.sorted.bed
-samtools view $PREFIXOUT.sorted.bam -u | bamdst -p $PREFIXOUT.sorted.bed -o .
-gunzip ./region.tsv.gz
-gunzip ./depth.tsv.gz
-sed -i -e 's/NC_045512\.2/'$PREFIXOUT'/g' chromosomes.report
-sed -i -e 's/__/\//g' -e 's/--/|/g' chromosomes.report
+python ../python_scripts/assembly_metrics.py -pr $PREFIXOUT
 end=$(date +%s%3N)
 analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
