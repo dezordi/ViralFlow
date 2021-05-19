@@ -156,7 +156,7 @@ Both of those examples will generate the following results:
 Disclaimer
 =====
 * The fastq files should be in the same directory of sars2_assembly.sh and the python scripts.
-* The minor consensus version is based only on replacing the nucleotide from the consensus (majority consensus) with the minor allele (supported by 5 to 49% of the reads), without any statistical method to reconstruct quasispecies genomic populations.
+* The minor consensus version is based only on replacing the nucleotide from the consensus (majority consensus) with the minor allele (supported by 5 to 49% of the reads), without any statistical method to reconstruct quasispecies genomic populations. The results of this step should be curated mannualy owing the possibility of different frequencies from ivar and bamreadcount analysis.
 * In the interactive container with Docker, a pangolin update is strongly recommended (pangolin --update);
 * Using Dockerfile a pangolin update will be performed automatically, but periodical updates are recommended (re-building the docker image);
 * If you use this workflow for academic  purposes, please cite this repository;
