@@ -18,7 +18,7 @@ try:
             && nextclade -i {prefixout}.depth{depth}.all.fa -c {prefixout}.depth{depth}.all.fa.nextclade.csv --jobs {threads} \
             && pangolin {prefixout}.depth{depth}.all.fa -t {threads} --outfile {prefixout}.depth{depth}.all.fa.pango.csv")
     else:
-        os.system("nextclade -i {prefixout}.depth{depth}.fa -c {prefixout}.depth{depth}.fa.nextclade.csv --jobs {threads} \
+        os.system(f"nextclade -i {prefixout}.depth{depth}.fa -c {prefixout}.depth{depth}.fa.nextclade.csv --jobs {threads} \
             && pangolin {prefixout}.depth{depth}.fa -t {threads} --outfile {prefixout}.depth{depth}.fa.pango.csv")
 except:
     print("Error in pangolin and nextclade step")
