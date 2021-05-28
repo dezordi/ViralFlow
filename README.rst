@@ -22,7 +22,7 @@ Dependencies
     * biopython 1.78
 * mafft v7.310 (2017/Mar/17)    
 * nextclade 0.14.2
-* pangolin 2.3.9
+* pangolin v3.0.3
 * bedtools v2.26.0
 * bamdst 1.0.6
 
@@ -31,6 +31,7 @@ Docker
 =====
 
 A docker image with all tools and libraries can be found `here <https://hub.docker.com/repository/docker/dezordi/iam_sarscov2/>`_.
+The last update of the pangolin in the docker images was carried out on May 28, 2021 to the version v3.0.3
 You can create a container and run as an interactive session the sars2_assembly.sh following:
 
 .. code:: bash
