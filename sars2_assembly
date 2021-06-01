@@ -28,7 +28,7 @@ ADAPTERS=$8 #fasta file with adapters
 # WORKFLOW
 #================================================================
 #Creating index of reference genome
-python ./python_scripts/bwa_index.py -in $FASTA
+python /home/IAM_SARSCOV2/python_scripts/bwa_index.py -in $FASTA
 #Creating directory to store results
 mkdir $PREFIXOUT.results
 cd $PREFIXOUT.results
