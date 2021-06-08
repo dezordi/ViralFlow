@@ -76,9 +76,9 @@ cd $PREFIXOUT.results
 
 #If the usar want to re-assembly the genome with a different depth treshold, only the consensus generation run will be performed
 if [ -f "$PREFIXOUT.sorted.bam" ]; then
-    samtools mpileup -a -d 50000 --reference ../$FASTA $PREFIXOUT.sorted.bam  -Q 30 | ivar variants -p $PREFIXOUT -q 30 -t 0.05
-    samtools mpileup -d 50000 -a --reference ../$FASTA $PREFIXOUT.sorted.bam  -Q 30 | ivar consensus -p  $PREFIXOUT -q 30 -t 0 -m $DEPTH -n N
-    samtools mpileup -d 50000 -a --reference ../$FASTA $PREFIXOUT.sorted.bam  -Q 30 | ivar consensus -p  $PREFIXOUT.ivar060 -q 30 -t 0.60 -m $DEPTH -n N
+    samtools mpileup -a -d 50000 --reference ../$FASTA $PREFIXOUT.sorted.bam  -q 30 -Q 30 | ivar variants -p $PREFIXOUT -t 0.05
+    samtools mpileup -d 50000 -a --reference ../$FASTA $PREFIXOUT.sorted.bam  -q 30 -Q 30 | ivar consensus -p  $PREFIXOUT -t 0 -m $DEPTH -n N
+    samtools mpileup -d 50000 -a --reference ../$FASTA $PREFIXOUT.sorted.bam  -q 30 -Q 30 | ivar consensus -p  $PREFIXOUT.ivar060 -t 0.60 -m $DEPTH -n N
     mv $PREFIXOUT.fa $PREFIXOUT.depth$DEPTH.fa
     sed -i -e 's/>.*/>'$PREFIXOUT'/g' ./$PREFIXOUT.depth$DEPTH.fa
     sed -i -e 's/__/\//g' -e 's/--/|/g' ./$PREFIXOUT.depth$DEPTH.fa
@@ -100,9 +100,9 @@ else
     bwa mem -t $THREADS ../$FASTA $PREFIXOUT.R1.fq.gz $PREFIXOUT.R2.fq.gz | samtools sort -o $PREFIXOUT.sorted.bam
     samtools index $PREFIXOUT.sorted.bam
     #GENERATING CONSENSUS WITH MAJOR ALLELE FREQUENCIES
-    samtools mpileup -a -d 50000 --reference ../$FASTA $PREFIXOUT.sorted.bam  -Q 30 | ivar variants -p $PREFIXOUT -q 30 -t 0.05
-    samtools mpileup -d 50000 -a --reference ../$FASTA $PREFIXOUT.sorted.bam  -Q 30 | ivar consensus -p  $PREFIXOUT -q 30 -t 0 -m $DEPTH -n N
-    samtools mpileup -d 50000 -a --reference ../$FASTA $PREFIXOUT.sorted.bam  -Q 30 | ivar consensus -p  $PREFIXOUT.ivar060 -q 30 -t 0.60 -m $DEPTH -n N
+    #samtools mpileup -a -d 50000 --reference ../$FASTA $PREFIXOUT.sorted.bam  -q 30 | ivar variants -p $PREFIXOUT -t 0.05
+    samtools mpileup -d 50000 -a --reference ../$FASTA $PREFIXOUT.sorted.bam  -q 30 | ivar consensus -p  $PREFIXOUT -t 0 -m $DEPTH -n N
+    samtools mpileup -d 50000 -a --reference ../$FASTA $PREFIXOUT.sorted.bam  -q 30 | ivar consensus -p  $PREFIXOUT.ivar060 -t 0.60 -m $DEPTH -n N
     mv $PREFIXOUT.fa $PREFIXOUT.depth$DEPTH.fa
     sed -i -e 's/>.*/>'$PREFIXOUT'/g' ./$PREFIXOUT.depth$DEPTH.fa
     sed -i -e 's/__/\//g' -e 's/--/|/g' ./$PREFIXOUT.depth$DEPTH.fa
@@ -112,7 +112,7 @@ else
     echo $analysis_in_minutes >> $PREFIXOUT.time.txt
     ##GET PUTATIVE MINOR VARIANTS STEP
     echo "Minor Variant Analysis:" >> $PREFIXOUT.time.txt
-    bam-readcount -d 50000 -b 30 -q 30 -w 0 -f ../$FASTA $PREFIXOUT.sorted.bam > $PREFIXOUT.depth$DEPTH.fa.bc
+    bam-readcount -d 50000 -q 30 -w 0 -f ../$FASTA $PREFIXOUT.sorted.bam > $PREFIXOUT.depth$DEPTH.fa.bc
     python ../minor_finder.py -in $PREFIXOUT.depth$DEPTH.fa.bc
     sed -i -e 's/__/\//g' -e 's/--/|/g' $PREFIXOUT.depth$DEPTH.fa.bc.fmt.minors.tsv
     python ../major_minor.py -in $PREFIXOUT.depth$DEPTH.fa.bc.fmt.minors.tsv
