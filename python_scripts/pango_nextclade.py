@@ -12,9 +12,9 @@ depth = args.depth
 threads = args.threads
 
 try:
-    num_lines = sum(1 for line in open(f"{prefixout}.depth{depth}.fa.bc.fmt.minors.tsv.fmt"))
+    num_lines = sum(1 for line in open(f"{prefixout}.depth{depth}.fa.bc.intrahost.short.tsv"))
     if num_lines > 1:
-        os.system(f"cat {prefixout}.depth{depth}.fa {prefixout}.depth{depth}.minor.fa > {prefixout}.depth{depth}.all.fa \
+        os.system(f"cat {prefixout}.depth{depth}.fa {prefixout}.depth{depth}.fa.algn.minor.fa > {prefixout}.depth{depth}.all.fa \
             && nextclade -i {prefixout}.depth{depth}.all.fa -c {prefixout}.depth{depth}.all.fa.nextclade.csv --jobs {threads} \
             && pangolin {prefixout}.depth{depth}.all.fa -t {threads} --outfile {prefixout}.depth{depth}.all.fa.pango.csv")
     else:

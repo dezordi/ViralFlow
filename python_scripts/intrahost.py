@@ -9,7 +9,7 @@ __email__ = "zimmer.filipe@gmail.com"
 __date__ = "2021/08/06"
 __username__ = "dezordi"
 
-import argparse, subprocess, shlex, csv, re, os
+import argparse, csv, re, os
 import pandas as pd
 import numpy as np
 from Bio import AlignIO
@@ -110,14 +110,17 @@ with open(bam_rc_file,'r') as bc_file, open(bam_rc_file+'.fmt.tsv','w') as bc_fo
                     T_depth = int(T_depth) - int(indel_depth)
                     T_plus = int(T_plus) - int(indel_plus)
                     T_minus = int(T_minus) - int(indel_minus)
-            if '-' in indel_seq:
-                del_length = len(indel_seq)-1
-                for i in range(0,del_length):
-                    del_dict['pos'].append(int(line[1])+i)
-                    del_dict['deletion'].append(indel_seq)
-                    del_dict['del_depth'].append(indel_depth)
-                    del_dict['del_depth_plus'].append(indel_plus)
-                    del_dict['del_depth_minus'].append(indel_minus)
+            elif '-' in indel_seq:
+                if int(indel_depth) < depth_value:
+                    pass
+                else:
+                    del_length = len(indel_seq)-1
+                    for i in range(0,del_length):
+                        del_dict['pos'].append(int(line[1])+i)
+                        del_dict['deletion'].append(indel_seq)
+                        del_dict['del_depth'].append(indel_depth)
+                        del_dict['del_depth_plus'].append(indel_plus)
+                        del_dict['del_depth_minus'].append(indel_minus)
         elif len(line) == 11:
             indel_depth_line = line[10].rstrip('\n')
             indel_seq = re.sub(r":.*","",indel_depth_line)
@@ -146,13 +149,16 @@ with open(bam_rc_file,'r') as bc_file, open(bam_rc_file+'.fmt.tsv','w') as bc_fo
                     T_plus = int(T_plus) - int(indel_plus)
                     T_minus = int(T_minus) - int(indel_minus)
             if '-' in indel_seq:
-                del_length = len(indel_seq)-1
-                for i in range(0,del_length):
-                    del_dict['pos'].append(int(line[1])+i)
-                    del_dict['deletion'].append(indel_seq)
-                    del_dict['del_depth'].append(indel_depth)
-                    del_dict['del_depth_plus'].append(indel_plus)
-                    del_dict['del_depth_minus'].append(indel_minus)
+                if int(indel_depth) < depth_value:
+                    pass
+                else:
+                    del_length = len(indel_seq)-1
+                    for i in range(0,del_length):
+                        del_dict['pos'].append(int(line[1])+i)
+                        del_dict['deletion'].append(indel_seq)
+                        del_dict['del_depth'].append(indel_depth)
+                        del_dict['del_depth_plus'].append(indel_plus)
+                        del_dict['del_depth_minus'].append(indel_minus)
         if int(var_pos) <= 265:
             region = '5UTR'
         elif int(var_pos) <= 21555:
@@ -416,10 +422,10 @@ with open(bam_rc_file+'.fmt.minors.tsv','r') as minor_tsv:
             out_short_list_lists.append([line[0],line[1],line[2],line[3],major,minor,major_depth,minor_depth,frequency])
 output_tsv_writer.writerows(out_list_lists)
 output_short_writer.writerows(out_short_list_lists)
-
+output_tsv.close()
 #generate minor consensus
 output_handle_min = open(alignment_file +'.minor.fa', "w")
-alignment = AlignIO.read(open(alignment_file ),'fasta')
+alignment = AlignIO.read(open(alignment_file),'fasta')
 
 for record in alignment:
     new_seq_lst = list(record.seq)
@@ -428,6 +434,8 @@ for record in alignment:
     with open(bam_rc_file+'.intrahost.tsv','r') as minor_variants_file:
         minor_reader = csv.reader(minor_variants_file,delimiter='\t')
         for line in minor_reader:
+            line[0] = re.sub(r'__','/',line[0])
+            line[0] = re.sub(r'--','|',line[0])
             if record.id == line[0]:
                 pos = int(line[1].rstrip('\n'))
                 minor = line[22].rstrip('\n')

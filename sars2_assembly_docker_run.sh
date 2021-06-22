@@ -65,4 +65,4 @@ MIN_LEN=$7 #minimum length to trimm reads
 ADAPTERS=$8 #fasta file with adapters
 IMAGE=$9
 
-docker run --env REFERENCE=$FASTA --env FASTQ1=$FASTQ1 --env FASTQ2=$FASTQ2 --env PREFIXOUT=$PREFIXOUT --env THREADS=$THREADS --env DEPTH=$DEPTH --env MIN_LEN=$MIN_LEN --env ADAPTERS=$ADAPTERS -v $(pwd)/:/store_results --rm $IMAGE
+docker run --env REFERENCE=$FASTA --env FASTQ1=$FASTQ1 --env FASTQ2=$FASTQ2 --env PREFIXOUT=$PREFIXOUT --env THREADS=$THREADS --env DEPTH=$DEPTH --env MIN_LEN=$MIN_LEN --env ADAPTERS=$ADAPTERS -v $(pwd)/:/home/ -w /home/ --rm $IMAGE

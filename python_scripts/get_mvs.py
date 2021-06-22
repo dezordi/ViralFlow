@@ -19,15 +19,11 @@ try:
         bwa_read = shlex.split(bwa_read)
         cmd_bwa_read = subprocess.Popen(bwa_read, stdout=bamread_output)
         cmd_bwa_read.wait()
-    os.system(f"python ../python_scripts/minor_finder.py -in {prefixout}.depth{depth}.fa.bc \
-                && sed -i -e 's/__/\//g' -e 's/--/|/g' {prefixout}.depth{depth}.fa.bc.fmt.minors.tsv \
-                && python ../python_scripts/major_minor.py -in {prefixout}.depth{depth}.fa.bc.fmt.minors.tsv")
     with open(f"{prefixout}.depth{depth}.fa.algn","w") as mafft_output:
         mafft = (f"mafft --thread {threads} --keeplength --add {prefixout}.depth{depth}.fa {fasta_file}")
         mafft = shlex.split(mafft)
         cmd_mafft = subprocess.Popen(mafft,stdout=mafft_output)
         cmd_mafft.wait()
-    os.system(f"python ../python_scripts/put_minor.py -in {prefixout}.depth{depth}.fa.algn -mv {prefixout}.depth{depth}.fa.bc.fmt.minors.tsv.fmt \
-            && mv {prefixout}.depth{depth}.fa.algn.minor.fa {prefixout}.depth{depth}.minor.fa")
+    os.system(f"python /home/python_scripts/intrahost.py -in {prefixout}.depth{depth}.fa.bc -al {prefixout}.depth{depth}.fa.algn")
 except:
     print("Error in minor variants step")

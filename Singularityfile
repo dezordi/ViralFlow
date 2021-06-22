@@ -14,7 +14,7 @@ Stage: spython-base
 
 
 %post
-	/bin/bash -c "source /home/IAM_SARSCOV2/pango_update" 
+	/bin/bash -c "source /home/pango_update" 
 
 %runscript
-	/bin/bash -c "source $(pwd)/sars2_assembly $(pwd)/$REFERENCE $(pwd)/$FASTQ1 $(pwd)/$FASTQ2 $PREFIXOUT $THREADS $DEPTH $MIN_LEN $(pwd)/$ADAPTERS" 
+	/bin/bash -c "source $(pwd)/sars2_assembly $(pwd)/$REFERENCE $(pwd)/$FASTQ1 $(pwd)/$FASTQ2 $PREFIXOUT $THREADS $DEPTH $MIN_LEN $(pwd)/$ADAPTERS"
