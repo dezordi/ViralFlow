@@ -57,7 +57,7 @@ Docker
 
 A docker image with all tools and libraries can be found `here <https://hub.docker.com/repository/docker/dezordi/iam_sarscov2/>`_.
 The last update of the pangolin in the docker images was carried out on June 22, 2021 to the version v3.1.4
-You can create a container and run as an interactive session the sars2_assembly.sh following:
+You can create a container and run as an interactive session the sars2_assembly following:
 
 .. code:: bash
     
@@ -100,7 +100,7 @@ The recipe file and following steps were tested for singularity version 3.7.1.
 .. code:: bash
     
     singularity build --fakeroot <imagename> Singularityfile
-    bash sars2_assembly_singularity_run.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN><ADAPTERS_FILE> <imagename>
+    bash sars2_assembly_singularity_run <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN><ADAPTERS_FILE> <imagename>
 
 **Suggestion to paired-end reads with 150 of length using Singularity:**
 
@@ -131,13 +131,13 @@ bash sars2_assembly <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NU
 
 .. code:: bash
     
-    bash sars2_assembly.sh reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa
+    bash sars2_assembly reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa
 
 **Suggestion to paired-end reads with 75 of length:**
 
 .. code:: bash
 
-    bash sars2_assembly.sh reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 35 adapters.fa
+    bash sars2_assembly reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 35 adapters.fa
 
 Both of those examples will generate the following results:
 
