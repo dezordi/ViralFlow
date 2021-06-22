@@ -2,10 +2,10 @@
 # HEADER
 #================================================================
 #% USAGE
-#+    bash sars2_assembly_docker reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa
+#+    bash sars2_assembly_singularity_run reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa
 #%
 #% DESCRIPTION
-#%    This script performs a reference guided genome assembly of SARS-CoV-2 using docker. Python scripts were developed based on the wuhan SARS-CoV-2 reference genome NC_045512.2.
+#%    This script performs a reference guided genome assembly of SARS-CoV-2 using singularity. Python scripts were developed based on the wuhan SARS-CoV-2 reference genome NC_045512.2.
 #%    The workflow was developed to work with Illumina paired-end reads. Tests with other technologies should be performed.
 #%    
 #% OPTIONS
@@ -87,14 +87,14 @@ ADAPTERS=$8 #fasta file with adapters
 #================================================================
 
 #CREATING INDEX OF REFERENCE GENOME
-python /home/python_scripts/bwa_index.py -in /home/$FASTA
+python $(pwd)/python_scripts/bwa_index.py -in $FASTA
 #CREATING DIR TO STORE RESULTS
 mkdir $PREFIXOUT.results/
 cd $PREFIXOUT.results
 #QUALITY CHECK
 echo "FASTP:" > $PREFIXOUT.time.txt
 start=$(date +%s%3N)
-python /home/python_scripts/fastp.py -f1 /home/$FASTQ1 -f2 /home/$FASTQ2 -pr $PREFIXOUT -mi $MIN_LEN -p $THREADS -a /home/$ADAPTERS
+python ../python_scripts/fastp.py -f1 $FASTQ1 -f2 $FASTQ2 -pr $PREFIXOUT -mi $MIN_LEN -p $THREADS -a $ADAPTERS
 end=$(date +%s%3N)
 analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
@@ -102,8 +102,8 @@ echo $analysis_in_minutes >> $PREFIXOUT.time.txt
 #MAPPING
 echo "BWA and ivar:" >> $PREFIXOUT.time.txt
 start=$(date +%s%3N)
-python /home/python_scripts/bwa_mem.py -f /home/$FASTA -pr $PREFIXOUT -p $THREADS
-python /home/python_scripts/ivar.py -f /home/$FASTA -pr $PREFIXOUT -dp $DEPTH
+python ../python_scripts/bwa_mem.py -f $FASTA -pr $PREFIXOUT -p $THREADS
+python ../python_scripts/ivar.py -f $FASTA -pr $PREFIXOUT -dp $DEPTH
 end=$(date +%s%3N)
 analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
@@ -111,7 +111,7 @@ echo $analysis_in_minutes >> $PREFIXOUT.time.txt
 ##GET PUTATIVE MINOR VARIANTS STEP
 echo "Minor Variant Analysis:" >> $PREFIXOUT.time.txt
 start=$(date +%s%3N)
-python /home/python_scripts/get_mvs.py -f /home/$FASTA -pr $PREFIXOUT -dp $DEPTH -p $THREADS
+python ../python_scripts/get_mvs_sing.py -f $FASTA -pr $PREFIXOUT -dp $DEPTH -p $THREADS
 end=$(date +%s%3N)
 analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
@@ -119,11 +119,11 @@ echo $analysis_in_minutes >> $PREFIXOUT.time.txt
 ##PANGOLIN AND NEXTCLADE
 echo "Pangolin and Nextclade Analysis:" >> $PREFIXOUT.time.txt
 start=$(date +%s%3N)
-python /home/python_scripts/pango_nextclade.py -pr $PREFIXOUT -dp $DEPTH -p $THREADS
+python ../python_scripts/pango_nextclade.py -pr $PREFIXOUT -dp $DEPTH -p $THREADS
 end=$(date +%s%3N)
 analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
 echo $analysis_in_minutes >> $PREFIXOUT.time.txt
 ##GET ASSEMBLY METRICS
-python /home/python_scripts/assembly_metrics.py -pr $PREFIXOUT
+python ../python_scripts/assembly_metrics.py -pr $PREFIXOUT
 cd ..

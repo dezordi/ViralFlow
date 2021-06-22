@@ -27,11 +27,36 @@ Dependencies
 * bamdst 1.0.6
 
 =====
+Files info
+=====
+
+.. code-block:: text
+
+    IAM_SARSCOV2/
+    ├-Dockerfile                            ### Recipe to build local docker image
+    ├-sars2_assembly_docker                 ### Script called into ENTRYPOINT of local docker image
+    ├-sars2_assembly_docker_run.sh          ### Script for users unfamiliar with docker run sintaxe 
+    ├-Singularityfile                       ### Recipe to build local singularity sandbox
+    ├-sars2_assembly_singularity            ### Script called into ENTRYPOINT of local singularity sandbox
+    ├-sars2_assembly_singularity_run.sh     ### Script for users unfamiliar with singularity run sintaxe 
+    ├-pango_update                          ### Script to activate conda and update pangolin, run automatically during docker or singularity build
+    └-python_scripts:                       
+      ├-assembly_metrics.py                 ### Run bamdst 
+      ├-bwa_index.py                        ### Run bwa index
+      ├-bwa_mem.py                          ### Run bwa mem
+      ├-fastp.py                            ### Run fastp
+      ├-get_mvs.py                          ### Perform intrahost variant analysis with bam-readcount and intrahost.py
+      ├-intrahost.py                        ### Identify genomic positions with multi-allele frequencies
+      ├-ivar.py                             ### Run ivar variant and ivar consensus
+      └-pango_nextclade.py                  ### Run pangolin and nextclade
+
+
+=====
 Docker
 =====
 
 A docker image with all tools and libraries can be found `here <https://hub.docker.com/repository/docker/dezordi/iam_sarscov2/>`_.
-The last update of the pangolin in the docker images was carried out on May 28, 2021 to the version v3.0.3
+The last update of the pangolin in the docker images was carried out on June 22, 2021 to the version v3.1.4
 You can create a container and run as an interactive session the sars2_assembly.sh following:
 
 .. code:: bash
@@ -88,28 +113,9 @@ The recipe file and following steps were tested for singularity version 3.7.1.
 Usage
 =====
 
+*Into interactive docker container*
+
 bash sars2_assembly <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN><ADAPTERS_FILE>
-
-.. code-block:: text
-
-    current_directory/
-    ├-sars2_assembly.sh
-    ├-reference.fasta
-    ├-code_R1.fastq.gz
-    ├-code_R2.fastq.gz
-    ├-adapters.fasta
-    └-python_scripts:
-      ├-assembly_metrics.py
-      ├-bwa_index.py
-      ├-bwa_mem.py
-      ├-fastp.py
-      ├-get_mvs.py
-      ├-intrahost.py
-      ├-ivar.py
-      ├-major_minor.py
-      ├-minor_finder.py
-      ├-pango_nextclade.py
-      └-put_minor.py
 
 * Arguments
     * <REFERENCEGENOME> -   Fasta file with reference genome
@@ -140,7 +146,7 @@ Both of those examples will generate the following results:
 
 
     current_directory/
-    ├-sars2_assembly.sh
+    ├-sars2_assembly
     ├-reference.fasta
     ├-code_R1.fastq.gz
     ├-code_R2.fastq.gz

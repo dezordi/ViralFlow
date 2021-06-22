@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: dezordi/iam_sarscov2:0.0.3
+From: dezordi/iam_sarscov2:0.0.4
 Stage: spython-base
 
 %environment
@@ -17,4 +17,4 @@ Stage: spython-base
 	/bin/bash -c "source /home/pango_update" 
 
 %runscript
-	/bin/bash -c "source $(pwd)/sars2_assembly $(pwd)/$REFERENCE $(pwd)/$FASTQ1 $(pwd)/$FASTQ2 $PREFIXOUT $THREADS $DEPTH $MIN_LEN $(pwd)/$ADAPTERS"
+	/bin/bash -c "source $(pwd)/sars2_assembly_singularity $(pwd)/$REFERENCE $(pwd)/$FASTQ1 $(pwd)/$FASTQ2 $PREFIXOUT $THREADS $DEPTH $MIN_LEN $(pwd)/$ADAPTERS"
