@@ -113,7 +113,7 @@ The recipe file and following steps were tested for singularity version 3.7.1.
 Usage
 =====
 
-*Into interactive docker container*
+**Into interactive docker container**
 
 bash sars2_assembly <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN><ADAPTERS_FILE>
 
