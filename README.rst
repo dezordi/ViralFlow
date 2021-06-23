@@ -129,7 +129,7 @@ bash sars2_assembly <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NU
     * <NUM_THREADS>     -   Number of threads
     * <DEPTH>           -   Minimum depth to mask unanssembled regions
     * <MIN_LEN>         -   Minimum length to trimm sequences
-    *<ADAPTERS_FILE>    -   Fasta file with adapters used in the sequencing analysis
+    * <ADAPTERS_FILE>    -   Fasta file with adapters used in the sequencing analysis
 
 **Suggestion to paired-end reads with 150 of length:**
 
