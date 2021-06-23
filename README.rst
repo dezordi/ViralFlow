@@ -124,7 +124,7 @@ bash sars2_assembly <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NU
     * <PREFIX>          -   Prefix string to store results and to rename consensus genome. The user can set the gisaid format genome name, and the workflow will automatically format the consensus name, as the prefix will be used to create the directory output, the slash '/' should be replaced by '__' and the pipe '|' should be replaced by '--'.
         * e.g. prefix:       hCoV-19__Brazil__PE-FIOCRUZ-IAM1234__2020--2020-06-01.
         * e.g. outdir:       hCoV-19__Brazil__PE-FIOCRUZ-IAM1234__2020--2020-06-01.results.
-        * e.g. conse.:    hCoV-19/Brazil/PE-FIOCRUZ-IAM1234/2020|2020-06-01.
+        * e.g. cons.:    hCoV-19/Brazil/PE-FIOCRUZ-IAM1234/2020|2020-06-01.
     * <NUM_THREADS>     -   Number of threads.
     * <DEPTH>           -   Minimum depth to mask unanssembled regions.
     * <MIN_LEN>         -   Minimum length to trimm sequences.
