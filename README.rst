@@ -115,7 +115,9 @@ Explained Usage
 
 **Into interactive docker container**
 
-bash sars2_assembly <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS_FILE>
+.. code:: bash
+
+    bash sars2_assembly <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS_FILE>
 
 * Arguments
     * <REFERENCEGENOME> -   Fasta file with reference genome.
