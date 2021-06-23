@@ -56,7 +56,7 @@ Docker
 =====
 
 A docker image with all tools and libraries can be found `here <https://hub.docker.com/repository/docker/dezordi/iam_sarscov2/>`_.
-The last update of the pangolin in the docker images was carried out on June 22, 2021 to the version v3.1.4
+The last update of the pangolin in the docker images was carried out on June 22, 2021 to the version v3.1.4.
 You can create a container and run as an interactive session the sars2_assembly following:
 
 .. code:: bash
@@ -81,7 +81,7 @@ Or you can use the Dockerfile and sars2_assembly_docker_run.sh to run the docker
     docker build -t <image>:<tag> .
     bash sars2_assembly_docker_run.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS_FILE> <image>:<tag>
 
-Using the Dockerfile and sars2_assembly_docker_run a directory named 'prefix.results' will be created in the current directory storing the results.
+Using the Dockerfile and sars2_assembly_docker_run.sh a directory named 'prefix.results' will be created in the current directory storing the results.
 
 **Suggestion to paired-end reads with 150 of length using Dockerfile:**
 
@@ -100,7 +100,7 @@ The recipe file and following steps were tested for singularity version 3.7.1.
 .. code:: bash
     
     singularity build --fakeroot <imagename> Singularityfile
-    bash sars2_assembly_singularity_run <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS_FILE> <imagename>
+    bash sars2_assembly_singularity_run.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS_FILE> <imagename>
 
 **Suggestion to paired-end reads with 150 of length using Singularity:**
 
@@ -110,7 +110,7 @@ The recipe file and following steps were tested for singularity version 3.7.1.
     bash sars2_assembly_singularity_run.sh reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa iam_sarscov2:0.0.4
 
 =====
-Usage
+Explained Usage
 =====
 
 **Into interactive docker container**
@@ -122,6 +122,10 @@ bash sars2_assembly <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NU
     * <001.fastq.gz>    -   Fasqt file with positive sense reads (R1)
     * <002.fastq.gz>    -   Fastq file with negative sense reads (R2)
     * <PREFIX>          -   Prefix string to store results and to rename consensus genome
+        * The user can set the gisaid format genome name, and the workflow will automatically format the consensus name, as the prefix will be used to create the directory output, the slash '/' should be replaced by '__' and the pipe '|' should be replaced by '--';
+            * e.g. prefix:       hCoV-19__Brazil__PE-FIOCRUZ-IAM1234__2020--2020-06-01
+            * e.g. outdir:       hCoV-19__Brazil__PE-FIOCRUZ-IAM1234__2020--2020-06-01.results
+            * e.g. consensus:    hCoV-19/Brazil/PE-FIOCRUZ-IAM1234/2020|2020-06-01
     * <NUM_THREADS>     -   Number of threads
     * <DEPTH>           -   Minimum depth to mask unanssembled regions
     * <MIN_LEN>         -   Minimum length to trimm sequences
