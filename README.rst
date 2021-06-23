@@ -100,7 +100,7 @@ The recipe file and following steps were tested for singularity version 3.7.1.
 .. code:: bash
     
     singularity build --fakeroot <imagename> Singularityfile
-    bash sars2_assembly_singularity_run <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN><ADAPTERS_FILE> <imagename>
+    bash sars2_assembly_singularity_run <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS_FILE> <imagename>
 
 **Suggestion to paired-end reads with 150 of length using Singularity:**
 
@@ -115,7 +115,7 @@ Usage
 
 **Into interactive docker container**
 
-bash sars2_assembly <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN><ADAPTERS_FILE>
+bash sars2_assembly <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS_FILE>
 
 * Arguments
     * <REFERENCEGENOME> -   Fasta file with reference genome
@@ -125,7 +125,7 @@ bash sars2_assembly <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NU
     * <NUM_THREADS>     -   Number of threads
     * <DEPTH>           -   Minimum depth to mask unanssembled regions
     * <MIN_LEN>         -   Minimum length to trimm sequences
-    *<ADAPTERS_FILE>        -   Fasta file with adapters used in the sequencing analysis
+    *<ADAPTERS_FILE>    -   Fasta file with adapters used in the sequencing analysis
 
 **Suggestion to paired-end reads with 150 of length:**
 
