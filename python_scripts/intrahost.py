@@ -447,5 +447,5 @@ for record in alignment:
         record_lst.append(record)
         SeqIO.write(record_lst,output_handle_min,'fasta')
 
-#os.remove(bam_rc_file+'.fmt.minors.tsv')
-#os.remove(bam_rc_file+'.fmt.tsv')
+os.remove(bam_rc_file+'.fmt.minors.tsv')
+os.remove(bam_rc_file+'.fmt.tsv')
