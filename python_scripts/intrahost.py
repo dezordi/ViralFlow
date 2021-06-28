@@ -32,6 +32,8 @@ alignment_file = args.alignment_file
 prefix = bam_rc_file
 prefix = re.sub(".*\/","",prefix)
 prefix = re.sub("\..*","",prefix)
+prefix = re.sub(r'__','/',prefix)
+prefix = re.sub(r'--','|',prefix)
 with open(bam_rc_file,'r') as bc_file, open(bam_rc_file+'.fmt.tsv','w') as bc_formated_output:
     output_csv_writer = csv.writer(bc_formated_output,delimiter='\t')
     output_csv_writer.writerow(['GENOME','POS','REGION','DEPTH','A_DEPTH','A_PLUS','A_MINUS','C_DEPTH','C_PLUS','C_MINUS','G_DEPTH','G_PLUS','G_MINUS','T_DEPTH','T_PLUS','T_MINUS','INDEL_DEPTH','INDEL_PLUS','INDEL_MINUS','INDEL'])
