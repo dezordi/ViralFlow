@@ -92,7 +92,7 @@ python $(pwd)/python_scripts/bwa_index.py -in $FASTA
 mkdir $PREFIXOUT.results/
 cd $PREFIXOUT.results
 #QUALITY CHECK
-echo "FASTP:" > $PREFIXOUT.time.txt
+echo "fastp analysis:" > $PREFIXOUT.time.txt
 start=$(date +%s%3N)
 python ../python_scripts/fastp.py -f1 $FASTQ1 -f2 $FASTQ2 -pr $PREFIXOUT -mi $MIN_LEN -p $THREADS -a $ADAPTERS
 end=$(date +%s%3N)
@@ -100,7 +100,7 @@ analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
 echo $analysis_in_minutes >> $PREFIXOUT.time.txt
 #MAPPING
-echo "BWA and ivar:" >> $PREFIXOUT.time.txt
+echo "BWA and iVar analysis:" >> $PREFIXOUT.time.txt
 start=$(date +%s%3N)
 python ../python_scripts/bwa_mem.py -f $FASTA -pr $PREFIXOUT -p $THREADS
 python ../python_scripts/ivar.py -f $FASTA -pr $PREFIXOUT -dp $DEPTH
@@ -109,7 +109,7 @@ analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
 echo $analysis_in_minutes >> $PREFIXOUT.time.txt
 ##GET PUTATIVE MINOR VARIANTS STEP
-echo "Minor Variant Analysis:" >> $PREFIXOUT.time.txt
+echo "Minor variant analysis:" >> $PREFIXOUT.time.txt
 start=$(date +%s%3N)
 python ../python_scripts/get_mvs_sing.py -f $FASTA -pr $PREFIXOUT -dp $DEPTH -p $THREADS
 end=$(date +%s%3N)
@@ -117,7 +117,7 @@ analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
 echo $analysis_in_minutes >> $PREFIXOUT.time.txt
 ##PANGOLIN AND NEXTCLADE
-echo "Pangolin and Nextclade Analysis:" >> $PREFIXOUT.time.txt
+echo "Nextclade and Pangolin analysis:" >> $PREFIXOUT.time.txt
 start=$(date +%s%3N)
 python ../python_scripts/pango_nextclade.py -pr $PREFIXOUT -dp $DEPTH -p $THREADS
 end=$(date +%s%3N)
@@ -125,5 +125,11 @@ analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
 echo $analysis_in_minutes >> $PREFIXOUT.time.txt
 ##GET ASSEMBLY METRICS
+echo "bamdst analysis:" >> $PREFIXOUT.time.txt
+start=$(date +%s%3N)
 python ../python_scripts/assembly_metrics.py -pr $PREFIXOUT
+end=$(date +%s%3N)
+analysis_in_miliseconds=$(expr $end - $start)
+analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
+echo $analysis_in_minutes >> $PREFIXOUT.time.txt
 cd ..
