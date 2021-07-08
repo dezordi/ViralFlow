@@ -169,7 +169,7 @@ Both of those examples will generate the following results:
      ├-prefix_name.depthX.fa.bc                      ### bamreadcount output, with all nucleotide frequencies by genomic position
      ├-prefix_name.depthX.fa.bc.intrahost.tsv        ### tsv file with minor variant informations
      ├-prefix_name.depthX.fa.bc.intrahost.short.tsv  ### short tsv file with minor variant informations
-     ├-prefix_name.depthX.minor.fa                   ### fasta file with minor consensus genome
+     ├-prefix_name.depthX.fa.algn.minor.fa           ### fasta file with minor consensus genome
      ├-prefix_name.quality.html                      ### html file with quality controll informations
      ├-prefix_name.sorted.bam                        ### sorted bam file
      ├-prefix_name.sorted.bam.bai                    ### index of sorted bam file
