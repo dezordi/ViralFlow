@@ -116,7 +116,7 @@ For Singularity > 3.7.1 versions, follow:
     singularity build --fakeroot --sandbox <imagename> Singularityfile 
     bash sars2_assembly_singularity_run.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS_FILE> <imagename>
 
-    This method will create a sandbox, and all files to analysis should be in the same directory of the sandbox.
+This method will create a sandbox, and all files to analysis should be in the same directory of the sandbox.
 
 =====
 Explained Usage
