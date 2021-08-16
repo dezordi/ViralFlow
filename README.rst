@@ -109,6 +109,15 @@ The recipe file and following steps were tested for singularity version 3.7.1.
     singularity build --fakeroot iam_sarscov2.0.0.4 Singularityfile
     bash sars2_assembly_singularity_run.sh reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa iam_sarscov2:0.0.4
 
+For Singularity > 3.7.1 versions, follow:
+
+.. code:: bash
+    
+    singularity build --fakeroot --sandbox <imagename> Singularityfile 
+    bash sars2_assembly_singularity_run.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS_FILE> <imagename>
+
+    This method will create a sandbox, and all files to analysis should be in the same directory of the sandbox.
+
 =====
 Explained Usage
 =====
