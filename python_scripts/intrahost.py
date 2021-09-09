@@ -120,7 +120,6 @@ with open(bam_rc_file,'r') as bc_file, open(bam_rc_file+'.fmt.tsv','w') as bc_fo
                     for i in range(0,del_length):
                         if i == 0:
                             var_depth = int(var_depth) - int(indel_depth)
-                            var_depth = int(var_depth) - int(indel_depth)
                             del_dict['pos'].append(int(line[1])+i)
                             del_dict['deletion'].append(indel_seq)
                             del_dict['del_depth'].append(indel_depth)
