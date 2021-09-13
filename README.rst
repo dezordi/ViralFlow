@@ -22,9 +22,10 @@ Dependencies
     * biopython 1.74
 * mafft v7.310 (2017/Mar/17)    
 * nextclade 0.14.2
-* pangolin v3.1.4
+* pangolin v3.1.11
 * bedtools v2.27.0
 * bamdst 1.0.6
+* seqtk 1.3-r106
 
 =====
 Files info
@@ -56,15 +57,16 @@ Docker
 =====
 
 A docker image with all tools and libraries can be found `here <https://hub.docker.com/repository/docker/dezordi/iam_sarscov2/>`_.
-The last update of the pangolin in the docker images was carried out on June 22, 2021 to the version v3.1.4.
+The last update of the pangolin in the docker images was carried out on Septenber 11, 2021 to the version v3.1.11.
 You can create a container and run as an interactive session the sars2_assembly following:
 
 .. code:: bash
     
-    docker run -tdi --name iam_sarscov2 --cpus <number> --memory <number> dezordi/iam_sarscov2:0.0.4 /bin/bash
-    docker cp  <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <ADAPTERS_FILE> iam_sarscov2:home
+    docker run -tdi --name iam_sarscov2 --cpus <number> --memory <number> dezordi/iam_sarscov2:0.0.5 /bin/bash
+    docker cp  <REFERENCEGENOME/001.fastq.gz/002.fastq.gz/ADAPTERS_FILE> iam_sarscov2:home
     docker attach iam_sarscov2
     cd home
+    conda activate pangolin
     bash sars2_assembly <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS_FILE>
 
 
@@ -87,8 +89,8 @@ Using the Dockerfile and sars2_assembly_docker_run.sh a directory named 'prefix.
 
 .. code:: bash
     
-    docker build -t iam_sarscov2:0.0.4 .
-    bash sars2_assembly_docker_run.sh reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa iam_sarscov2:0.0.4
+    docker build -t iam_sarscov2:0.0.5 .
+    bash sars2_assembly_docker_run.sh reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa iam_sarscov2:0.0.5
 
 =====
 Singularity
@@ -106,8 +108,8 @@ The recipe file and following steps were tested for singularity version 3.7.1.
 
 .. code:: bash
     
-    singularity build --fakeroot iam_sarscov2.0.0.4 Singularityfile
-    bash sars2_assembly_singularity_run.sh reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa iam_sarscov2:0.0.4
+    singularity build --fakeroot iam_sarscov2.0.0.5 Singularityfile
+    bash sars2_assembly_singularity_run.sh reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa iam_sarscov2:0.0.5
 
 For Singularity > 3.7.1 versions, follow:
 
@@ -140,12 +142,26 @@ Explained Usage
     * <DEPTH>           -   Minimum depth to mask unanssembled regions.
     * <MIN_LEN>         -   Minimum length to trimm sequences.
     * <ADAPTERS_FILE>   -   Fasta file with adapters used in the sequencing analysis.
+    * <DP_INTRAHOST>    -   Argument created on workflow v.0.0.5. Minimum depth value to consider intrahost minor allele, optional, default = 100.
+    * <TRIMM_LEN>       -   Argument created on workflow v.0.0.5. Length to trimm front and tail of reads on fastp analysis,optional, default = 0.
 
 **Suggestion to paired-end reads with 150 of length:**
 
 .. code:: bash
     
     bash sars2_assembly reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa
+
+**Suggestion to paired-end reads with 150 of length, considering 50 of depth threshold for intrahost minor alleles:**
+
+.. code:: bash
+    
+    bash sars2_assembly reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa 50
+
+**Suggestion to paired-end reads with 150 of length, considering 50 of depth threshold for intrahost minor alleles and trimming 10 bases of front and tail of reads:**
+
+.. code:: bash
+    
+    bash sars2_assembly reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa 50 10
 
 **Suggestion to paired-end reads with 75 of length:**
 

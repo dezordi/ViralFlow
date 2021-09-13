@@ -7,6 +7,7 @@ parser.add_argument("-pr", "--prefixout", help="prefixout", required=True)
 parser.add_argument("-mi", "--min_len", help="min_len", required=True)
 parser.add_argument("-p", "--threads", help="threads", required=True)
 parser.add_argument("-a", "--adapters", help="adapters", required=True)
+parser.add_argument("-t", "--trimm", help="trimm reads?", required=True)
 
 #Storing argument on variables
 args = parser.parse_args()
@@ -16,9 +17,10 @@ prefixout = args.prefixout
 min_len = args.min_len
 threads = args.threads
 adapters = args.adapters
+trimm = str(args.trimm)
 
 try:
-    fastp = (f"fastp -i {fastq1} -I {fastq2} -o {prefixout}.R1.fq.gz -O {prefixout}.R2.fq.gz --cut_front --cut_tail --qualified_quality_phred 20 -l {min_len} -h {prefixout}.quality.html --thread {threads} --adapter_fasta {adapters}")
+    fastp = (f"fastp -i {fastq1} -I {fastq2} -o {prefixout}.R1.fq.gz -O {prefixout}.R2.fq.gz --cut_front --cut_tail --qualified_quality_phred 20 -l {min_len} -h {prefixout}.quality.html --thread {threads} --adapter_fasta {adapters} -f {trimm} -t {trimm} -F {trimm} -T {trimm}")
     fastp = shlex.split(fastp)
     cmd_fastp = subprocess.Popen(fastp)
     cmd_fastp.wait()

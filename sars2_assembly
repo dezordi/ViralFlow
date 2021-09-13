@@ -2,7 +2,7 @@
 # HEADER
 #================================================================
 #% USAGE
-#+    $bash sars2_assembly.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS>
+#%    $bash sars2_assembly <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS> <DP_INTRAHOST> <TRIMM_LEN>
 #%
 #% DESCRIPTION
 #%    This script performs a reference guided genome assembly of SARS-CoV-2. Python scripts were developed based on the wuhan SARS-CoV-2 reference genome NC_045512.2.
@@ -17,9 +17,12 @@
 #%    <DEPTH>              -   Minimum depth to mask unanssembled regions
 #%    <MIN_LEN>            -   Minimum length to trimm sequences
 #%    <ADAPTERS>           -   Fasta file with adapters used in the sequencing analysis
+#%    <DP_INTRAHOST>       -   Minimum depth to consider a intrahost minor allele, optional, default = 100
+#%    <TRIM_LEN>           -   Length to trimm front and tail of reads, optional, default = 0
 #%
 #% EXAMPLES
-#%    $bash sars2_assembly.sh reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa
+#%    $bash sars2_assembly reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa
+#%    $bash sars2_assembly reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa 50 5
 #%
 #% DEPENDENCIES
 #%    BWA Version: 0.7.17-r1198-dirty
@@ -30,13 +33,14 @@
 #%    Python 3.7.10
 #%    mafft v7.310 (2017/Mar/17)    
 #%    nextclade 0.14.2
-#%    pangolin 2.3.9
+#%    pangolin 3.1.11
 #%    bedtools v2.26.0
 #%    bamdst 1.0.6
+#%    seqtk 1.3-r106
 #%
 #================================================================
 #- IMPLEMENTATION
-#-    version         $sars2_assembly 0.0.1
+#-    version         $sars2_assembly 0.0.5
 #-    authors         Filipe Dezordi and Gabriel Wallau
 #-    maintainer      Filipe Dezordi (zimmer.filipe@gmail.com)
 #-    username        dezordi
@@ -46,6 +50,7 @@
 #  HISTORY
 #     2021/04/17 : dezordi : Script creation
 #     2021/06/22 : dezordi : Update, improve indels recognition into intrahost variant analysis
+#     2021/09/11 : dezordi : Update, improve consensus assembly of low quality mapping regions, insertion of exact coverage percentage based on depth treshold, create arguments to modify depth treshold of intrahost minor alleles and to trimm reads.
 # 
 #================================================================
 # ARGUMENTS
@@ -59,25 +64,27 @@ THREADS=$5 #number of threads
 DEPTH=$6 #minum depth to mask regions
 MIN_LEN=$7 #minimum length to trimm reads
 ADAPTERS=$8 #fasta file with adapters
+DP_INTRAHOST=${9-100} #minimum dp for intrahost analysis
+TRIMM_LEN=${10-0} #length to trim front and tail reads with fastp
 
 #================================================================
 # WORKFLOW
 #================================================================
 
-#CREATING INDEX OF REFERENCE GENOME
+##CREATING INDEX OF REFERENCE GENOME
 python python_scripts/bwa_index.py -in $FASTA
-#CREATING DIR TO STORE RESULTS
+##CREATING DIR TO STORE RESULTS
 mkdir $PREFIXOUT.results/
 cd $PREFIXOUT.results
-#QUALITY CHECK
+##QUALITY CHECK
 echo "fastp analysis:" > $PREFIXOUT.time.txt
 start=$(date +%s%3N)
-python ../python_scripts/fastp.py -f1 ../$FASTQ1 -f2 ../$FASTQ2 -pr $PREFIXOUT -mi $MIN_LEN -p $THREADS -a ../$ADAPTERS
+python ../python_scripts/fastp.py -f1 ../$FASTQ1 -f2 ../$FASTQ2 -pr $PREFIXOUT -mi $MIN_LEN -p $THREADS -a ../$ADAPTERS -t $TRIMM_LEN
 end=$(date +%s%3N)
 analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
 echo $analysis_in_minutes >> $PREFIXOUT.time.txt
-#MAPPING
+##MAPPING
 echo "BWA and iVar analysis:" >> $PREFIXOUT.time.txt
 start=$(date +%s%3N)
 python ../python_scripts/bwa_mem.py -f ../$FASTA -pr $PREFIXOUT -p $THREADS
@@ -89,7 +96,7 @@ echo $analysis_in_minutes >> $PREFIXOUT.time.txt
 ##GET PUTATIVE MINOR VARIANTS STEP
 echo "Minor variant analysis:" >> $PREFIXOUT.time.txt
 start=$(date +%s%3N)
-python ../python_scripts/get_mvs.py -f ../$FASTA -pr $PREFIXOUT -dp $DEPTH -p $THREADS
+python ../python_scripts/get_mvs.py -f ../$FASTA -pr $PREFIXOUT -dp $DEPTH -p $THREADS  -di $DP_INTRAHOST
 end=$(date +%s%3N)
 analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
@@ -106,6 +113,10 @@ echo $analysis_in_minutes >> $PREFIXOUT.time.txt
 echo "bamdst analysis:" >> $PREFIXOUT.time.txt
 start=$(date +%s%3N)
 python ../python_scripts/assembly_metrics.py -pr $PREFIXOUT
+COV=$(seqtk comp $PREFIXOUT.depth$DEPTH.fa | awk '{x=$3+$4+$5+$6;y=$2;print $1,y-x,y,100-((y-x)/y)*100}' | cut -f 4 -d ' ')
+printf "cov_$DEPTH%%\n$COV" > coverage.txt
+paste chromosomes.report coverage.txt > chromosomes.report.tmp
+rm chromosomes.report && mv chromosomes.report.tmp chromosomes.report
 end=$(date +%s%3N)
 analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
