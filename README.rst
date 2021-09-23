@@ -57,7 +57,7 @@ Docker
 =====
 
 A docker image with all tools and libraries can be found `here <https://hub.docker.com/repository/docker/dezordi/iam_sarscov2/>`_.
-The last update of the pangolin in the docker images was carried out on Septenber 11, 2021 to the version v3.1.11.
+The last update of the pangolin in the docker images was carried out on Septenber 11, 2021 to the version v3.1.11. The following structions were tested into Docker version 20.10.x.
 You can create a container and run as an interactive session the sars2_assembly following:
 
 .. code:: bash
