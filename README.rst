@@ -1,4 +1,4 @@
-IAM_SARS-CoV-2
+ViralFlow
 =========
 
 This repository contains a set of scripts to performs a reference guided genome assembly of SARS-CoV-2. Python scripts were developed based on the wuhan SARS-CoV-2 reference genome NC_045512.2. The workflow was developed to work with Illumina paired-end reads. Tests with other technologies should be performed.
