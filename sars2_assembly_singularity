@@ -7,7 +7,7 @@
 #% DESCRIPTION
 #%    This script performs a reference guided genome assembly of SARS-CoV-2 using singularity. Python scripts were developed based on the wuhan SARS-CoV-2 reference genome NC_045512.2.
 #%    The workflow was developed to work with Illumina paired-end reads. Tests with other technologies should be performed.
-#% 
+#%
 #% OPTIONS
 #%    <REFERENCEGENOME>    -   Fasta file with reference genome
 #%    <001.fastq.gz>       -   Fasqt file with positive sense reads (R1)
@@ -31,7 +31,7 @@
 #%    iVar version 1.3.1
 #%    bam-readcount version: 0.8.0-unstable-7-625eea2
 #%    Python 3.7.10
-#%    mafft v7.310 (2017/Mar/17)    
+#%    mafft v7.310 (2017/Mar/17)
 #%    nextclade 0.14.2
 #%    pangolin 3.1.11
 #%    bedtools v2.26.0
@@ -51,7 +51,7 @@
 #     2021/04/17 : dezordi : Script creation
 #     2021/06/22 : dezordi : Update, improve indels recognition into intrahost variant analysis
 #     2021/09/11 : dezordi : Update, improve consensus assembly of low quality mapping regions, insertion of exact coverage percentage based on depth treshold, create arguments to modify depth treshold of intrahost minor alleles and to trimm reads.
-# 
+#
 #================================================================
 # ACTIVATE CONDA AND PANGOLIN
 #================================================================
@@ -93,48 +93,111 @@ TRIMM_LEN=${10-0} #length to trim front and tail reads with fastp
 # WORKFLOW
 #================================================================
 
+# CHECK DATA DIR CONTAINER
+echo ":: THE CONTAINER HAVE ACCESS TO THE FOLLOWING FILES ::"
+ls /data/
+echo ":: ------------------------------------------------ ::"
+
+
 ##CREATING INDEX OF REFERENCE GENOME
-python $(pwd)/python_scripts/bwa_index.py -in $FASTA
+python /app/ViralFlow/python_scripts/bwa_index.py -in /data/$FASTA
+
 #CREATING DIR TO STORE RESULTS
-mkdir $PREFIXOUT.results/
-cd $PREFIXOUT.results
+mkdir /data/$PREFIXOUT.results/
+cd /data/$PREFIXOUT.results
+
+## ------------------------------ STEP 1 ---------------------------------------
 ##QUALITY CHECK
+echo ''
+echo '--- STEP 1 ---'
+echo ''
+
 echo "fastp analysis:" > $PREFIXOUT.time.txt
 start=$(date +%s%3N)
-python ../python_scripts/fastp.py -f1 $FASTQ1 -f2 $FASTQ2 -pr $PREFIXOUT -mi $MIN_LEN -p $THREADS -a $ADAPTERS -t $TRIMM_LEN
+
+
+python /app/ViralFlow/python_scripts/fastp.py -f1 /data/$FASTQ1 -f2 /data/$FASTQ2 -pr $PREFIXOUT -mi $MIN_LEN -p $THREADS -a /data/$ADAPTERS -t $TRIMM_LEN
+
+echo '--- DONE -----'
+
 end=$(date +%s%3N)
 analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
 echo $analysis_in_minutes >> $PREFIXOUT.time.txt
+
+## ------------------------------ STEP 2 ---------------------------------------
 ##MAPPING
+echo ''
+echo '--- STEP 2 ---'
+echo ''
+
 echo "BWA and iVar analysis:" >> $PREFIXOUT.time.txt
 start=$(date +%s%3N)
-python ../python_scripts/bwa_mem.py -f $FASTA -pr $PREFIXOUT -p $THREADS
-python ../python_scripts/ivar.py -f $FASTA -pr $PREFIXOUT -dp $DEPTH
+
+python /app/ViralFlow/python_scripts/bwa_mem.py -f /data/$FASTA -pr $PREFIXOUT -p $THREADS
+python /app/ViralFlow/python_scripts/ivar.py -f /data/$FASTA -pr $PREFIXOUT -dp $DEPTH
+
+echo '--- DONE -----'
+
 end=$(date +%s%3N)
 analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
 echo $analysis_in_minutes >> $PREFIXOUT.time.txt
+
+## ------------------------------ STEP 3 ---------------------------------------
+
 ##GET PUTATIVE MINOR VARIANTS STEP
+
+echo ''
+echo '--- STEP 3 ---'
+echo ''
 echo "Minor variant analysis:" >> $PREFIXOUT.time.txt
 start=$(date +%s%3N)
-python ../python_scripts/get_mvs_sing.py -f $FASTA -pr $PREFIXOUT -dp $DEPTH -p $THREADS -di $DP_INTRAHOST
+
+
+python /app/ViralFlow/python_scripts/get_mvs_sing.py -f /data/$FASTA -pr $PREFIXOUT -dp $DEPTH -p $THREADS -di $DP_INTRAHOST
+
+echo '--- DONE -----'
+
 end=$(date +%s%3N)
 analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
 echo $analysis_in_minutes >> $PREFIXOUT.time.txt
+
+## ------------------------------ STEP 4 ---------------------------------------
+
 ##GET LINEAGE AND MUTATIONS
+
+echo ''
+echo '--- STEP 4 ---'
+echo ''
 echo "Nextclade and Pangolin analysis:" >> $PREFIXOUT.time.txt
+
 start=$(date +%s%3N)
-python ../python_scripts/pango_nextclade.py -pr $PREFIXOUT -dp $DEPTH -p $THREADS
+
+
+python /app/ViralFlow/python_scripts/pango_nextclade.py -pr $PREFIXOUT -dp $DEPTH -p $THREADS
+
+echo '--- DONE -----'
+
 end=$(date +%s%3N)
 analysis_in_miliseconds=$(expr $end - $start)
 analysis_in_minutes="$(($analysis_in_miliseconds / 60000)).$(($analysis_in_miliseconds % 60000))"
 echo $analysis_in_minutes >> $PREFIXOUT.time.txt
+
 ##GET ASSEMBLY METRICS
+## ------------------------------ STEP 5 ---------------------------------------
+echo ''
+echo '--- STEP 5 ---'
+echo ''
+
 echo "bamdst analysis:" >> $PREFIXOUT.time.txt
 start=$(date +%s%3N)
-python ../python_scripts/assembly_metrics.py -pr $PREFIXOUT
+
+python /app/ViralFlow/python_scripts/assembly_metrics.py -pr $PREFIXOUT
+
+echo '--- DONE -----'
+
 COV=$(seqtk comp $PREFIXOUT.depth$DEPTH.fa | awk '{x=$3+$4+$5+$6;y=$2;print $1,y-x,y,100-((y-x)/y)*100}' | cut -f 4 -d ' ')
 printf "cov_$DEPTH%%\n$COV" > coverage.txt
 paste chromosomes.report coverage.txt > chromosomes.report.tmp

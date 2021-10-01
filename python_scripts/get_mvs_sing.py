@@ -26,6 +26,6 @@ try:
         mafft = shlex.split(mafft)
         cmd_mafft = subprocess.Popen(mafft,stdout=mafft_output)
         cmd_mafft.wait()
-    os.system(f"python ../python_scripts/intrahost.py -in {prefixout}.depth{depth}.fa.bc -al {prefixout}.depth{depth}.fa.algn -dp {intrahost_depth}")
+    os.system(f"python /app/ViralFlow/python_scripts/intrahost.py -in {prefixout}.depth{depth}.fa.bc -al {prefixout}.depth{depth}.fa.algn -dp {intrahost_depth}")
 except:
     print("Error in minor variants step")
