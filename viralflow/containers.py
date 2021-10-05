@@ -1,7 +1,16 @@
 import os
 
+__author__ = "Antonio Marinho da Silva Neto"
+__copyright__ = "Copyright 2021, Rede Genomica Fiocruz"
+__license__ = "GPL"
+__version__ = "0.1"
+__maintainer__ = "Antonio Marinho da Silva Neto"
+__email__ = "antonio.marinho@fiocruz.br"
+__status__ = "Prototype"
+__username__ = 'AMarinhoSN'
+
 '''
-Here methods to handles build and running containers are defined and provided
+Functions to build and running containers are defined and provided
 '''
 
 

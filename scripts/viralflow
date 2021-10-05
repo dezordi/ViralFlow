@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+import argparse
+import viralflow.containers
+import os
+__author__ = "Antonio Marinho da Silva Neto"
+#__copyright__ = "Copyright 2021, Rede Genomica Fiocruz"
+#__credits__ = []
+__license__ = "GPL"
+__version__ = "0.1"
+__maintainer__ = "Antonio Marinho da Silva Neto"
+__email__ = "antonio.marinho@fiocruz.br"
+__status__ = "Prototype"
+
+# -- Docstring -----------------------------------------------------------------
+'''
+viralflow
+----
+
+This script activate
+
+Usage
+----
+
+>$ viralflow <dir_path> <cred_flpath> <db_name>
+
+Input
+-----
+
+WARNING:
+
+'''
+
+#-------------------------------------------------------------------------------
+
+dsc = '''
+'''
+
+
+# ---- INPUT -------------------------------------------------------------------
+parser = argparse.ArgumentParser(description=dsc)
+# Build mode
+parser.add_argument('--build', action='store_true', help='set build mode on')
+parser.add_argument('-outDir', type=str, help='set directory path for output',
+                    default=os.getcwd()+'/')
+parser.add_argument('-singFilePath', type=str, help='Singularityfile path')
+
+parser.add_argument('-containerName', type=str, help='set container name',
+                    default='viralflow_container')
+
+parser.add_argument('-singOpt', type=str, help='singularity build option',
+                    default='--fakeroot --sandbox')
+
+parser.add_argument('-singPath', type=str, help='singularity path',
+                    default='/usr/local/bin/singularity')
+# Run mode
+parser.add_argument('--run', action='store_true', help='set run mode on')
+
+args = parser.parse_args()
+
+
+outDir = args.outDir
+if outDir.endswith('/') is False:
+    outDir += '/'
+singOpt = args.singOpt
+singFilePath = args.singFilePath
+containerName = args.containerName
+singPath = args.singPath
+
+print('| --------------------------------------------------------------------|')
+print('|                            >> ViralFlow <<')
+print('|                               v0.0.6.dev')
+print('|                            made by Wallau Lab ')
+print('|                      Aggeu Magalhães Research Institute')
+print('|                             FIOCRUZ - Pernambuco')
+print('| --------------------------------------------------------------------|')
+print('| ')
+print('| ')
+print('| --------------------------------------------------------------------|')
+print('| Author:')
+print('|    Filipe Z. Dezordi (zimmer.filipe@gmail.com)')
+print('| More information at: ')
+print('|    https://github.com/dezordi/ViralFlow/')
+print('| --------------------------------------------------------------------|')
+print('| --------------------------------------------------------------------|')
+print("| USAGE:")
+print('| * build containers ')
+print('| >$ viralflow --build -singFilePath /path/to/ViralFlow/Singularityfile')
+print('| --------------------------------------------------------------------|')
+print('| HOW TO CITE:')
+print('| ')
+print('| [PrePrint]')
+print('| ViralFlow: an automated workflow for SARS-CoV-2 genome assembly, ')
+print('| lineage assignment, mutations and intrahost variants detection')
+print('| medRxiv 2021.10.01.21264424;')
+print('| doi: https://doi.org/10.1101/2021.10.01.21264424')
+print('| --------------------------------------------------------------------|')
+print('| Parameters')
+print('| ----------')
+if args.build is True:
+    print('|    BUILD MODE ON      |')
+    print('| output_dir    : ', args.outDir)
+    print('| singFilePath  : ', args.singFilePath)
+    print('| containerName : ', args.containerName)
+    print('| singOpt       : ', args.singOpt)
+    print('| singPath      : ', args.singPath)
+if args.run is True:
+    print('|      RUN MODE ON      |')
+
+print('| --------------------------------------------------------------------|')
+
+# Build mode
+if args.build is True:
+    # TODO: check input (sanity test)
+    try:
+        assert(singFilePath is not None)
+    except(AssertionError):
+        print('ERROR : Singularityfile path must be provided.')
+        exit(1)
+    print('@ building container ', outDir+containerName)
+    viralflow.containers.buildSing(outDir, singFilePath,
+                                   container_name=containerName,
+                                   sing_path=singPath, sing_opt=singOpt)
+
+# Run mode
+
+print(' | --- DONE --- |')
