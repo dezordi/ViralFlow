@@ -126,6 +126,8 @@ def run_sing_container(container_img, input_dir, ref_gnm, fastq_R1, fastq_R2,
     cmd += '--env DP_INTRAHOST='+str(min_dp_intrahost)+' '
     cmd += '--env TRIMM_LEN='+str(trim_len)+' '
     cmd += '--writable-tmpfs '+container_img
+    # get write output
+    cmd += ' > '+input_dir+prefix_out+'.log'
     # run command
     if dry is True:
         print(cmd)
