@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import argparse
-import viralflow.containers
+import viralflow
 import os
+from pathlib import Path
 __author__ = "Antonio Marinho da Silva Neto"
 #__copyright__ = "Copyright 2021, Rede Genomica Fiocruz"
 #__credits__ = []
@@ -36,9 +37,13 @@ dsc = '''
 '''
 
 
-# ---- INPUT -------------------------------------------------------------------
+# ---- INPUT ------------------------------------------------------------------
 parser = argparse.ArgumentParser(description=dsc)
-# Build mode
+# --- general -----------------------------------------------------------------
+parser.add_argument('-singPath', type=str, help='singularity path',
+                    default='/usr/local/bin/singularity')
+
+# --- Build mode --------------------------------------------------------------
 parser.add_argument('--build', action='store_true', help='set build mode on')
 parser.add_argument('-outDir', type=str, help='set directory path for output',
                     default=os.getcwd()+'/')
@@ -50,21 +55,47 @@ parser.add_argument('-containerName', type=str, help='set container name',
 parser.add_argument('-singOpt', type=str, help='singularity build option',
                     default='--fakeroot --sandbox')
 
-parser.add_argument('-singPath', type=str, help='singularity path',
-                    default='/usr/local/bin/singularity')
-# Run mode
+# --- Run mode -----------------------------------------------------------------
 parser.add_argument('--run', action='store_true', help='set run mode on')
+
+parser.add_argument('-inputDir', type=str,
+                    help='set input directory path')
+
+parser.add_argument('-containerImg', type=str,
+                    help='path for viralflow container')
+
+parser.add_argument('-referenceGenome', type=str,
+                    help='name of reference genome file at input dir')
+
+parser.add_argument('-adaptersFile', type=str,
+                    help='adapters file name at input dir')
+
+h0 = 'minimum depth to mask unanssembled regions (default=5)'
+parser.add_argument('-depth', type=int, default=5, help=h0)
+
+parser.add_argument('-minLen', type=int, default=75,
+                    help='minimum length to trimm sequences (default = 75)')
+
+h1 = 'minimum depth value to consider intrahost minor allele (default = 100)'
+parser.add_argument('-minDpIntrahost', type=int, default=100, help=h1)
+
+h2 = 'length to trimm front and tail of reads on fastp analysis (default = 0)'
+parser.add_argument('-trimLen', type=int, default=0, help=h2)
+h3 = "command to call or absolute path of singularity (default = 'singularity')"
+
+parser.add_argument('-totalCpus', type=int, default=1,
+                    help='total of cpus for parallel assemblies (default = 1)')
+
+parser.add_argument('-cpusPerSample', type=int, default=None,
+                    help='cpus to use on individual sample run (default = auto)')
+
 
 args = parser.parse_args()
 
-
+# -----------------------------------------------------------------------------
 outDir = args.outDir
 if outDir.endswith('/') is False:
     outDir += '/'
-singOpt = args.singOpt
-singFilePath = args.singFilePath
-containerName = args.containerName
-singPath = args.singPath
 
 print('| --------------------------------------------------------------------|')
 print('|                            >> ViralFlow <<')
@@ -94,33 +125,75 @@ print('| lineage assignment, mutations and intrahost variants detection')
 print('| medRxiv 2021.10.01.21264424;')
 print('| doi: https://doi.org/10.1101/2021.10.01.21264424')
 print('| --------------------------------------------------------------------|')
+
+# sanity check ----------------------------------------------------------------
+# check singularity path validity
+try:
+    assert(Path(args.singPath).exists())
+except(AssertionError):
+    print('ERROR :', args.singPath, ' Singularity path does not exists.')
+    exit(1)
+# check if mode was set
+if (args.build is False) and (args.run is False):
+    print("ERROR : a mode must be set (use either '--build' or '--run').")
+    exit(1)
+
+# -----------------------------------------------------------------------------
+
+
 print('| Parameters')
 print('| ----------')
 if args.build is True:
     print('|    BUILD MODE ON      |')
-    print('| output_dir    : ', args.outDir)
+    print('| output_dir    : ', outDir)
     print('| singFilePath  : ', args.singFilePath)
     print('| containerName : ', args.containerName)
     print('| singOpt       : ', args.singOpt)
     print('| singPath      : ', args.singPath)
 if args.run is True:
     print('|      RUN MODE ON      |')
+    print('| inputDir        : ', args.inputDir)
+    print('| containerName   : ', args.containerName)
+    print('| referenceGenome : ', args.referenceGenome)
+    print('| adaptersFile    : ', args.adaptersFile)
+    print('| depth           : ', args.depth)
+    print('| minLen          : ', args.minLen)
+    print('| minDpIntrahost  : ', args.minDpIntrahost)
+    print('| trimLen         : ', args.trimLen)
+    print('| singPath        : ', args.singPath)
+    print('| totalCpus       : ', args.totalCpus)
+    print('| cpusPerSample   : ', args.cpusPerSample)
 
 print('| --------------------------------------------------------------------|')
-
 # Build mode
 if args.build is True:
     # TODO: check input (sanity test)
     try:
-        assert(singFilePath is not None)
+        assert(args.singFilePath is not None)
     except(AssertionError):
         print('ERROR : Singularityfile path must be provided.')
         exit(1)
-    print('@ building container ', outDir+containerName)
-    viralflow.containers.buildSing(outDir, singFilePath,
-                                   container_name=containerName,
-                                   sing_path=singPath, sing_opt=singOpt)
+    print('@ building container ', outDir+args.containerName)
+    viralflow.containers.buildSing(outDir, args.singFilePath,
+                                   container_name=args.containerName,
+                                   sing_path=args.singPath,
+                                   sing_opt=args.singOpt)
 
 # Run mode
+if args.run is True:
+    # TODO: check input (sanity test)
+    # TODO: hide std error from terminal and store at log
+    viralflow.run_viralflow_pp(args.inputDir, args.containerImg,
+                               args.referenceGenome, args.adaptersFile,
+                               args.depth, args.minLen, args.minDpIntrahost,
+                               args.trimLen, sing_call=args.singPath,
+                               cpus_total=args.totalCpus,
+                               cpus_pprc=args.cpusPerSample)
+
+# single pair processing
+# viralflow.run_viralflow_pp(args.input_dir, args.container_img,
+#                           args.ref_gnm, prefix_out, adapters_file,
+#                           depth=depth, min_len=min_len, min_dp_intrahost=min_dp_intrahost,
+#                           trim_len=trim_len, sing_call=sing_call, cpus_total=cpus_total)
 
 print(' | --- DONE --- |')

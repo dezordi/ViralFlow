@@ -107,8 +107,8 @@ def run_sing_cont_pp(kwargs):
                                             sing_call=sing_call, dry=False)
 
 
-def run_viralflow_pp(input_dir, cntnr_img, ref_gnm, prefix_out, adapters_file,
-                     depth, min_len, min_dp_intrahost, trim_len,
+def run_viralflow_pp(input_dir, cntnr_img, ref_gnm, adapters_file, depth,
+                     min_len, min_dp_intrahost, trim_len,
                      sing_call='singularity', cpus_total=mp.cpu_count(),
                      cpus_pprc=None):
     '''
