@@ -5,6 +5,7 @@ from pathlib import Path
 import multiprocessing as mp
 import tqdm
 import viralflow.containers
+import viralflow.calls
 # --- FUNCTIONS ---------------------------------------------------------------
 
 
