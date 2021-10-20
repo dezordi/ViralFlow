@@ -6,6 +6,7 @@ import multiprocessing as mp
 import tqdm
 import viralflow.containers
 import viralflow.calls
+import viralflow.pipeline
 # --- FUNCTIONS ---------------------------------------------------------------
 
 
