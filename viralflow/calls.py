@@ -99,6 +99,10 @@ def run_fastp(fastq1, fastq2, prefixout, threads, adapters, min_len, trimm,
     trim:<int>
         Length to trimm front and tail of reads on fastp analysis
 
+    Returns
+    -------
+    <dct>
+        a dictionary with output files names expected to be obtained
     '''
     # --- Sanity check --------------------------------------------------------
     if out_dir.endswith('/') is False:
@@ -123,6 +127,12 @@ def run_fastp(fastq1, fastq2, prefixout, threads, adapters, min_len, trimm,
     __write_popen_logs(cmd_fastp, prfx_wdir+'_fastp')
     # check if errors
     __check_status(cmd_fastp, prfx_wdir+'_fastp_err.log', 'FASTP')
+
+    # check if expected output files were obtained
+    output_flnm = {'R1': prfx_wdir+'.R1.fq.gz',
+                   'R2': prfx_wdir+'.R2.fq.gz',
+                   'quality_html': prfx_wdir+'.quality.html'}
+    return output_flnm
 
 
 def align_reads2ref(reference_fasta, R1_fq, R2_fq, prefixout, threads, out_dir):
@@ -185,3 +195,79 @@ def align_reads2ref(reference_fasta, R1_fq, R2_fq, prefixout, threads, out_dir):
     __check_status(p_sam_index, prfx_wdir+'_sam_index_err.log', 'SAM INDEX')
     # remove bam files
     os.remove(prfx_wdir+'.bam')
+
+
+def run_ivar(reference_fasta, prefixout, out_dir, depth):
+    '''
+    run ivar steps
+
+    '''
+    # --- Sanity check --------------------------------------------------------
+    if out_dir.endswith('/') is False:
+        out_dir += '/'
+
+    assert(Path(out_dir).is_dir()), out_dir+" does not exist"
+    # -------------------------------------------------------------------------
+    # mpileup
+    # ivar gets output from samtools mpileup, so mount samtools cmd string
+    prfx_wdir = out_dir+prefixout
+    mpi_p = f"-d 50000 --reference {reference_fasta} -a "
+    out_flnm = f"-B {prfx_wdir}.sorted.bam "
+    mpileup_str = "samtools mpileup "+mpi_p+out_flnm
+
+    # IVAR STEP 1 -------------------------------------------------------------
+    # Call variants
+    ivar_1 = f"| ivar variants -p {prfx_wdir} -q 30 -t 0.05 "
+    cmd_ivar_1 = mpileup_str+ivar_1
+    print("COMMAND:")
+    print(cmd_ivar_1)
+    os.system(cmd_ivar_1)
+    #p_ivar_1 = __run_command(cmd_ivar_1)
+    #__write_popen_logs(p_ivar_1, prfx_wdir+'_ivar_1')
+    #__check_status(p_ivar_1, prfx_wdir+'_ivar_1_err.log', 'IVAR_variants')
+
+    # IVAR STEP 2 -------------------------------------------------------------
+    # Mount consensus for a given minimum depth
+    ivar_2 = f"| ivar consensus -p {prfx_wdir} -q 30 -t 0 -m {depth} -n N"
+    cmd_ivar_2 = mpileup_str+ivar_2
+    print("COMMAND:")
+    print(cmd_ivar_2)
+    os.system(cmd_ivar_2)
+    #p_ivar_2 = __run_command(cmd_ivar_2)
+    #__write_popen_logs(p_ivar_2, prfx_wdir+'_ivar_2')
+    #__check_status(p_ivar_2, prfx_wdir+'_ivar_2_err.log', "IVAR_consensus")
+
+    # IVAR STEP 3 -------------------------------------------------------------
+    d = f"-m {depth}"
+    ivar_3 = f"| ivar consensus -p {prfx_wdir}.ivar060 -q 30 -t 0.60 -n N "+d
+    cmd_ivar_3 = mpileup_str+ivar_3
+    print('COMMAND:')
+    print(cmd_ivar_3)
+    os.system(cmd_ivar_3)
+
+    #p_ivar_3 = __run_command(cmd_ivar_3)
+    #__write_popen_logs(p_ivar_3, prfx_wdir+'_ivar_3')
+    #__check_status(p_ivar_3, prfx_wdir+'_ivar_3_err.log', 'IVAR_consencus_60')
+
+    # EDIT FILES --------------------------------------------------------------
+    #
+    mv_str = f"mv {prfx_wdir}.fa {prfx_wdir}.depth{depth}.fa"
+    os.system(mv_str)
+
+    s1_str = f"sed -i -e 's/>.*/>|'{prfx_wdir}'/g' {prfx_wdir}.depth{depth}.fa"
+    os.system(s1_str)
+
+    s2_str = f"sed -i -e 's/__/\//g' -e 's/--/|/g' {prfx_wdir}.depth{depth}.fa"
+    os.system(s2_str)
+
+    mv_str = f"mv {prfx_wdir}.ivar060.fa {prfx_wdir}.depth{depth}.amb.fa"
+    os.system(mv_str)
+
+    s3_str = f"sed -i -e 's/>.*/>|'{prfx_wdir}'/g' {prfx_wdir}.depth{depth}.amb.fa"
+    os.system(s3_str)
+
+    s4_str = f"sed -i -e 's/__/\//g' -e 's/--/|/g' {prfx_wdir}.depth{depth}.amb.fa"
+    os.system(s4_str)
+    #p_ivar_4 = __run_command(edit_str)
+    #__write_popen_logs(p_ivar_4, prfx_wdir+'_ivar_4')
+    #__check_status(p_ivar_4, prfx_wdir+'_ivar_4_err.log', 'IVAR_edit_file')
