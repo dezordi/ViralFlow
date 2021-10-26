@@ -124,9 +124,9 @@ def run_fastp(fastq1, fastq2, prefixout, threads, adapters, min_len, trimm,
     # run command
     cmd_fastp = __run_command(fastp)
     # write log file
-    __write_popen_logs(cmd_fastp, prfx_wdir+'_fastp')
+    __write_popen_logs(cmd_fastp, prfx_wdir+'_1_fastp')
     # check if errors
-    __check_status(cmd_fastp, prfx_wdir+'_fastp_err.log', 'FASTP')
+    __check_status(cmd_fastp, prfx_wdir+'_1_fastp_err.log', 'FASTP')
 
     # check if expected output files were obtained
     output_flnm = {'R1': prfx_wdir+'.R1.fq.gz',
@@ -175,7 +175,7 @@ def align_reads2ref(reference_fasta, R1_fq, R2_fq, prefixout, threads, out_dir):
     p_bwa_mem = __run_command(bwa_mem)
     __write_popen_logs(p_bwa_mem, prfx_wdir+'_bwa_mem')
     # check if there was some error
-    __check_status(p_bwa_mem, prfx_wdir+'_bwa_mem_err.log', 'BWA MEM')
+    __check_status(p_bwa_mem, prfx_wdir+'_2_bwa_mem_err.log', 'BWA MEM')
 
     # -------------------------------------------------------------------------
 
@@ -183,7 +183,7 @@ def align_reads2ref(reference_fasta, R1_fq, R2_fq, prefixout, threads, out_dir):
     sam_sort = (f"samtools sort -o {prfx_wdir}.sorted.bam {prfx_wdir}.bam")
     p_sam_sort = __run_command(sam_sort)
     __write_popen_logs(p_sam_sort, prfx_wdir+'_sam_sort')
-    __check_status(p_sam_sort, prfx_wdir+'_sam_sort_err.log', 'SAM SORT')
+    __check_status(p_sam_sort, prfx_wdir+'_2_sam_sort_err.log', 'SAM SORT')
 
     # -------------------------------------------------------------------------
 
@@ -192,7 +192,7 @@ def align_reads2ref(reference_fasta, R1_fq, R2_fq, prefixout, threads, out_dir):
     sam_index = (f"samtools index {prfx_wdir}.sorted.bam")
     p_sam_index = __run_command(sam_index)
     __write_popen_logs(p_sam_index, prfx_wdir+'_sam_index')
-    __check_status(p_sam_index, prfx_wdir+'_sam_index_err.log', 'SAM INDEX')
+    __check_status(p_sam_index, prfx_wdir+'_2_sam_index_err.log', 'SAM INDEX')
     # remove bam files
     os.remove(prfx_wdir+'.bam')
 
@@ -200,7 +200,6 @@ def align_reads2ref(reference_fasta, R1_fq, R2_fq, prefixout, threads, out_dir):
 def run_ivar(reference_fasta, prefixout, out_dir, depth):
     '''
     run ivar steps
-
     '''
     # --- Sanity check --------------------------------------------------------
     if out_dir.endswith('/') is False:
@@ -219,8 +218,13 @@ def run_ivar(reference_fasta, prefixout, out_dir, depth):
     # Call variants
     ivar_1 = f"| ivar variants -p {prfx_wdir} -q 30 -t 0.05 "
     cmd_ivar_1 = mpileup_str+ivar_1
-    print("COMMAND:")
-    print(cmd_ivar_1)
+    #print("COMMAND:")
+    #print(cmd_ivar_1)
+
+    # WARNING #################################################################
+    # for some reason, using shellx using "|" doesn't work very well. For now
+    # os.system() works just fine, but THIS SHOULD BE FIX in the future
+    # so we get more log output control
     os.system(cmd_ivar_1)
     #p_ivar_1 = __run_command(cmd_ivar_1)
     #__write_popen_logs(p_ivar_1, prfx_wdir+'_ivar_1')
@@ -230,8 +234,8 @@ def run_ivar(reference_fasta, prefixout, out_dir, depth):
     # Mount consensus for a given minimum depth
     ivar_2 = f"| ivar consensus -p {prfx_wdir} -q 30 -t 0 -m {depth} -n N"
     cmd_ivar_2 = mpileup_str+ivar_2
-    print("COMMAND:")
-    print(cmd_ivar_2)
+    #print("COMMAND:")
+    #print(cmd_ivar_2)
     os.system(cmd_ivar_2)
     #p_ivar_2 = __run_command(cmd_ivar_2)
     #__write_popen_logs(p_ivar_2, prfx_wdir+'_ivar_2')
@@ -241,8 +245,8 @@ def run_ivar(reference_fasta, prefixout, out_dir, depth):
     d = f"-m {depth}"
     ivar_3 = f"| ivar consensus -p {prfx_wdir}.ivar060 -q 30 -t 0.60 -n N "+d
     cmd_ivar_3 = mpileup_str+ivar_3
-    print('COMMAND:')
-    print(cmd_ivar_3)
+    #print('COMMAND:')
+    #print(cmd_ivar_3)
     os.system(cmd_ivar_3)
 
     #p_ivar_3 = __run_command(cmd_ivar_3)
@@ -253,6 +257,11 @@ def run_ivar(reference_fasta, prefixout, out_dir, depth):
     #
     mv_str = f"mv {prfx_wdir}.fa {prfx_wdir}.depth{depth}.fa"
     os.system(mv_str)
+
+    mv_str = f"mv {prfx_wdir}.ivar060.fa {prfx_wdir}.depth{depth}.amb.fa"
+    os.system(mv_str)
+
+    '''
 
     s1_str = f"sed -i -e 's/>.*/>|'{prfx_wdir}'/g' {prfx_wdir}.depth{depth}.fa"
     os.system(s1_str)
@@ -267,7 +276,142 @@ def run_ivar(reference_fasta, prefixout, out_dir, depth):
     os.system(s3_str)
 
     s4_str = f"sed -i -e 's/__/\//g' -e 's/--/|/g' {prfx_wdir}.depth{depth}.amb.fa"
+
     os.system(s4_str)
+    '''
     #p_ivar_4 = __run_command(edit_str)
     #__write_popen_logs(p_ivar_4, prfx_wdir+'_ivar_4')
     #__check_status(p_ivar_4, prfx_wdir+'_ivar_4_err.log', 'IVAR_edit_file')
+
+
+def get_minor_variants(reference_genome, prefixout, depth, threads, outdir):
+    '''
+
+    '''
+    prfx_wdir = outdir+prefixout
+    # BAM READCOUNT -----------------------------------------------------------
+    # abm = annotation bed merged
+    bamread_output = open(f"{prfx_wdir}.depth{depth}.fa.bc", "w")
+    input_ref = f"-f {reference_genome} "
+    bam_out = f"{prfx_wdir}.sorted.bam "
+    bwa_read = f"bam-readcount -d 50000 -q 30 -w 0 "+input_ref+bam_out
+    # run command and store sdtout on bam read
+    p_bwa_read = __run_command(bwa_read)
+    # write bwa readcount stidout on fa.bc
+    stdout, stderr = p_bwa_read.communicate()
+    bamread_output.write(stdout)
+    bamread_output.close()
+    #
+    #bwa_read = shlex.split(bwa_read)
+    #p_bwa_read = subprocess.Popen(bwa_read)  # , stdout=bamread_output)
+    #p_bwa_read.wait()
+
+    #__check_status(p_bwa_read, "_bam-rc", "BAM READCOUNTS")
+
+    # MAFFT -------------------------------------------------------------------
+    #mafft_output = open(f"{prfx_wdir}.depth{depth}.fa.algn", "w")
+    input_fa = f"--add {prfx_wdir}.depth{depth}.fa "
+    t_str = f"--thread {threads}"
+    out = f" --clustalout {prfx_wdir}.depth{depth}.fa.algn"
+    mafft = "mafft --keeplength "+input_fa+t_str + \
+        f" {reference_genome}"  # > {prfx_wdir}.depth{depth}.fa.algn"
+
+    cmd_mafft = __run_command(mafft)
+    log_prfx = prfx_wdir+'2_mafft'
+    __write_popen_logs(cmd_mafft, log_prfx)
+    __check_status(cmd_mafft, log_prfx+"_err.log", "MAFFT")
+
+    # mafft print the output on the terminal
+    os.system(f'cp {log_prfx}_out.log {prfx_wdir}.depth{depth}.fa.algn')
+
+
+def get_variant_naming(prefixout, depth, threads, out_dir, ref_gnm,
+                       nxt_dataset):
+    '''
+    Define clade and variant for a given SARS-CoV2 sequence.
+    The variant and clade definition is based on Nextclade and Pangolin.
+    '''
+    # standard input names
+    prfx_wdir = out_dir+prefixout
+    intrahost_tsv = f"{prfx_wdir}.depth{depth}.fa.bc.intrahost.short.tsv"
+    consensus_fa = f"{prfx_wdir}.depth{depth}.fa "
+    # get standard variant files output prefix
+    output_prfx = f"{prfx_wdir}.depth{depth}"
+
+    # check for single or multiple sequences at intrahost ---------------------
+    num_lines = sum(1 for line in open(intrahost_tsv, 'r'))
+
+    # if more than a single variant, then compile variants on a single file
+    if num_lines > 1:
+        minor_var_fa = f"{prfx_wdir}.depth{depth}.fa.algn.minor.fa"
+        all_fa = f"{prfx_wdir}.depth{depth}.all.fa "
+        output_nxt = f"{prfx_wdir}.depth{depth}.all.nextclade.csv"
+        output_pgl = output_prfx+".all.fa.pangolin.csv"
+        # compile
+        cmd_str = "cat "+consensus_fa + minor_var_fa + f" > "+all_fa
+        os.system(cmd_str)
+        #p_cat = __run_command(cmd_str)
+        #__write_popen_logs(p_cat, prfx_wdir+'_4_cat')
+        #__check_status(p_cat, prfx_wdir+'_4_cat', 'COMPILE VARIANTS')
+
+    # single sequence, use consensus fasta as input
+    if num_lines == 1:
+        input_seqs = consensus_fa
+        output_nxt = f"{prfx_wdir}.depth{depth}.nextclade.csv"
+        #output_prfx+".fa.nextclade.csv"
+        output_pgl = output_prfx+".fa.pangolin.csv"
+    # if no sequence, something went wrong on previous step
+    if num_lines == 0:
+        raise Exception("No sequence at "+intrahost_tsv)
+    # -------------------------------------------------------------------------
+
+    # NEXTCLADE ---------------------------------------------------------------
+    # get clades for each sequence, via nextclade
+    in_str = f" -i {input_seqs}"
+    job_str = f" --jobs {threads} "
+    ref_str = f" --input-root-seq={ref_gnm}"
+    nxtdst_str = f" --input-dataset={nxt_dataset}"
+    out_csv = f" --output-csv={prfx_wdir}.depth{depth}.all.nextclade.csv"
+    out_str = f" --output-dir={out_dir}"
+    # nxt_str = "nextclade -i "+input_seqs + job_str + " -c  "+output_nxt
+    nxt_str = "/home/amarihosn/Programs/nextclade-Linux-x86_64" + in_str +\
+        job_str + ref_str + nxtdst_str + out_csv + out_str
+    print(nxt_str)
+    os.system(nxt_str)
+    # print(nxt_str)
+    p_nxt = __run_command(nxt_str)
+    __write_popen_logs(p_nxt, prfx_wdir+'_4_nextclade')
+    __check_status(p_nxt, prfx_wdir+'_4_nextclade', "NEXTCLADE")
+    # -------------------------------------------------------------------------
+
+    # PANGOLIN ----------------------------------------------------------------
+    # get variant namings, via pangolin
+    out_str = " --outfile " + output_pgl
+    pgl_str = "pangolin  " + input_seqs + f" -t {threads}" + out_str
+
+    p_pgl = __run_command(pgl_str)
+    __write_popen_logs(p_pgl, prfx_wdir+'_4_pangolin')
+    __check_status(p_pgl, prfx_wdir+'_4_pangolin', "PANGOLIN")
+
+
+def do_assembly_metrics(prefixout, outdir):
+    '''
+    do assembly metrics
+    '''
+    prfx_wdir = outdir+prefixout
+    bam_in = f"{prfx_wdir}.sorted.bam"
+    bed_out = f"{prefixout}.sorted.bed"
+
+    # BEDTOOLS BAMTOBED
+    cmd_bedtools = f"bedtools bamtobed -i {bam_in} > {bed_out}"
+    os.system(cmd_bedtools)
+
+    # SAMTOOLS VIEW + BAMDST
+    cmd_samtools = f"samtools view {bam_in} - u | bamdst - p {bed_out} - o {outdir}"
+    os.system(cmd_samtools)
+
+    # GUNZIP
+    gzp_1 = f"gunzip {outdir}region.tsv.gz"
+    __run_command(gzp_1)
+    gzp_2 = f"gunzip {outdir}depth.tsv.gz"
+    __run_command(gzp_2)
