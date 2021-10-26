@@ -7,6 +7,7 @@ import tqdm
 import viralflow.containers
 import viralflow.calls
 import viralflow.pipeline
+import viralflow.intrahost
 # --- FUNCTIONS ---------------------------------------------------------------
 
 
