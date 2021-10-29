@@ -46,8 +46,8 @@ def run_step_2(ref_gnm, prefixout, threads, outdir, depth):
     fq2 = outdir+prefixout+'.R2.fq.gz'
 
     s = time.time()
-    #viralflow.calls.align_reads2ref(
-    #    ref_gnm, fq1, fq2, prefixout, threads, outdir)
+    viralflow.calls.align_reads2ref(
+        ref_gnm, fq1, fq2, prefixout, threads, outdir)
     f = time.time()
     print(' > total execution time : ', f - s)
 
@@ -124,3 +124,27 @@ def run_step_5(prefixout, outdir):
     print('@ computings assembly metrics...')
     viralflow.calls.do_assembly_metrics(prefixout, outdir)
     # TODO check output for possible errors
+
+
+def run_pipeline(outdir, ref_gnm, fastq1, fastq2, adapters, prefixout, threads,
+                 depth, min_len, trim, intrahost_depth, nxt_dataset):
+    '''
+    Run the full pipeline on a pair of fastq
+    '''
+    try:
+        assert(Path(outdir).is_dir())
+    except(AssertionError):
+        print("WARNING: "+outdir
+              + " does not exist. Don't worry it will be created then. ")
+        os.system('mkdir '+outdir)
+
+    run_step_1(fastq1, fastq2, adapters, prefixout, threads,
+               min_len, trim, outdir)
+
+    run_step_2(ref_gnm, prefixout, threads, outdir, depth)
+
+    run_step_3(prefixout, depth, intrahost_depth, outdir)
+
+    run_step_4(prefixout, depth, threads, outdir, ref_gnm, nxt_dataset)
+
+    run_step_5(prefixout, outdir)
