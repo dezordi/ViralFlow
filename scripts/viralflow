@@ -4,6 +4,9 @@ import viralflow
 import os
 from pathlib import Path
 from sys import exit
+import subprocess
+import shlex
+
 __author__ = "Antonio Marinho da Silva Neto"
 #__copyright__ = "Copyright 2021, Rede Genomica Fiocruz"
 #__credits__ = []
@@ -65,6 +68,10 @@ def __checkIfIsDir(str, argName):
 dsc = '''
 '''
 
+# get viralflow path
+script_file = _path = os.path.realpath(__file__)
+viralflow_path = '/'.join(script_file.split('/')[0:-2])+'/'
+
 
 # ---- INPUT ------------------------------------------------------------------
 parser = argparse.ArgumentParser(description=dsc)
@@ -74,9 +81,10 @@ parser.add_argument('-singPath', type=str, help='singularity path',
 
 # --- Build mode --------------------------------------------------------------
 parser.add_argument('--build', action='store_true', help='set build mode on')
-parser.add_argument('-outDir', type=str, help='set directory path for output',
-                    default=os.getcwd()+'/')
-parser.add_argument('-singFilePath', type=str, help='Singularityfile path')
+parser.add_argument('-outDir', type=str, default=os.getcwd()+'/',
+                    help='set directory path for output (default = working dir)')
+parser.add_argument('-singFilePath', type=str, help='Singularityfile path',
+                    default=viralflow_path+'Singularityfile_test')
 
 parser.add_argument('-containerName', type=str, help='set container name',
                     default='viralflow_container')
@@ -85,7 +93,10 @@ parser.add_argument('-singOpt', type=str, help='singularity build option',
                     default='--fakeroot --sandbox')
 
 # --- Run mode -----------------------------------------------------------------
-parser.add_argument('--run', action='store_true', help='set run mode on')
+parser.add_argument('--run', action='store_true', help='set run local mode on')
+
+parser.add_argument('--runContainer', action='store_true',
+                    help='Run singularity container')
 
 parser.add_argument('-inputDir', type=str,
                     help='set input directory path')
@@ -169,8 +180,10 @@ print('| --------------------------------------------------------------------|')
 #    print('ERROR :', args.singPath, ' Singularity path does not exists.')
 #    exit(1)
 # check if mode was set
-if (args.build is False) and (args.run is False):
-    print("ERROR : a mode must be set (use either '--build' or '--run').")
+if (args.build is False) and ((args.run is False)
+                              and (args.runContainer is False)):
+    s = "(use either '--build', '--run' or '--runContainer')"
+    print(f"ERROR : a mode must be set {s}.")
     exit(1)
 
 # -----------------------------------------------------------------------------
@@ -185,27 +198,24 @@ if args.build is True:
     print('| containerName : ', args.containerName)
     print('| singOpt       : ', args.singOpt)
     print('| singPath      : ', args.singPath)
-if args.run is True:
+if (args.run is True) or (args.runContainer is True):
     print('|      RUN MODE ON      |')
+    if args.runContainer is True:
+        print('| singPath        : ', args.singPath)
+        print('| containerImg    : ', args.containerImg)
     print('| inputDir        : ', args.inputDir)
-    print('| containerName   : ', args.containerName)
     print('| referenceGenome : ', args.referenceGenome)
     print('| adaptersFile    : ', args.adaptersFile)
     print('| depth           : ', args.depth)
     print('| minLen          : ', args.minLen)
     print('| minDpIntrahost  : ', args.minDpIntrahost)
     print('| trimLen         : ', args.trimLen)
-    print('| singPath        : ', args.singPath)
     print('| totalCpus       : ', args.totalCpus)
     print('| cpusPerSample   : ', args.cpusPerSample)
     print('| nxtBin          : ', args.nxtBin)
     print('| nxtDtset        : ', args.nxtDtset)
-
-    if args.containerImg is None:
-        print("| WARNING: NO CONTAINER IMAGE PROVIDED, RUNNING LOCALLY")
-        print("|          BE SURE ALL REQUIREMENTS ARE MET ON YOUR MACHINE")
-        local = True
 print('| --------------------------------------------------------------------|')
+
 # Build mode
 if args.build is True:
     # TODO: check input (sanity test)
@@ -222,27 +232,33 @@ if args.build is True:
 
 # Run mode
 if args.run is True:
-    if args.containerImg is None:
-        # --- sanity check ---------------------------------------------------
-        # check dirs
-        __checkIfIsDir(args.inputDir, 'inputDir')
-        __checkIfIsDir(args.nxtDtset, 'nxtDtset')
-        # check files
-        __checkIfIsFile(args.inputDir+args.referenceGenome, 'referenceGenome')
-        __checkIfIsFile(args.inputDir+args.adaptersFile, 'adaptersFile')
-        # ---------------------------------------------------------------------
-        # TODO: hide std error from terminal and store at log
-        viralflow.run_viralflow_pp(args.inputDir, args.referenceGenome,
-                                   args.adaptersFile, args.depth, args.minLen,
-                                   args.minDpIntrahost, args.trimLen,
-                                   args.nxtDtset, nxt_bin=args.nxtBin,
-                                   cpus_total=args.totalCpus,
-                                   cpus_pprc=args.cpusPerSample,
-                                   verbose=args.verbose)
-    if args.containerImg is not None:
-        # sanity check
-        # TODO: Check container path
-        #viralflow.run_pipeline
-        pass
+    # --- sanity check ---------------------------------------------------
+    # check dirs
+    __checkIfIsDir(args.inputDir, 'inputDir')
+    __checkIfIsDir(args.nxtDtset, 'nxtDtset')
+    # check files
+    __checkIfIsFile(args.inputDir+args.referenceGenome, 'referenceGenome')
+    __checkIfIsFile(args.inputDir+args.adaptersFile, 'adaptersFile')
+    # ---------------------------------------------------------------------
+    # TODO: hide std error from terminal and store at log
+    viralflow.run_viralflow_pp(args.inputDir, args.referenceGenome,
+                               args.adaptersFile, args.depth, args.minLen,
+                               args.minDpIntrahost, args.trimLen,
+                               args.nxtDtset, nxt_bin=args.nxtBin,
+                               cpus_total=args.totalCpus,
+                               cpus_pprc=args.cpusPerSample,
+                               verbose=args.verbose)
+if args.runContainer is True:
+    # sanity check
+    # TODO: Check container path
+    sh_str = f'{viralflow_path}sars2_assembly_singularity_run_test.sh'
+    cmd = f'bash {sh_str} {args.inputDir} {args.referenceGenome} \
+              {args.adaptersFile} {args.totalCpus} {args.depth} \
+              {args.minLen} {args.containerImg} {args.minDpIntrahost} \
+              {args.trimLen}'
+
+    cmd = shlex.split(cmd)
+    p = subprocess.Popen(cmd)
+    p.wait()
 
 print(' | --- DONE --- |')
