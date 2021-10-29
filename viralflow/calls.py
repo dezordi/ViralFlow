@@ -291,22 +291,24 @@ def get_minor_variants(reference_genome, prefixout, depth, threads, outdir):
     prfx_wdir = outdir+prefixout
     # BAM READCOUNT -----------------------------------------------------------
     # abm = annotation bed merged
-    bamread_output = open(f"{prfx_wdir}.depth{depth}.fa.bc", "w")
+    bamread_output = open(f"{prfx_wdir}.depth{depth}.fa.bc", "wb")
     input_ref = f"-f {reference_genome} "
     bam_out = f"{prfx_wdir}.sorted.bam "
     bwa_read = f"bam-readcount -d 50000 -q 30 -w 0 "+input_ref+bam_out
     # run command and store sdtout on bam read
-    p_bwa_read = __run_command(bwa_read)
+    #print("COMMAND:")
+    #print(bwa_read)
+    # WARNING #################################################################
+    # For some reason, using the __run_command stuck the pipeline at cmd.wait()
+    # for now, os.system get the job done, but this needs to be fixed.
+    # ------------------------------------------------------------------------
+    #p_bwa_read = __run_command(bwa_read)
     # write bwa readcount stidout on fa.bc
-    stdout, stderr = p_bwa_read.communicate()
-    bamread_output.write(stdout)
-    bamread_output.close()
-    #
-    #bwa_read = shlex.split(bwa_read)
-    #p_bwa_read = subprocess.Popen(bwa_read)  # , stdout=bamread_output)
-    #p_bwa_read.wait()
-
-    #__check_status(p_bwa_read, "_bam-rc", "BAM READCOUNTS")
+    #stdout, stderr = p_bwa_read.communicate()
+    #bamread_output.write(stdout)
+    #bamread_output.close()
+    # CURRENT
+    os.system(bwa_read)
 
     # MAFFT -------------------------------------------------------------------
     #mafft_output = open(f"{prfx_wdir}.depth{depth}.fa.algn", "w")
@@ -315,9 +317,10 @@ def get_minor_variants(reference_genome, prefixout, depth, threads, outdir):
     out = f" --clustalout {prfx_wdir}.depth{depth}.fa.algn"
     mafft = "mafft --keeplength "+input_fa+t_str + \
         f" {reference_genome}"  # > {prfx_wdir}.depth{depth}.fa.algn"
-
+    #print("COMMAND:")
+    #print(mafft)
     cmd_mafft = __run_command(mafft)
-    log_prfx = prfx_wdir+'2_mafft'
+    log_prfx = prfx_wdir+'_2_mafft'
     __write_popen_logs(cmd_mafft, log_prfx)
     __check_status(cmd_mafft, log_prfx+"_err.log", "MAFFT")
 
@@ -326,7 +329,7 @@ def get_minor_variants(reference_genome, prefixout, depth, threads, outdir):
 
 
 def get_variant_naming(prefixout, depth, threads, out_dir, ref_gnm,
-                       nxt_dataset):
+                       nxt_dataset, nxt_bin='nextclade'):
     '''
     Define clade and variant for a given SARS-CoV2 sequence.
     The variant and clade definition is based on Nextclade and Pangolin.
@@ -374,14 +377,15 @@ def get_variant_naming(prefixout, depth, threads, out_dir, ref_gnm,
     out_csv = f" --output-csv={prfx_wdir}.depth{depth}.all.nextclade.csv"
     out_str = f" --output-dir={out_dir}"
     # nxt_str = "nextclade -i "+input_seqs + job_str + " -c  "+output_nxt
-    nxt_str = "/home/amarihosn/Programs/nextclade-Linux-x86_64" + in_str +\
-        job_str + ref_str + nxtdst_str + out_csv + out_str
-    print(nxt_str)
-    os.system(nxt_str)
+    nxt_str = nxt_bin + in_str + job_str + ref_str + nxtdst_str + out_csv \
+        + out_str
+    #print("COMMAND NEXTCLADE:")
+    #print(nxt_str)
+    #os.system(nxt_str)
     # print(nxt_str)
     p_nxt = __run_command(nxt_str)
     __write_popen_logs(p_nxt, prfx_wdir+'_4_nextclade')
-    __check_status(p_nxt, prfx_wdir+'_4_nextclade', "NEXTCLADE")
+    __check_status(p_nxt, prfx_wdir+'_4_nextclade_err.log', "NEXTCLADE")
     # -------------------------------------------------------------------------
 
     # PANGOLIN ----------------------------------------------------------------
@@ -400,14 +404,18 @@ def do_assembly_metrics(prefixout, outdir):
     '''
     prfx_wdir = outdir+prefixout
     bam_in = f"{prfx_wdir}.sorted.bam"
-    bed_out = f"{prefixout}.sorted.bed"
+    bed_out = f"{prfx_wdir}.sorted.bed"
 
     # BEDTOOLS BAMTOBED
+
     cmd_bedtools = f"bedtools bamtobed -i {bam_in} > {bed_out}"
+    print('COMMAND:')
+    print(cmd_bedtools)
     os.system(cmd_bedtools)
 
     # SAMTOOLS VIEW + BAMDST
-    cmd_samtools = f"samtools view {bam_in} - u | bamdst - p {bed_out} - o {outdir}"
+    cmd_samtools = f"samtools view {bam_in} -u | bamdst -p {bed_out} -o {outdir}"
+    print(cmd_samtools)
     os.system(cmd_samtools)
 
     # GUNZIP
