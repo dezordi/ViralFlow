@@ -3,10 +3,11 @@ From: dezordi/iam_sarscov2:0.0.5
 Stage: spython-base
 
 %environment
+        export INPUT_DIR=''
         export REFERENCE=''
-        export FASTQ1=''
-        export FASTQ2=''
-        export PREFIXOUT=''
+        #export FASTQ1=''
+        #export FASTQ2=''
+        #export PREFIXOUT=''
         export THREADS=''
         export DEPTH=''
         export MIN_LEN=''
@@ -21,7 +22,9 @@ Stage: spython-base
  mkdir /app
  cd /app/
  git clone https://github.com/dezordi/ViralFlow.git
-
+ cd ViralFlow/
+ git checkout new_cli
+ cd /
  # set output dir
  mkdir /data/
  apt update
@@ -46,6 +49,11 @@ Stage: spython-base
  echo "Activating pangolin"
  conda activate pangolin
 
+ # install viralflow
+ cd /app/ViralFlow/
+ pip install -e ./
+ cd /
+
  # get nexclade dataset
  mkdir /app/nextclade/
  cd /app/nextclade/
@@ -59,4 +67,4 @@ Stage: spython-base
  pip install pandas
 
 %runscript
-	/bin/bash -c "source /app/ViralFlow/sars2_assembly_singularity_test"
+	/bin/bash -c "source /app/ViralFlow/sars2_assembly_singularity_test $REFERENCE $FASTQ1 $FASTQ2 $PREFIXOUT $THREADS $DEPTH $MIN_LEN $ADAPTERS $DP_INTRAHOST $TRIMM_LEN $"
