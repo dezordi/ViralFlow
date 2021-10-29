@@ -3,6 +3,7 @@ import argparse
 import viralflow
 import os
 from pathlib import Path
+from sys import exit
 __author__ = "Antonio Marinho da Silva Neto"
 #__copyright__ = "Copyright 2021, Rede Genomica Fiocruz"
 #__credits__ = []
@@ -31,7 +32,35 @@ WARNING:
 
 '''
 
-#-------------------------------------------------------------------------------
+# --- FUNCTIONS ---------------------------------------------------------------
+# SANITY CHECK
+
+
+def __checkIfPathExists(str, argName):
+    try:
+        assert(Path(str).exists())
+    except(AssertionError):
+        print(f'ERROR: {argName} provided ({str}) does not exist.')
+        exit(1)
+
+
+def __checkIfIsFile(str, argName):
+    try:
+        assert(Path(str).is_file())
+    except(AssertionError):
+        print(f'ERROR: {argName} provided ({str}) is not a file.')
+        exit(1)
+
+
+def __checkIfIsDir(str, argName):
+    try:
+        assert(Path(str).is_dir())
+    except(AssertionError):
+        print(f'ERROR: {argName} provided ({str}) is not a dir.')
+        exit(1)
+
+# -----------------------------------------------------------------------------
+
 
 dsc = '''
 '''
@@ -61,7 +90,7 @@ parser.add_argument('--run', action='store_true', help='set run mode on')
 parser.add_argument('-inputDir', type=str,
                     help='set input directory path')
 
-parser.add_argument('-containerImg', type=str,
+parser.add_argument('-containerImg', type=str, default=None,
                     help='path for viralflow container')
 
 parser.add_argument('-referenceGenome', type=str,
@@ -89,7 +118,13 @@ parser.add_argument('-totalCpus', type=int, default=1,
 parser.add_argument('-cpusPerSample', type=int, default=None,
                     help='cpus to use on individual sample run (default = auto)')
 
+parser.add_argument('-nxtBin', type=str, default='nextclade',
+                    help='path for nextclade command (default=nextclade)')
 
+parser.add_argument('-nxtDtset', type=str, default=None,
+                    help='path for nextclade dataset dir')
+parser.add_argument('-v', '--verbose', action='store_true',
+                    help='increase output verbosity')
 args = parser.parse_args()
 
 # -----------------------------------------------------------------------------
@@ -128,11 +163,11 @@ print('| --------------------------------------------------------------------|')
 
 # sanity check ----------------------------------------------------------------
 # check singularity path validity
-try:
-    assert(Path(args.singPath).exists())
-except(AssertionError):
-    print('ERROR :', args.singPath, ' Singularity path does not exists.')
-    exit(1)
+#try:
+#    assert(Path(args.singPath).exists())
+#except(AssertionError):
+#    print('ERROR :', args.singPath, ' Singularity path does not exists.')
+#    exit(1)
 # check if mode was set
 if (args.build is False) and (args.run is False):
     print("ERROR : a mode must be set (use either '--build' or '--run').")
@@ -163,7 +198,13 @@ if args.run is True:
     print('| singPath        : ', args.singPath)
     print('| totalCpus       : ', args.totalCpus)
     print('| cpusPerSample   : ', args.cpusPerSample)
+    print('| nxtBin          : ', args.nxtBin)
+    print('| nxtDtset        : ', args.nxtDtset)
 
+    if args.containerImg is None:
+        print("| WARNING: NO CONTAINER IMAGE PROVIDED, RUNNING LOCALLY")
+        print("|          BE SURE ALL REQUIREMENTS ARE MET ON YOUR MACHINE")
+        local = True
 print('| --------------------------------------------------------------------|')
 # Build mode
 if args.build is True:
@@ -181,19 +222,27 @@ if args.build is True:
 
 # Run mode
 if args.run is True:
-    # TODO: check input (sanity test)
-    # TODO: hide std error from terminal and store at log
-    viralflow.run_viralflow_pp(args.inputDir, args.containerImg,
-                               args.referenceGenome, args.adaptersFile,
-                               args.depth, args.minLen, args.minDpIntrahost,
-                               args.trimLen, sing_call=args.singPath,
-                               cpus_total=args.totalCpus,
-                               cpus_pprc=args.cpusPerSample)
-
-# single pair processing
-# viralflow.run_viralflow_pp(args.input_dir, args.container_img,
-#                           args.ref_gnm, prefix_out, adapters_file,
-#                           depth=depth, min_len=min_len, min_dp_intrahost=min_dp_intrahost,
-#                           trim_len=trim_len, sing_call=sing_call, cpus_total=cpus_total)
+    if args.containerImg is None:
+        # --- sanity check ---------------------------------------------------
+        # check dirs
+        __checkIfIsDir(args.inputDir, 'inputDir')
+        __checkIfIsDir(args.nxtDtset, 'nxtDtset')
+        # check files
+        __checkIfIsFile(args.inputDir+args.referenceGenome, 'referenceGenome')
+        __checkIfIsFile(args.inputDir+args.adaptersFile, 'adaptersFile')
+        # ---------------------------------------------------------------------
+        # TODO: hide std error from terminal and store at log
+        viralflow.run_viralflow_pp(args.inputDir, args.referenceGenome,
+                                   args.adaptersFile, args.depth, args.minLen,
+                                   args.minDpIntrahost, args.trimLen,
+                                   args.nxtDtset, nxt_bin=args.nxtBin,
+                                   cpus_total=args.totalCpus,
+                                   cpus_pprc=args.cpusPerSample,
+                                   verbose=args.verbose)
+    if args.containerImg is not None:
+        # sanity check
+        # TODO: Check container path
+        #viralflow.run_pipeline
+        pass
 
 print(' | --- DONE --- |')
