@@ -110,12 +110,36 @@ def run_sing_cont_pp(kwargs):
                                             sing_call=sing_call, dry=False)
 
 
-def run_viralflow_pp(input_dir, cntnr_img, ref_gnm, adapters_file, depth,
-                     min_len, min_dp_intrahost, trim_len,
-                     sing_call='singularity', cpus_total=mp.cpu_count(),
-                     cpus_pprc=None):
+def run_pipeline_pp(kwargs):
     '''
-    Run muiltiple viralflow call to all fastq pais (R1 and R2) on a given
+    wrapper for run pipeline function
+    '''
+    outdir = kwargs['outdir']
+    ref_gnm = kwargs['ref_gnm']
+    fastq1 = kwargs['fastq_R1']
+    fastq2 = kwargs['fastq_R2']
+    adapters = kwargs['adapters_file']
+    prefixout = kwargs['prefixout']
+    threads = kwargs['threads']
+    depth = kwargs['depth']
+    min_len = kwargs['min_len']
+    trim = kwargs['trim_len']
+    intrahost_depth = kwargs['min_dp_intrahost']
+    nxt_dataset = kwargs['nxt_dataset']
+    verbose = kwargs['verbose']
+    nxt_bin = kwargs['nxt_bin']
+    viralflow.pipeline.run_pipeline(outdir, ref_gnm, fastq1, fastq2, adapters,
+                                    prefixout, threads, depth, min_len, trim,
+                                    intrahost_depth, nxt_dataset,
+                                    nxt_bin=nxt_bin, verbose=verbose)
+
+
+def run_viralflow_pp(input_dir, ref_gnm, adapters_file, depth,
+                     min_len, min_dp_intrahost, trim_len, nxt_dataset,
+                     nxt_bin='nextclade', cpus_total=mp.cpu_count(),
+                     cpus_pprc=None, verbose=False):
+    '''
+    Run multiple viralflow call to all fastq pais (R1 and R2) on a given
     directory.
     '''
     # santy check --------------------------------------------------------------
@@ -129,7 +153,6 @@ def run_viralflow_pp(input_dir, cntnr_img, ref_gnm, adapters_file, depth,
     for f in files:
         assert(Path(input_dir+f).exists()), f+' does not exist at '+input_dir
 
-    assert(Path(cntnr_img).exists()), cntnr_img+' does not exist.'
     # --------------------------------------------------------------------------
     # get pairs of fastq available
     print('@ mapping fastq pairs to process...')
@@ -167,11 +190,12 @@ def run_viralflow_pp(input_dir, cntnr_img, ref_gnm, adapters_file, depth,
     print("  > number of multiple call = ", n_parallel_calls)
 
     # get keyword arguments per pairs of fastq
-    dct_fix = {'container_img': cntnr_img, 'input_dir': input_dir,
-               'ref_gnm': ref_gnm, 'adapters_file': adapters_file,
-               'threads': cpus_pprc, 'depth': depth, 'min_len': min_len,
+    dct_fix = {'input_dir': input_dir, 'ref_gnm': input_dir+ref_gnm,
+               'adapters_file': input_dir+adapters_file, 'threads': cpus_pprc,
+               'depth': depth, 'min_len': min_len,
                'min_dp_intrahost': min_dp_intrahost, 'trim_len': trim_len,
-               'sing_call': sing_call}
+               'nxt_dataset': nxt_dataset, 'nxt_bin': nxt_bin,
+               'verbose': verbose}
 
     # get kwargs list
     kwargs_lst = []
@@ -180,15 +204,18 @@ def run_viralflow_pp(input_dir, cntnr_img, ref_gnm, adapters_file, depth,
         R1 = pair[0]
         R2 = pair[1]
         prefix_out = R1.split('.')[0]
-        kwarg = {'fastq_R1': R1, 'fastq_R2': R2, 'prefix_out': prefix_out}
+        kwarg = {'fastq_R1': input_dir+R1, 'fastq_R2': input_dir+R2,
+                 'prefixout': prefix_out,
+                 'outdir': input_dir+prefix_out+'.results/'}
         kwarg_f = {**kwarg, **dct_fix}
         kwargs_lst.append(kwarg_f)
 
     # run multiple calls in parallels
     workers = mp.Pool(n_parallel_calls)
     max_ = len(kwargs_lst)
+
     with tqdm.tqdm(total=max_) as pbar:
-        for i, chunk_results in enumerate(workers.imap(run_sing_cont_pp,
+        for i, chunk_results in enumerate(workers.imap(run_pipeline_pp,  # run_sing_cont_pp,
                                                        kwargs_lst)):
             pbar.update()
         workers.close()
