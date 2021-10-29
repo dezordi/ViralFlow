@@ -28,69 +28,72 @@ Dependencies
 * seqtk 1.3-r106
 
 =====
+How to install
+=====
+
+You can install viralflow via pip
+
+.. code-block:: text
+
+  git clone https://github.com/dezordi/ViralFlow.git
+  cd ViralFlow/
+  git checkout new-cli
+  pip install -e ./
+
+The recommended way to run ViralFlow is via **Singularity container**, be sure `Singularity is installed <https://hub.docker.com/repository/docker/dezordi/iam_sarscov2/>`_.
+If you plan to run on your local environment, be sure all requirements are met.
+
+=====
 Files info
 =====
 
 .. code-block:: text
 
     IAM_SARSCOV2/
-    ├-Dockerfile                            ### Recipe to build local docker image
-    ├-sars2_assembly_docker                 ### Script called into ENTRYPOINT of local docker image
-    ├-sars2_assembly_docker_run.sh          ### Script for users unfamiliar with docker run sintaxe
     ├-Singularityfile                       ### Recipe to build local singularity sandbox
     ├-sars2_assembly_singularity            ### Script called into ENTRYPOINT of local singularity sandbox
     ├-sars2_assembly_singularity_run.sh     ### Script for users unfamiliar with singularity run sintaxe
     ├-pango_update                          ### Script to activate conda and update pangolin, run automatically during docker or singularity build
-    └-python_scripts:
-      ├-assembly_metrics.py                 ### Run bamdst
-      ├-bwa_index.py                        ### Run bwa index
-      ├-bwa_mem.py                          ### Run bwa mem
-      ├-fastp.py                            ### Run fastp
-      ├-get_mvs.py                          ### Perform intrahost variant analysis with bam-readcount and intrahost.py
-      ├-intrahost.py                        ### Identify genomic positions with multi-allele frequencies
-      ├-ivar.py                             ### Run ivar variant and ivar consensus
-      └-pango_nextclade.py                  ### Run pangolin and nextclade
+    ├-setup.py                              ### install instructions for pip
+    ├-viralflow
+    | ├-__init__.py                         ### viralflow python library definition
+    | ├-calls.py                            ### command calls module
+    | ├-containers.py                       ### containers handling functions module
+    | ├-intrahost.py                        ### intrahost bam processing functions module
+    | └-pipeline.py                         ### wrapper functions for running pipeline
+    |
+    ├-scripts:
+    | └-viralflow                           ### CLI ViralFlow interface
+    └-images:
+      └-workflow.png                        ### image of workflow
 
+====
+Quick guide
+====
 
-=====
-Docker
-=====
+Building and running a ViralFlow singularity container
+.. code::bash
 
-A docker image with all tools and libraries can be found `here <https://hub.docker.com/repository/docker/dezordi/iam_sarscov2/>`_.
-The last update of the pangolin in the docker images was carried out on Septenber 11, 2021 to the version v3.1.11. The following structions were tested into Docker version 20.10.x.
-You can create a container and run as an interactive session the sars2_assembly following:
+  viralflow --build -singFilePath /path/to/ViralFlow/Singularityfile_test
 
-.. code:: bash
+  viralflow --runContainer -inputDir path/to/input/  \
+                           -referenceGenome reference_genome.fasta \
+                           -adaptersFile adapters.fasta -totalCpus 4 \
+                           -depth 5 -minLen 75 \
+                           -containerImg /path/to/viralflow_container \
+                           -minDpIntrahost 100 -trimLen 0
 
-    docker run -tdi --name iam_sarscov2 --cpus <number> --memory <number> dezordi/iam_sarscov2:0.0.5 /bin/bash
-    docker cp  <REFERENCEGENOME/001.fastq.gz/002.fastq.gz/ADAPTERS_FILE> iam_sarscov2:home
-    docker attach iam_sarscov2
-    cd home
-    conda activate pangolin
-    bash sars2_assembly <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS_FILE>
+Run locally (Be sure all requirements are met on your machine)
 
+.. code::bash
 
-* Arguments docker run
-    * tdi     -   t and i create an interactive environment similar to terminal connection session, d run the container in background;
-    * name    -   container name;
-    * cpus    -   number maximum of threads;
-    * memory  -   ram memory limit;
+  viralflow --run -inputDir path/to/input/data/ \
+                  -referenceGenome $FASTA \
+                  -adaptersFile adapters.fasta -totalCpus 4 -depth 5 \
+                  -minLen 75 -minDpIntrahost 100 -trimLen 75 \
+                  -nxtBin /path/to/nextclade \
+                  -nxtDtset /path/to/nextclade/dataset/sars-cov-2/ -v
 
-Or you can use the Dockerfile and sars2_assembly_docker_run.sh to run the docker without the interactive mode:
-
-.. code:: bash
-
-    docker build -t <image>:<tag> .
-    bash sars2_assembly_docker_run.sh <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS_FILE> <image>:<tag>
-
-Using the Dockerfile and sars2_assembly_docker_run.sh a directory named 'prefix.results' will be created in the current directory storing the results.
-
-**Suggestion to paired-end reads with 150 of length using Dockerfile:**
-
-.. code:: bash
-
-    docker build -t iam_sarscov2:0.0.5 .
-    bash sars2_assembly_docker_run.sh reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa iam_sarscov2:0.0.5
 
 =====
 Singularity
