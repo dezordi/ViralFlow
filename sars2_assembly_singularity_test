@@ -107,4 +107,4 @@ viralflow --run  -inputDir /data/ -referenceGenome $FASTA \
                  -minLen $MIN_LEN -minDpIntrahost $DP_INTRAHOST \
                  -trimLen $TRIMM_LEN \
                  -nxtBin /app/nextclade/nextclade-Linux-x86_64 \
-                 -nxtDtset /app/nextclade/dtset/sars-cov-2/
+                 -nxtDtset /app/nextclade/dtset/sars-cov-2/ -v
