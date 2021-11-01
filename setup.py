@@ -16,5 +16,5 @@ setup(name='ViralFlow',
         'Topic :: Scientific/Engineering :: Bio-Informatics'
           ],
       scripts=['scripts/viralflow'],
-      install_requires=[],
+      install_requires=['tqdm', 'biopython', 'pandas'],
       zip_safe=False)
