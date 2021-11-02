@@ -11,7 +11,7 @@ defined at 'viralflow.calls' added of some sanity check for input files.
 
 
 def run_step_1(fastq1, fastq2, adapters, prefixout, threads, min_len,
-               trim, outdir, verbose=True):
+               trim, outdir, reference_genome, verbose=True):
     '''
     Run step 1 of ViralFlow, check github README and/or paper for further
     details
@@ -26,6 +26,14 @@ def run_step_1(fastq1, fastq2, adapters, prefixout, threads, min_len,
               + " does not exist. Don't worry it will be created then. ")
         os.system('mkdir ' + outdir)
     # ----------------------------------------------------------------------
+    if verbose is True:
+        print('@ running bwa index...')
+    s = time.time()
+    viralflow.calls.run_bwa_idex(reference_genome, outdir, prefixout)
+    f = time.time()
+    if verbose is True:
+        print(' > total execution time : ', f - s)
+
     if verbose is True:
         print('@ running fastp...')
     s = time.time()
@@ -152,7 +160,7 @@ def run_pipeline(outdir, ref_gnm, fastq1, fastq2, adapters, prefixout, threads,
         os.system('mkdir '+outdir)
 
     run_step_1(fastq1, fastq2, adapters, prefixout, threads,
-               min_len, trim, outdir, verbose=verbose)
+               min_len, trim, outdir, ref_gnm, verbose=verbose)
 
     run_step_2(ref_gnm, prefixout, threads, outdir, depth, verbose=verbose)
 
