@@ -251,14 +251,14 @@ if args.run is True:
 if args.runContainer is True:
     # sanity check
     # TODO: Check container path
-    sh_str = f'{viralflow_path}sars2_assembly_singularity_run_test.sh'
-    cmd = f'bash {sh_str} {args.inputDir} {args.referenceGenome} \
-              {args.adaptersFile} {args.totalCpus} {args.depth} \
-              {args.minLen} {args.containerImg} {args.minDpIntrahost} \
-              {args.trimLen}'
-
-    cmd = shlex.split(cmd)
-    p = subprocess.Popen(cmd)
-    p.wait()
-
+    viralflow.containers.run_sing_container(args.containerImg, args.inputDir,
+                                            args.referenceGenome,
+                                            args.adaptersFile,
+                                            threads=args.totalCpus,
+                                            depth=args.depth,
+                                            min_len=args.minLen,
+                                            min_dp_intrahost=args.minDpIntrahost,
+                                            trim_len=args.trimLen,
+                                            sing_call=args.singPath)
+    
 print(' | --- DONE --- |')

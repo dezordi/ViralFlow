@@ -82,14 +82,15 @@ conda activate pangolin
 # ex: if /my/input/dir/fastq_R1.fastq.gz, then FASTQ1 should be fastq_R1.fastq.gz
 #     if /my/input/dir/reference/ref.fasta, then FASTA must be referece/ref.fasta
 
-#FASTQ1=$3 #foward reads
-#FASTQ2=$4 #reverse reads
-#PREFIXOUT=$5 #prefix for output
 #IMAGE=$5 # container image file
+#FASTQ1=$2 #foward reads
+#FASTQ2=$3 #reverse reads
+#PREFIXOUT=$4 #prefix for output
 
 FASTA=$1 #reference genome
+
 THREADS=$2 #number of threads
-DEPTH=$3 #minum depth to mask regions
+DEPTH=$3 #minimum depth to mask regions
 MIN_LEN=$4 #minimum length to trimm reads
 ADAPTERS=$5 #fasta file with adapters
 DP_INTRAHOST=${6-100} #minimum dp for intrahost analysis
@@ -98,10 +99,20 @@ TRIMM_LEN=${7-0} #length to trim front and tail reads with fastp
 #================================================================
 # WORKFLOW
 #================================================================
-echo reference $FASTA
-#echo $ADAPTERS
-#echo $DEPTH
+echo '| ---  ENV PARAMETERS --- |'
+#echo 'fastq_R1 = '$FASTQ1
+#echo 'fastq_R2 = '$FASTQ2
+#echo 'prefix_out='$PREFIXOUT
+echo 'reference = ' $FASTA
+echo 'adapters = '$ADAPTERS
+echo 'depth =' $DEPTH
+echo 'min_len =' $MIN_LEN
+echo 'adapters = '$ADAPTERS
+echo 'DP_INTRAHOS = '$DP_INTRAHOST
+echo 'TRIMM_LEN = '$TRIMM_LEN
+echo '| ----------------------- |'
 ls /data/
+
 viralflow --run  -inputDir /data/ -referenceGenome $FASTA \
                  -adaptersFile $ADAPTERS -totalCpus $THREADS -depth $DEPTH \
                  -minLen $MIN_LEN -minDpIntrahost $DP_INTRAHOST \
