@@ -2,6 +2,7 @@ import subprocess
 import shlex
 import os
 from pathlib import Path
+import sys
 
 
 def __run_command(cmd_str):
@@ -70,19 +71,20 @@ def __check_status(proc, log_file, proc_label):
         l_nm = log_file
         m = "Error in "+proc_label+", check log file (" + l_nm + ')'
         print(m)
-        exit(1)
+        sys.exit(1)
         #raise Exception(f'Invalid result: { proc.returncode }')
 
 
 def run_bwa_idex(input_file, out_dir, prefixout):
     '''Perform bwa index analysis'''
     prfx_wdir = out_dir + prefixout
-    bwa_index = (f"bwa index {input_file}")
-    p_bwa_idx = __run_command(bwa_index)
+    bwa_index = f"bwa index {input_file}"
+    os.system(bwa_index)
+    #p_bwa_idx = __run_command(bwa_index)
     # write log file
-    __write_popen_logs(p_bwa_idx, prfx_wdir+'_1_bwa_idx')
+    #__write_popen_logs(p_bwa_idx, prfx_wdir+'_1_bwa_idx')
     # check if errors
-    __check_status(p_bwa_idx, prfx_wdir+'_1_bwa_idx_err.log', 'BWA INDEX')
+    #__check_status(p_bwa_idx, prfx_wdir+'_1_bwa_idx_err.log', 'BWA INDEX')
 
 
 def run_fastp(fastq1, fastq2, prefixout, threads, adapters, min_len, trimm,
