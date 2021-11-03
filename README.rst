@@ -37,6 +37,8 @@ You can install viralflow via pip
 
   git clone https://github.com/dezordi/ViralFlow.git
   cd ViralFlow/
+  conda env create -f envs/viralflow.yml
+  conda activate viralflow
   git checkout new-cli
   pip install -e ./
 
@@ -72,10 +74,10 @@ Quick guide
 ====
 
 Building and running a ViralFlow singularity container
+
 .. code::bash
 
   viralflow --build -singFilePath /path/to/ViralFlow/Singularityfile_test
-
   viralflow --runContainer -inputDir path/to/input/  \
                            -referenceGenome reference_genome.fasta \
                            -adaptersFile adapters.fasta -totalCpus 4 \

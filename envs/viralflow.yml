@@ -1,0 +1,6 @@
+name: viralflow
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+prefix: /home/dezordi/anaconda3/envs/viralflow
