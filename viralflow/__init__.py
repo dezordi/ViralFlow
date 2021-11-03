@@ -11,8 +11,7 @@ import viralflow.intrahost
 # --- FUNCTIONS ---------------------------------------------------------------
 
 
-def get_fastq_pairs(input_dir, format=['fastq.gz','fq.gz']):
-    print('OOOI')
+def get_fastq_pairs(input_dir, format=tuple(["fastq.gz","fq.gz"])):
     '''
     Get fastq pairs files (R1 and R2) on a given dir.
     This function assumes pairs have the same name differing only that instead
@@ -64,7 +63,8 @@ def get_fastq_pairs(input_dir, format=['fastq.gz','fq.gz']):
 
     # get fastq.gz files
     files_at_dir = os.listdir(input_dir)
-    fastq_lst = [x for x in files_at_dir if x.endswith((format))]
+    fastq_lst = [x for x in files_at_dir if x.endswith(format)]
+    print(fastq_lst)
 
     # get R1 and R2 pairs
     pairs = []
