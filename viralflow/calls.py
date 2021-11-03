@@ -304,10 +304,14 @@ def get_minor_variants(reference_genome, prefixout, depth, threads, outdir):
     prfx_wdir = outdir+prefixout
     # BAM READCOUNT -----------------------------------------------------------
     # abm = annotation bed merged
-    bamread_output = open(f"{prfx_wdir}.depth{depth}.fa.bc", "wb")
-    input_ref = f"-f {reference_genome} "
+
     bam_out = f"{prfx_wdir}.sorted.bam "
-    bwa_read = f"bam-readcount -d 50000 -q 30 -w 0 "+input_ref+bam_out
+    #bam_read = ["bam-readcount","-d","50000","-q","30","-w","0","-f",input_ref,bam_out]
+    bamread_output = open(f"{prfx_wdir}.depth{depth}.fa.bc", "wb")
+    bwa_read = f"bam-readcount -d 50000 -q 30 -w 0 -f {reference_genome} {bam_out}"
+    bwa_read = shlex.split(bwa_read)
+    cmd_bwa_read = subprocess.Popen(bwa_read, stdout=bamread_output)
+    cmd_bwa_read.wait()
     # run command and store sdtout on bam read
     #print("COMMAND:")
     #print(bwa_read)
@@ -321,7 +325,10 @@ def get_minor_variants(reference_genome, prefixout, depth, threads, outdir):
     #bamread_output.write(stdout)
     #bamread_output.close()
     # CURRENT
-    os.system(bwa_read)
+    #os.system(bwa_read)
+    #bam_readcount_run = subprocess.Popen(bam_read, stdout=bamread_output)
+    #bam_readcount_run.wait()
+
 
     # MAFFT -------------------------------------------------------------------
     #mafft_output = open(f"{prfx_wdir}.depth{depth}.fa.algn", "w")
