@@ -329,7 +329,6 @@ def get_minor_variants(reference_genome, prefixout, depth, threads, outdir):
     #bam_readcount_run = subprocess.Popen(bam_read, stdout=bamread_output)
     #bam_readcount_run.wait()
 
-
     # MAFFT -------------------------------------------------------------------
     #mafft_output = open(f"{prfx_wdir}.depth{depth}.fa.algn", "w")
     input_fa = f"--add {prfx_wdir}.depth{depth}.fa "
@@ -373,6 +372,7 @@ def get_variant_naming(prefixout, depth, threads, out_dir, ref_gnm,
         # compile
         cmd_str = "cat "+consensus_fa + minor_var_fa + f" > "+all_fa
         os.system(cmd_str)
+        input_seqs = all_fa
         #p_cat = __run_command(cmd_str)
         #__write_popen_logs(p_cat, prfx_wdir+'_4_cat')
         #__check_status(p_cat, prfx_wdir+'_4_cat', 'COMPILE VARIANTS')
