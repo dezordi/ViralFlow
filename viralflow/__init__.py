@@ -11,7 +11,7 @@ import viralflow.intrahost
 # --- FUNCTIONS ---------------------------------------------------------------
 
 
-def get_fastq_pairs(input_dir, format=tuple(["fastq.gz","fq.gz"])):
+def get_fastq_pairs(input_dir, format=tuple(["fastq.gz", "fq.gz"])):
     '''
     Get fastq pairs files (R1 and R2) on a given dir.
     This function assumes pairs have the same name differing only that instead
@@ -64,7 +64,7 @@ def get_fastq_pairs(input_dir, format=tuple(["fastq.gz","fq.gz"])):
     # get fastq.gz files
     files_at_dir = os.listdir(input_dir)
     fastq_lst = [x for x in files_at_dir if x.endswith(format)]
-    print(fastq_lst)
+    #print(fastq_lst)
 
     # get R1 and R2 pairs
     pairs = []
@@ -175,7 +175,7 @@ def run_viralflow_pp(input_dir, ref_gnm, adapters_file, depth,
     print('  >> total cpus = ', cpus_total)
     # total number of cpus per simultaneos process
 
-    if cpus_pprc is None:
+    if cpus_pprc in [None, 0]:
         cpus_pprc = round(cpus_total / n_runs)
 
     if cpus_pprc > cpus_total:
