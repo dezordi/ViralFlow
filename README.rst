@@ -75,7 +75,7 @@ Quick guide
 
 Building and running a ViralFlow singularity container
 
-.. code::bash
+.. code:: bash
 
   viralflow --build -singFilePath /path/to/ViralFlow/Singularityfile_test
   viralflow --runContainer -inputDir path/to/input/  \
@@ -87,7 +87,7 @@ Building and running a ViralFlow singularity container
 
 Run locally (Be sure all requirements are met on your machine)
 
-.. code::bash
+.. code:: bash
 
   viralflow --run -inputDir path/to/input/data/ \
                   -referenceGenome $FASTA \
