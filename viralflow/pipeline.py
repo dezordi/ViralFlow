@@ -8,6 +8,8 @@ Here we define some handy functions to run individual steps or the whole
 pipeline. The functions defined here are essentially wrappers for functions
 defined at 'viralflow.calls' added of some sanity check for input files.
 '''
+script_file = _path = os.path.realpath(__file__)
+VIRALFLOW_PATH = '/'.join(script_file.split('/')[0:-2])+'/'
 
 
 def run_step_1(fastq1, fastq2, adapters, prefixout, threads, min_len,
@@ -111,9 +113,15 @@ def run_step_3(prefixout, depth, intrahost_depth, out_dir,
         print('     - ', alignment_file)
 
     s = time.time()
-    viralflow.intrahost.get_instrahost_tsv(bam_rc_file, alignment_file,
-                                           per_limit=per_limit,
-                                           depth_value=depth_number)
+    # get viralflow path
+
+    os.system(f"python {VIRALFLOW_PATH}/viralflow/intrahost_script.py \
+    -in {prfx_wdir}.depth{depth}.fa.bc -al {prfx_wdir}.depth{depth}.fa.algn \
+    -dp {intrahost_depth}")
+
+    #viralflow.intrahost.get_instrahost_tsv(bam_rc_file, alignment_file,
+    #                                       per_limit=per_limit,
+    #                                       depth_value=depth_number)
     f = time.time()
     if verbose is True:
         print(' > total execution time : ', f - s)

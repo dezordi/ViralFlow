@@ -255,10 +255,11 @@ if args.runContainer is True:
                                             args.referenceGenome,
                                             args.adaptersFile,
                                             threads=args.totalCpus,
+                                            cpus_pprc=args.cpusPerSample,
                                             depth=args.depth,
                                             min_len=args.minLen,
                                             min_dp_intrahost=args.minDpIntrahost,
                                             trim_len=args.trimLen,
                                             sing_call=args.singPath)
-    
+
 print(' | --- DONE --- |')
