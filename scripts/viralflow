@@ -136,8 +136,11 @@ parser.add_argument('-nxtDtset', type=str, default=None,
                     help='path for nextclade dataset dir')
 parser.add_argument('-v', '--verbose', action='store_true',
                     help='increase output verbosity')
-args = parser.parse_args()
+# --- OUTPUT MODE -------------------------------------------------------------
+parser.add_argument('--compileOutput', action='store_true',
+                    help='compile output file of a given dir')
 
+args = parser.parse_args()
 # -----------------------------------------------------------------------------
 outDir = args.outDir
 if outDir.endswith('/') is False:
@@ -181,7 +184,8 @@ print('| --------------------------------------------------------------------|')
 #    exit(1)
 # check if mode was set
 if (args.build is False) and ((args.run is False)
-                              and (args.runContainer is False)):
+                              and (args.runContainer is False)
+                              and (args.compileOutput is False)):
     s = "(use either '--build', '--run' or '--runContainer')"
     print(f"ERROR : a mode must be set {s}.")
     exit(1)
@@ -214,6 +218,13 @@ if (args.run is True) or (args.runContainer is True):
     print('| cpusPerSample   : ', args.cpusPerSample)
     print('| nxtBin          : ', args.nxtBin)
     print('| nxtDtset        : ', args.nxtDtset)
+if args.compileOutput is True:
+    print('| OUTPUT PROCESSING MODE ON |')
+    print('| inputDir        : ', args.inputDir)
+    print('| depth           : ', args.depth)
+    if args.inputDir == None:
+        print('ERROR: No input dir specified')
+        exit(1)
 print('| --------------------------------------------------------------------|')
 
 # Build mode
@@ -248,6 +259,8 @@ if args.run is True:
                                cpus_total=args.totalCpus,
                                cpus_pprc=args.cpusPerSample,
                                verbose=args.verbose)
+
+
 if args.runContainer is True:
     # sanity check
     # TODO: Check container path
@@ -261,5 +274,9 @@ if args.runContainer is True:
                                             min_dp_intrahost=args.minDpIntrahost,
                                             trim_len=args.trimLen,
                                             sing_call=args.singPath)
+if args.compileOutput is True:
+    # compile samples results into single csv
+    out_dir = args.inputDir+'RESULTS/'
+    viralflow.output.compile_output_fls(args.inputDir, out_dir, args.depth)
 
-print(' | --- DONE --- |')
+print('| --- DONE --- |')

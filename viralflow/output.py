@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-import viralflow
+import sys
 # get list of results dir
 
 
@@ -35,7 +35,7 @@ def parse_fabc(fbc_path):
         depth_lst.append(int(l_dt[3]))
 
     df = pd.DataFrame.from_dict({'pos': [pos_lst],
-                                'depth': [depth_lst]})
+                                 'depth': [depth_lst]})
     return df
 
 
@@ -60,7 +60,9 @@ def __check_if_outfls_exist(cod, out_fls_lst, mut_fl):
             srvc = fl.split('.')[-2]
             if fl == mut_fl:
                 srvc = 'Mutations'
-            print(f'  :: WARNING: missing {srvc} output for '+cod)
+            print(
+                f'  :: WARNING: missing {srvc} output for {cod} [expects {fl}]'
+            )
             type = 'ERROR'
             kind = f'No {srvc} output [expected={fl}]'
             err_dct = {'cod': cod, 'type': type, 'kind': kind}
@@ -87,7 +89,8 @@ def compile_output_fls(data_dir, out_dir, depth):
     except(AssertionError):
         print('@ creating output dir')
         os.system('mkdir '+out_dir)
-
+    if out_dir.endswith('/'):
+        out_dir += '/'
     print('@ compiling output files')
     # create multifasta file
     multifas_fl = open(data_dir+'seqbatch.fa', 'w')
@@ -101,13 +104,13 @@ def compile_output_fls(data_dir, out_dir, depth):
     err_dct_lst = []
     skip_lst = []
     dpth_lst = []
-
     # iterate over subdirs on data dir
     c = 0
     for path, subdirs, files in os.walk(data_dir):
         for name in files:
             # check only files at *.results subdirs
             sub_dir = path.split('/')[-1]
+
             if sub_dir.endswith('.results') is False:
                 continue
             # get consensus
@@ -115,6 +118,7 @@ def compile_output_fls(data_dir, out_dir, depth):
             prfx = path+f'/{cod}.'
             if cod in skip_lst:
                 continue
+
             # look for consensus sequence fasta, if yes, then check for
             # 1) expected files
             # 2) parse and compiled results in single files
@@ -145,10 +149,10 @@ def compile_output_fls(data_dir, out_dir, depth):
                 depth_fl = f'{prfx}depth{depth}.fa.bc'
                 # pangolin
                 try:
-                    pango_fl = f'{prfx}depth{depth}.fa.pango.csv'
+                    pango_fl = f'{prfx}depth{depth}.fa.pangolin.csv'
                     assert(os.path.isfile(pango_fl))
                 except(AssertionError):
-                    pango_fl = f'{prfx}depth{depth}.all.fa.pango.csv'
+                    pango_fl = f'{prfx}depth{depth}.all.fa.pangolin.csv'
                 # chromosomes
                 chrms_fl = f'{path}/chromosomes.report'
                 # intrahost
@@ -157,10 +161,10 @@ def compile_output_fls(data_dir, out_dir, depth):
                 mut_fl = f'{prfx}tsv'
                 # nextclade
                 try:
-                    nxtcl_fl = f'{prfx}depth{depth}.fa.nextclade.csv'
+                    nxtcl_fl = f'{prfx}depth{depth}.nextclade.csv'
                     assert(os.path.isfile(nxtcl_fl))
                 except(AssertionError):
-                    nxtcl_fl = f'{prfx}depth{depth}.all.fa.nextclade.csv'
+                    nxtcl_fl = f'{prfx}depth{depth}.all.nextclade.csv'
 
                 # --- CHECK IF FILES EXIST ------------------------------------
                 out_fls_lst = [pango_fl, chrms_fl, ithst_fl, mut_fl, depth_fl]
@@ -184,7 +188,13 @@ def compile_output_fls(data_dir, out_dir, depth):
                 # Mutations
                 mut_df = pd.read_csv(mut_fl, sep='\t')
                 val_mut_df = mut_df.loc[mut_df['PASS'] == True]
-                mut_lst = val_mut_df.apply(get_mut, axis=1).values
+                # check if no mutation data
+                if len(val_mut_df) == 0:
+                    print(f"WARNING: no mutation data for {cod}")
+                    mut_lst = []
+                if len(val_mut_df) >= 0:
+                    mut_lst = val_mut_df.apply(get_mut, axis=1).values
+
                 dct = {'cod': cod, 'mut': mut_lst}
                 mut_df_lst.append(pd.DataFrame(dct))
                 # depth data
@@ -194,26 +204,30 @@ def compile_output_fls(data_dir, out_dir, depth):
         # if name.endswith('intrahost.short.tsv')
     print(f'  > Total {c} samples processed')
 
-    print('@ writing compiled data')
     # mount compileds dataframes
-    all_pango_df = pd.concat(pango_df_lst, ignore_index=True)
-    all_nxtcd_df = pd.concat(nxtcd_df_lst, ignore_index=True)
-    all_chrms_df = pd.concat(chrms_df_lst, ignore_index=True)
-    all_mut_df = pd.concat(mut_df_lst, ignore_index=True)
-    all_dpth_df = pd.concat(dpth_lst, ignore_index=True)
-    errors_df = pd.DataFrame(err_dct_lst)
-    # write csvs
-    all_pango_df.to_csv(out_dir+'pango.csv')
-    print('  > pango.csv')
-    all_nxtcd_df.to_csv(out_dir+'nextclade.csv')
-    print('  > nextclade.csv')
-    all_chrms_df.to_csv(out_dir+'chromossomes.csv')
-    print('  > chromossomes.csv')
-    all_mut_df.to_csv(out_dir+'mutations.csv')
-    print('  > mutations.csv')
-    all_dpth_df.to_csv(out_dir+'depth.csv')
-    print('  > depth.csv')
-    errors_df.to_csv(out_dir+'errors_detected.csv')
-    print('  > errors_detected.csv')
+    if c == 0:
+        print("ERROR: No ViralFlow output files found")
+        sys.exit(1)
+    if c > 0:
+        print('@ writing compiled data')
+        all_pango_df = pd.concat(pango_df_lst, ignore_index=True)
+        all_nxtcd_df = pd.concat(nxtcd_df_lst, ignore_index=True)
+        all_chrms_df = pd.concat(chrms_df_lst, ignore_index=True)
+        all_mut_df = pd.concat(mut_df_lst, ignore_index=True)
+        all_dpth_df = pd.concat(dpth_lst, ignore_index=True)
+        errors_df = pd.DataFrame(err_dct_lst)
+        # write csvs
+        all_pango_df.to_csv(out_dir+'/pango.csv')
+        print('  > pango.csv')
+        all_nxtcd_df.to_csv(out_dir+'/nextclade.csv')
+        print('  > nextclade.csv')
+        all_chrms_df.to_csv(out_dir+'/chromossomes.csv')
+        print('  > chromossomes.csv')
+        all_mut_df.to_csv(out_dir+'/mutations.csv')
+        print('  > mutations.csv')
+        all_dpth_df.to_csv(out_dir+'/depth.csv')
+        print('  > depth.csv')
+        errors_df.to_csv(out_dir+'/errors_detected.csv')
+        print('  > errors_detected.csv')
 
     print(' :: DONE ::')
