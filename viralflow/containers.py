@@ -63,9 +63,10 @@ def buildSing(output_dir, singfl_path, container_name='viralflow_container',
     os.system(cmd_str)
 
 
-def run_sing_container(container_img, input_dir, ref_gnm, adapters_file,
-                       threads=1, depth=5, min_len=75, min_dp_intrahost=100,
-                       trim_len=0, cpus_pprc=0, sing_call='singularity', dry=False):
+def run_sing_container(container_img, inArgsFile, input_dir, ref_gnm,
+                       adapters_file, threads=1, depth=5, min_len=75,
+                       min_dp_intrahost=100, trim_len=0, cpus_pprc=0,
+                       sing_call='singularity', dry=False):
     '''
     run singularity viralflow singularity container on a pair of fastq files
 
@@ -111,20 +112,23 @@ def run_sing_container(container_img, input_dir, ref_gnm, adapters_file,
         string to call singularity, must be absolute path or 'singularity'
         (default = 'singularity')
     '''
+    # assumes all files are at input dir
+    argfl = inArgsFile.split('/')[-1]
     # get command line
     cmd = sing_call+' run --bind '
     cmd += input_dir+':/data/ '
-    cmd += '--env FASTA='+ref_gnm+' '
+    #cmd += '--env ARGS_FILE='+argfl+' '
+    cmd += '--env FASTA='+argfl+' '
     #cmd += '--env FASTQ1='+fastq_R1+' '
     #cmd += '--env FASTQ2='+fastq_R2+' '
     #cmd += '--env PREFIXOUT='+prefix_out+' '
-    cmd += '--env THREADS='+str(threads)+' '
-    cmd += '--env DEPTH='+str(depth)+' '
-    cmd += '--env MIN_LEN='+str(min_len)+' '
-    cmd += '--env ADAPTERS='+adapters_file+' '
-    cmd += '--env CPUS_PSMPL='+str(cpus_pprc)+' '
-    cmd += '--env DP_INTRAHOST='+str(min_dp_intrahost)+' '
-    cmd += '--env TRIMM_LEN='+str(trim_len)+' '
+    #cmd += '--env THREADS='+str(threads)+' '
+    #cmd += '--env DEPTH='+str(depth)+' '
+    #cmd += '--env MIN_LEN='+str(min_len)+' '
+    #cmd += '--env ADAPTERS='+adapters_file+' '
+    #cmd += '--env CPUS_PSMPL='+str(cpus_pprc)+' '
+    #cmd += '--env DP_INTRAHOST='+str(min_dp_intrahost)+' '
+    #cmd += '--env TRIMM_LEN='+str(trim_len)+' '
     cmd += '--writable-tmpfs '+container_img
     # get write output
     #cmd += ' > '+input_dir+prefix_out+'.log'
