@@ -2,6 +2,8 @@ import os
 import pandas as pd
 import sys
 # get list of results dir
+# === FUNCTIONS ===============================================================
+# --- Compile results ---------------------------------------------------------
 
 
 def get_consensus_seq(fasta_path, cod):
@@ -231,3 +233,83 @@ def compile_output_fls(data_dir, out_dir, depth):
         print('  > errors_detected.csv')
 
     print(' :: DONE ::')
+
+# --- Check controls ----------------------------------------------------------
+
+
+def get_controls_lineages(control_lbl_lst, pango_df):
+    '''
+    get control unique lineages set
+    '''
+    def __get_ctrls(row):
+        if row['cod'] in control_lbl_lst:
+            return True
+        else:
+            return False
+    ctrl_bool_tbl = pango_df.apply(__get_ctrls, axis=1)
+    control_slice_df = pango_df.loc[ctrl_bool_tbl]
+    control_lngs = control_slice_df.lineage.unique()
+    return control_lngs
+
+
+def sel_samples_ofLngs(pango_df, lng_lst):
+    '''
+    Get samples with a given set of lineages
+    '''
+    def get_samples_wCtrls_lng(row):
+        if row['lineage'] in lng_lst:
+            return True
+        else:
+            return False
+    sample_wCtrl_lng_df = pango_df.loc[pango_df.apply(
+        get_samples_wCtrls_lng, axis=1)]
+    return sample_wCtrl_lng_df
+
+
+def check_controls_lineages(control_lbl_lst, pango_csv):
+    '''
+    check if controls have lineages assigned.
+    '''
+    print('@ checking controls lineages...')
+    # get controls lineages
+    pango_df = pd.read_csv(pango_csv)
+    control_lngs = get_controls_lineages(control_lbl_lst, pango_df)
+    n_ctrl_lngs = len(control_lngs)
+    if n_ctrl_lngs == 0:
+        print('No lineages on negative controls')
+        return None
+    if n_ctrl_lngs > 0:
+        # check if control lineages are different from samples (is it unique?)
+        print('Lineages found on negative controls')
+        print(f'  > {n_ctrl_lngs} found : {control_lngs}')
+        print('@ looking for contamination evidence...')
+        # check if lineages are present on samples
+        suspected_df = sel_samples_ofLngs(pango_df, control_lngs)
+        n_suspected = len(suspected_df)
+        if n_suspected == 0:
+            print(
+                '  > No sample presenting same lineages of control. Everything is fine.')
+            return None
+        if n_suspected > 0:
+            print(f'  > {n_suspected} suspected samples')
+            print('    | cod | taxon | lineage ')
+            for i in suspected_df[['cod', 'taxon', 'lineage']].values:
+                print(f'    |{i[0]} | {i[1]} | {i[2]} ')
+        return suspected_df
+
+# --- Data summary ------------------------------------------------------------
+
+
+def get_lineages_summary(pango_csv, outdir):
+    '''
+    count lineages on a given pangolin dataframe
+    '''
+    print('@ compute lineage summary ')
+    pango_df = pd.read_csv(pango_csv)
+    print(f'  > {len(pango_df)} total samples')
+    lineage_df = pango_df['lineage'].value_counts()
+    lineage_df.to_csv(outdir+'/lineage_summary.csv')
+    print(f'  > {outdir}lineage_summary.csv')
+    print(lineage_df)
+
+    return lineage_df

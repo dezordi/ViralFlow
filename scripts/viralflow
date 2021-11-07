@@ -139,7 +139,14 @@ parser.add_argument('-v', '--verbose', action='store_true',
 # --- OUTPUT MODE -------------------------------------------------------------
 parser.add_argument('--compileOutput', action='store_true',
                     help='compile output file of a given dir')
-
+parser.add_argument('--checkNegControls', action='store_true',
+                    help='check for possible negative control contamination ')
+parser.add_argument('-negControlLabels', nargs='+',
+                    help='negative control labels')
+parser.add_argument('-pangoCSV', type=str, default=None,
+                    help='pango csv filepath')
+parser.add_argument('--getLineageSummary', action='store_true',
+                    help=' compute lineage summary')
 args = parser.parse_args()
 # -----------------------------------------------------------------------------
 outDir = args.outDir
@@ -183,11 +190,14 @@ print('| --------------------------------------------------------------------|')
 #    print('ERROR :', args.singPath, ' Singularity path does not exists.')
 #    exit(1)
 # check if mode was set
-if (args.build is False) and ((args.run is False)
-                              and (args.runContainer is False)
-                              and (args.compileOutput is False)):
-    s = "(use either '--build', '--run' or '--runContainer')"
-    print(f"ERROR : a mode must be set {s}.")
+if (args.build is False) and (args.run is False) \
+                        and (args.runContainer is False) \
+                        and (args.compileOutput is False) \
+                        and (args.checkNegControls is False) \
+                        and (args.getLineageSummary is False):
+    s = "use either '--build', '--run', '--runContainer',"
+    s1 = "'--compileOutput', '--checkNegControls' or --getLineageSummary"
+    print(f"ERROR : a mode must be set ({s+s1}).")
     exit(1)
 
 # -----------------------------------------------------------------------------
@@ -218,13 +228,34 @@ if (args.run is True) or (args.runContainer is True):
     print('| cpusPerSample   : ', args.cpusPerSample)
     print('| nxtBin          : ', args.nxtBin)
     print('| nxtDtset        : ', args.nxtDtset)
-if args.compileOutput is True:
+if args.compileOutput:
     print('| OUTPUT PROCESSING MODE ON |')
     print('| inputDir        : ', args.inputDir)
     print('| depth           : ', args.depth)
     if args.inputDir == None:
         print('ERROR: No input dir specified')
         exit(1)
+if args.checkNegControls:
+    print('| CHECK CONTROLS LINEAGES |')
+    print('| negControlLabels : ', args.negControlLabels)
+    print('| pangoCSV         : ', args.pangoCSV)
+    if args.negControlLabels is None:
+        print('ERROR: No control labels provided')
+        exit(1)
+    if args.pangoCSV is None:
+        print('ERROR: No pangolin csv file path provided')
+        exit(1)
+if args.getLineageSummary:
+    print('| LINEAGES SUMMARY |')
+    print('| pangoCSV         : ', args.pangoCSV)
+    print('| outDir           : ', args.outDir)
+    if args.pangoCSV is None:
+        print('ERROR: No pangolin csv file path provided')
+        exit(1)
+    if args.outDir is None:
+        print('ERROR: No output directory provided')
+        exit(1)
+
 print('| --------------------------------------------------------------------|')
 
 # Build mode
@@ -274,9 +305,14 @@ if args.runContainer is True:
                                             min_dp_intrahost=args.minDpIntrahost,
                                             trim_len=args.trimLen,
                                             sing_call=args.singPath)
-if args.compileOutput is True:
+if args.compileOutput:
     # compile samples results into single csv
     out_dir = args.inputDir+'RESULTS/'
     viralflow.output.compile_output_fls(args.inputDir, out_dir, args.depth)
 
+if args.checkNegControls:
+    viralflow.output.check_controls_lineages(args.negControlLabels,
+                                             args.pangoCSV)
+if args.getLineageSummary:
+    viralflow.output.get_lineages_summary(args.pangoCSV, args.outDir)
 print('| --- DONE --- |')
