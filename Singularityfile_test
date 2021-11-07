@@ -66,6 +66,6 @@ Stage: spython-base
  pip install biopython
  pip install tqdm
  pip install pandas
-
+ pip install --upgrade numpy
 %runscript
 	/bin/bash -c "source /app/ViralFlow/sars2_assembly_singularity_test $FASTA $FASTQ1 $FASTQ2 $PREFIXOUT $THREADS $DEPTH $MIN_LEN $ADAPTERS $DP_INTRAHOST $TRIMM_LEN"
