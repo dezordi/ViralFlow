@@ -45,6 +45,40 @@ You can install viralflow via pip
 The recommended way to run ViralFlow is via **Singularity container**, be sure `Singularity is installed <https://hub.docker.com/repository/docker/dezordi/iam_sarscov2/>`_.
 If you plan to run on your local environment, be sure all requirements are met.
 
+====
+Quick guide
+====
+
+Building and running a ViralFlow singularity container
+
+.. code:: bash
+
+  viralflow --build -singFilePath /path/to/ViralFlow/Singularityfile_test
+  viralflow --runContainer -inputDir path/to/input/  \
+                           -referenceGenome reference_genome.fasta \
+                           -adaptersFile adapters.fasta -totalCpus 4 \
+                           -depth 5 -minLen 75 \
+                           -containerImg /path/to/viralflow_container \
+                           -minDpIntrahost 100 -trimLen 0
+
+Or you can pass a configure file:
+
+.. code:: bash
+
+  viralflow --build -singFilePath ./Singularityfile_test
+  viralflow --runContainer -inArgsFile ./test_files/test_args.conf
+
+Run locally (Be sure all requirements are met on your machine)
+
+.. code:: bash
+
+  viralflow --run -inputDir path/to/input/data/ \
+                  -referenceGenome $FASTA \
+                  -adaptersFile adapters.fasta -totalCpus 4 -depth 5 \
+                  -minLen 75 -minDpIntrahost 100 -trimLen 75 \
+                  -nxtBin /path/to/nextclade \
+                  -nxtDtset /path/to/nextclade/dataset/sars-cov-2/ -v
+
 =====
 Files info
 =====
@@ -68,34 +102,6 @@ Files info
     | └-viralflow                           ### CLI ViralFlow interface
     └-images:
       └-workflow.png                        ### image of workflow
-
-====
-Quick guide
-====
-
-Building and running a ViralFlow singularity container
-
-.. code:: bash
-
-  viralflow --build -singFilePath /path/to/ViralFlow/Singularityfile_test
-  viralflow --runContainer -inputDir path/to/input/  \
-                           -referenceGenome reference_genome.fasta \
-                           -adaptersFile adapters.fasta -totalCpus 4 \
-                           -depth 5 -minLen 75 \
-                           -containerImg /path/to/viralflow_container \
-                           -minDpIntrahost 100 -trimLen 0
-
-Run locally (Be sure all requirements are met on your machine)
-
-.. code:: bash
-
-  viralflow --run -inputDir path/to/input/data/ \
-                  -referenceGenome $FASTA \
-                  -adaptersFile adapters.fasta -totalCpus 4 -depth 5 \
-                  -minLen 75 -minDpIntrahost 100 -trimLen 75 \
-                  -nxtBin /path/to/nextclade \
-                  -nxtDtset /path/to/nextclade/dataset/sars-cov-2/ -v
-
 
 =====
 Singularity
