@@ -37,9 +37,9 @@ You can install viralflow via pip
 
   git clone https://github.com/dezordi/ViralFlow.git
   cd ViralFlow/
+  git checkout new_cli
   conda env create -f envs/viralflow.yml
   conda activate viralflow
-  git checkout new-cli
   pip install -e ./
 
 The recommended way to run ViralFlow is via **Singularity container**, be sure `Singularity is installed <https://hub.docker.com/repository/docker/dezordi/iam_sarscov2/>`_.
