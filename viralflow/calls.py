@@ -274,6 +274,12 @@ def run_ivar(reference_fasta, prefixout, out_dir, depth):
     mv_str = f"mv {prfx_wdir}.ivar060.fa {prfx_wdir}.depth{depth}.amb.fa"
     os.system(mv_str)
 
+    mv_str = f"sed -i -e 's/>.*/>{prefixout}/g' {prfx_wdir}.depth{depth}.fa"
+    os.system(mv_str)
+
+    mv_str = f"sed -i -e 's/>.*/>{prefixout}/g' {prfx_wdir}.depth{depth}.amb.fa "
+    os.system(mv_str)
+
     '''
 
     s1_str = f"sed -i -e 's/>.*/>|'{prfx_wdir}'/g' {prfx_wdir}.depth{depth}.fa"
