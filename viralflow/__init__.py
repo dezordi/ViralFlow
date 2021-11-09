@@ -176,6 +176,17 @@ def run_viralflow_pp(input_dir, ref_gnm, adapters_file, depth,
     print('  >> total cpus = ', cpus_total)
     # total number of cpus per simultaneos process
 
+    if cpus_pprc not in [None, 0]:
+        # check if multiple call number is higher then number of samples
+        assert(type(cpus_pprc) == int), 'cpus_pprc must be a integer'
+        n_parallel_calls = round(cpus_total / cpus_pprc)
+        if n_parallel_calls > n_runs:
+            print("WARNING: the ratio of total cpus and cpus per sample",
+                  f"requested({cpus_total}/{cpus_pprc}={n_parallel_calls})",
+                  f' is bigger then the total number of samples ({n_runs}).',
+                  'Setting cpus per samples to AUTO')
+            cpus_pprc = 0
+
     if cpus_pprc in [None, 0]:
         cpus_pprc = round(cpus_total / n_runs)
 
