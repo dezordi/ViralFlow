@@ -373,7 +373,7 @@ def get_variant_naming(prefixout, depth, threads, out_dir, ref_gnm,
     if num_lines > 1:
         minor_var_fa = f"{prfx_wdir}.depth{depth}.fa.algn.minor.fa"
         all_fa = f"{prfx_wdir}.depth{depth}.all.fa "
-        output_nxt = f"{prfx_wdir}.depth{depth}.all.nextclade.csv"
+        output_nxt = f"{prfx_wdir}.depth{depth}.all.fa.nextclade.csv"
         output_pgl = output_prfx+".all.fa.pangolin.csv"
         # compile
         cmd_str = "cat "+consensus_fa + minor_var_fa + f" > "+all_fa
@@ -386,7 +386,7 @@ def get_variant_naming(prefixout, depth, threads, out_dir, ref_gnm,
     # single sequence, use consensus fasta as input
     if num_lines == 1:
         input_seqs = consensus_fa
-        output_nxt = f"{prfx_wdir}.depth{depth}.nextclade.csv"
+        output_nxt = f"{prfx_wdir}.depth{depth}.fa.nextclade.csv"
         #output_prfx+".fa.nextclade.csv"
         output_pgl = output_prfx+".fa.pangolin.csv"
     # if no sequence, something went wrong on previous step
