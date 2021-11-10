@@ -374,7 +374,7 @@ def get_variant_naming(prefixout, depth, threads, out_dir, ref_gnm,
         minor_var_fa = f"{prfx_wdir}.depth{depth}.fa.algn.minor.fa"
         all_fa = f"{prfx_wdir}.depth{depth}.all.fa "
         output_nxt = f"{prfx_wdir}.depth{depth}.all.fa.nextclade.csv"
-        output_pgl = output_prfx+".all.fa.pangolin.csv"
+        output_pgl = output_prfx+".all.fa.pango.csv"
         # compile
         cmd_str = "cat "+consensus_fa + minor_var_fa + f" > "+all_fa
         os.system(cmd_str)
@@ -388,7 +388,7 @@ def get_variant_naming(prefixout, depth, threads, out_dir, ref_gnm,
         input_seqs = consensus_fa
         output_nxt = f"{prfx_wdir}.depth{depth}.fa.nextclade.csv"
         #output_prfx+".fa.nextclade.csv"
-        output_pgl = output_prfx+".fa.pangolin.csv"
+        output_pgl = output_prfx+".fa.pango.csv"
     # if no sequence, something went wrong on previous step
     if num_lines == 0:
         raise Exception("No sequence at "+intrahost_tsv)
