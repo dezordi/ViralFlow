@@ -151,10 +151,10 @@ def compile_output_fls(data_dir, out_dir, depth):
                 depth_fl = f'{prfx}depth{depth}.fa.bc'
                 # pangolin
                 try:
-                    pango_fl = f'{prfx}depth{depth}.fa.pangolin.csv'
+                    pango_fl = f'{prfx}depth{depth}.fa.pango.csv'
                     assert(os.path.isfile(pango_fl))
                 except(AssertionError):
-                    pango_fl = f'{prfx}depth{depth}.all.fa.pangolin.csv'
+                    pango_fl = f'{prfx}depth{depth}.all.fa.pango.csv'
                 # chromosomes
                 chrms_fl = f'{path}/chromosomes.report'
                 # intrahost
