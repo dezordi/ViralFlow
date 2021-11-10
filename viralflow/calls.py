@@ -400,7 +400,7 @@ def get_variant_naming(prefixout, depth, threads, out_dir, ref_gnm,
     job_str = f" --jobs {threads} "
     ref_str = f" --input-root-seq={ref_gnm}"
     nxtdst_str = f" --input-dataset={nxt_dataset}"
-    out_csv = f" --output-csv={prfx_wdir}.depth{depth}.all.nextclade.csv"
+    out_csv = f" --output-csv={prfx_wdir}.depth{depth}.all.fa.nextclade.csv"
     out_str = f" --output-dir={out_dir}"
     # nxt_str = "nextclade -i "+input_seqs + job_str + " -c  "+output_nxt
     nxt_str = nxt_bin + in_str + job_str + ref_str + nxtdst_str + out_csv \
