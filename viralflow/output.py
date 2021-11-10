@@ -163,10 +163,10 @@ def compile_output_fls(data_dir, out_dir, depth):
                 mut_fl = f'{prfx}tsv'
                 # nextclade
                 try:
-                    nxtcl_fl = f'{prfx}depth{depth}.nextclade.csv'
+                    nxtcl_fl = f'{prfx}depth{depth}.fa.nextclade.csv'
                     assert(os.path.isfile(nxtcl_fl))
                 except(AssertionError):
-                    nxtcl_fl = f'{prfx}depth{depth}.all.nextclade.csv'
+                    nxtcl_fl = f'{prfx}depth{depth}.all.fa.nextclade.csv'
 
                 # --- CHECK IF FILES EXIST ------------------------------------
                 out_fls_lst = [pango_fl, chrms_fl, ithst_fl, mut_fl, depth_fl]
