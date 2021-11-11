@@ -11,7 +11,7 @@ def load_short_summary_df(chrm_df, pang_df):
     '''
     # get slices
     chrms_slice = chrm_df[['cod', ' Avg depth', ' Coverage%']]
-    pang_slice = pang_df[['cod', 'taxon', 'lineage']]
+    pang_slice = pang_df[['cod', 'taxon', 'lineage', 'scorpio_call']]
     # merge dataframes
     short_summary = pd.merge(chrms_slice, pang_slice,
                              right_on='cod', left_on='cod')
