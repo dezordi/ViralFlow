@@ -6,6 +6,19 @@ import sys
 # --- Compile results ---------------------------------------------------------
 
 
+def load_short_summary_df(chrm_df, pang_df):
+    '''
+    '''
+    # get slices
+    chrms_slice = chrm_df[['cod', ' Avg depth', ' Coverage%']]
+    pang_slice = pang_df[['cod', 'taxon', 'lineage']]
+    # merge dataframes
+    short_summary = pd.merge(chrms_slice, pang_slice,
+                             right_on='cod', left_on='cod')
+    # return df
+    return short_summary
+
+
 def get_consensus_seq(fasta_path, cod):
     '''
     get sequence line from a single sequence fasta file
@@ -300,7 +313,7 @@ def check_controls_lineages(control_lbl_lst, pango_csv):
 # --- Data summary ------------------------------------------------------------
 
 
-def get_lineages_summary(pango_csv, outdir):
+def get_lineages_summary(pango_csv, chromosomes_csv, outdir):
     '''
     count lineages on a given pangolin dataframe
     '''
@@ -312,4 +325,14 @@ def get_lineages_summary(pango_csv, outdir):
     print(f'  > {outdir}lineage_summary.csv')
     print(lineage_df)
 
-    return lineage_df
+    print("@ generating short summary [sample, depth, coverage, lineage]...")
+    chrm_df = pd.read_csv(chromosomes_csv, index_col=0)
+    pang_df = pd.read_csv(pango_csv, index_col=0)
+    # get short summary csv
+    short_summary_df = load_short_summary_df(chrm_df, pang_df)
+    short_summary_df.to_csv(outdir+'/short_summary.csv')
+    print(f'  > {outdir}short_summary.csv')
+    return lineage_df, short_summary_df
+
+#def get_short_summary(pango_csv, chromosomes_csv, ):
+    # load chromossomes and mix with pango strain

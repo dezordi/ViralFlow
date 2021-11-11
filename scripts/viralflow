@@ -193,6 +193,8 @@ parser.add_argument('-pangoCSV', type=str, default=None,
                     help='pango csv filepath')
 parser.add_argument('--getLineageSummary', action='store_true',
                     help=' compute lineage summary')
+parser.add_argument('-chromCSV', type=str, default=None,
+                    help='chromosomes csv path')
 parser.add_argument('--onContainer', action='store_true')
 args = parser.parse_args()
 # -----------------------------------------------------------------------------
@@ -225,6 +227,7 @@ nxtBin = args.nxtBin
 nxtDtset = args.nxtDtset
 negControlLabels = args.negControlLabels
 pangoCSV = args.pangoCSV
+chromCSV = args.chromCSV
 
 isModeSet = any([build, run, runContainer, compileOutput, getLineageSummary,
                  checkNegControls])
@@ -292,6 +295,8 @@ if args.inArgsFile is not None:
         negControlLabels = args_dct['negControlLabels']
     if 'pangoCSV' in ks:
         pangoCSV = args_dct['pangoCSV']
+    if 'chromCSV' in ks:
+        chromCSV = args_dct['chromCSV']
 
 
 if outDir.endswith('/') is False:
@@ -392,10 +397,15 @@ if checkNegControls:
 if getLineageSummary:
     print('| LINEAGES SUMMARY |')
     print('| pangoCSV         : ', pangoCSV)
+    print('| chromCSV         : ', chromCSV)
     print('| outDir           : ', outDir)
     if pangoCSV is None:
         print('ERROR: No pangolin csv file path provided')
         exit(1)
+    if chromCSV is None:
+        print('ERROR: No chromosomes csv file path provided')
+        exit(1)
+
     if outDir is None:
         print('ERROR: No output directory provided')
         exit(1)
@@ -472,5 +482,5 @@ if checkNegControls:
     viralflow.output.check_controls_lineages(negControlLabels,
                                              pangoCSV)
 if getLineageSummary:
-    viralflow.output.get_lineages_summary(pangoCSV, outDir)
+    viralflow.output.get_lineages_summary(pangoCSV, chromCSV, outDir)
 print('| --- DONE --- |')
