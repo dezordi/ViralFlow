@@ -23,7 +23,7 @@ Stage: spython-base
  cd /app/
  git clone https://github.com/dezordi/ViralFlow.git
  cd ViralFlow/
- git checkout new_cli
+ git checkout develop
  cd /
  # set output dir
  mkdir /data/
