@@ -127,10 +127,18 @@ parser.add_argument('-singPath', type=str, help='singularity path',
 
 # --- Build mode --------------------------------------------------------------
 parser.add_argument('--build', action='store_true', help='set build mode on')
+
+parser.add_argument('-containerService', type=str, help="Container service to be used, options: 'docker' or 'sing', default = sing",
+                    default='sing', choices=['docker','sing'])
+
 parser.add_argument('-outDir', type=str, default=os.getcwd()+'/',
                     help='set directory path for output (default = working dir)')
+
 parser.add_argument('-singFilePath', type=str, help='Singularityfile path',
                     default=viralflow_path+'Singularityfile_test')
+
+parser.add_argument('-dockerFilePath', type=str, help='Dockerfile path',
+                    default=viralflow_path)
 
 parser.add_argument('-containerName', type=str, help='set container name',
                     default='viralflow_container')
@@ -138,11 +146,14 @@ parser.add_argument('-containerName', type=str, help='set container name',
 parser.add_argument('-singOpt', type=str, help='singularity build option',
                     default='--fakeroot --sandbox')
 
+parser.add_argument('-dockerOpt', type=str, help='singularity build option',
+                    default=None)
+
 # --- Run mode -----------------------------------------------------------------
 parser.add_argument('--run', action='store_true', help='set run local mode on')
 
 parser.add_argument('--runContainer', action='store_true',
-                    help='Run singularity container')
+                    help='Run singularity or docker container')
 
 parser.add_argument('-inputDir', type=str,
                     help='set input directory path')
@@ -156,18 +167,16 @@ parser.add_argument('-referenceGenome', type=str,
 parser.add_argument('-adaptersFile', type=str,
                     help='adapters file name at input dir')
 
-h0 = 'minimum depth to mask unanssembled regions (default=5)'
-parser.add_argument('-depth', type=int, default=5, help=h0)
+parser.add_argument('-depth', type=int, default=5, help='minimum depth to mask unanssembled regions (default=5)')
 
 parser.add_argument('-minLen', type=int, default=75,
                     help='minimum length to trimm sequences (default = 75)')
 
-h1 = 'minimum depth value to consider intrahost minor allele (default = 100)'
-parser.add_argument('-minDpIntrahost', type=int, default=100, help=h1)
+parser.add_argument('-minDpIntrahost', type=int, default=100, 
+                    help='minimum depth value to consider intrahost minor allele (default = 100)')
 
-h2 = 'length to trimm front and tail of reads on fastp analysis (default = 0)'
-parser.add_argument('-trimLen', type=int, default=0, help=h2)
-h3 = "command to call or absolute path of singularity (default = 'singularity')"
+parser.add_argument('-trimLen', type=int, default=0, 
+                    help='length to trimm front and tail of reads on fastp analysis (default = 0)')
 
 parser.add_argument('-totalCpus', type=int, default=1,
                     help='total of cpus for parallel assemblies (default = 1)')
@@ -209,9 +218,12 @@ getLineageSummary = args.getLineageSummary
 
 # args
 outDir = args.outDir
+containerService = args.containerService
 singFilePath = args.singFilePath
+dockerFilePath = args.dockerFilePath
 containerName = args.containerName
 singOpt = args.singOpt
+dockerOpt = args.dockerOpt
 singPath = args.singPath
 containerImg = args.containerImg
 inputDir = args.inputDir
@@ -258,12 +270,18 @@ if args.inArgsFile is not None:
             checkNegControls = True
 
     # parse args
+    if 'containerService' in ks:
+        containerService = args_dct['containerService']
     if 'singFilePath' in ks:
         singFilePath = args_dct['singFilePath']
+    if 'dockerFilePath' in ks:
+        dockerFilePath = args_dct['dockerFilePath']
     if 'containerName' in ks:
         containerName = args_dct['containerName']
     if 'singOpt' in ks:
         singOpt = args_dct['singOpt']
+    if 'dockerOpt' in ks:
+        dockerOpt = args_dct['dockerOpt']
     if 'singPath' in ks:
         singPath = args_dct['singPath']
     if 'containerImg' in ks:
@@ -272,7 +290,6 @@ if args.inArgsFile is not None:
         inputDir = args_dct['inputDir']
     if 'referenceGenome' in ks:
         referenceGenome = args_dct['referenceGenome']
-
     if 'adaptersFile' in ks:
         adaptersFile = args_dct['adaptersFile']
     if 'depth' in ks:
@@ -356,15 +373,21 @@ print('| ----------')
 if build is True:
     print('|    BUILD MODE ON      |')
     print('| output_dir    : ', outDir)
-    print('| singFilePath  : ', singFilePath)
-    print('| containerName : ', containerName)
-    print('| singOpt       : ', singOpt)
-    print('| singPath      : ', singPath)
+    if containerService == 'sing':
+        print('| singFilePath  : ', singFilePath)
+        print('| containerName : ', containerName)
+        print('| singOpt       : ', singOpt)
+        print('| singPath      : ', singPath)
+    else:
+        print('| dockerFilePath  : ', dockerFilePath)
+        print('| containerName   : ', containerName)
+        print('| dockerOpt       : ', dockerOpt)
 if (run is True) or (runContainer is True):
     print('|      RUN MODE ON      |')
     if runContainer is True:
-        print('| singPath        : ', singPath)
-        print('| containerImg    : ', containerImg)
+        if containerService == 'sing':
+            print('| singPath        : ', singPath)
+            print('| containerImg    : ', containerImg)
     print('| inputDir        : ', inputDir)
     print('| referenceGenome : ', referenceGenome)
     print('| adaptersFile    : ', adaptersFile)
@@ -415,16 +438,23 @@ print('| --------------------------------------------------------------------|')
 # Build mode
 if build is True:
     # TODO: check input (sanity test)
-    try:
-        assert(singFilePath is not None)
-    except(AssertionError):
-        print('ERROR : Singularityfile path must be provided.')
-        exit(1)
-    print('@ building container ', outDir+containerName)
-    viralflow.containers.buildSing(outDir, singFilePath,
-                                   container_name=containerName,
-                                   sing_path=singPath,
-                                   sing_opt=singOpt)
+    if containerService == 'sing':
+        try:
+            assert(singFilePath is not None)
+        except(AssertionError):
+            print('ERROR : Singularityfile path must be provided.')
+            exit(1)
+        print('@ building container ', outDir+containerName)
+        viralflow.containers.buildSing(outDir, singFilePath,
+                                    container_name=containerName,
+                                    sing_path=singPath,
+                                    sing_opt=singOpt)
+    else:
+        print('@ building container ', containerName)
+        viralflow.containers.buildDocker(dockerFilePath,
+                                    container_name=containerName,
+                                    docker_opt=dockerOpt)
+
 
 # Run mode
 if run is True:

@@ -62,6 +62,39 @@ def buildSing(output_dir, singfl_path, container_name='viralflow_container',
     cmd_str += ' '+singfl_path
     os.system(cmd_str)
 
+def buildDocker(dockerfl_path, 
+                container_name='viralflow_container',
+                docker_opt=""):
+    '''
+    build containers docker container
+
+    Parameters
+    ----------
+    singfl_path:<path>
+        path to docker file
+    container_name:<str>
+        name of the container (default = 'viralflow_container')
+    docker_opt:<str>
+        docker build options (default = '')
+    '''
+    # ---- sanity check -------------------------------------------------------
+    # check if docker is installed
+    """
+    try:
+        #
+    except():
+        #
+    """
+    # -------------------------------------------------------------------------
+    # run command
+    print(container_name)
+    if docker_opt == None:
+        cmd_str = 'docker build -t '+container_name+':latest '+dockerfl_path
+        print(cmd_str)
+        os.system(cmd_str)
+    else:
+        cmd_str = 'docker build '+docker_opt+' -t '+container_name+' '+dockerfl_path
+        os.system(cmd_str)
 
 def run_sing_container(container_img, inArgsFile, input_dir, ref_gnm,
                        adapters_file, threads=1, depth=5, min_len=75,
