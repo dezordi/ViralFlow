@@ -23,7 +23,7 @@ Dependencies
     * numpy 1.20.3
     * biopython 1.74
 * mafft v7.453 (2019/Nov/8)
-* nextclade 0.14.4
+* nextclade 1.4.5
 * pangolin v3.1.11
 * bedtools v2.27.1
 * bamdst 1.0.9
@@ -39,7 +39,7 @@ You can install viralflow via pip
 
   git clone https://github.com/dezordi/ViralFlow.git
   cd ViralFlow/
-  git checkout develop
+  git checkout docker
   conda env create -f envs/viralflow.yml
   conda activate viralflow
   pip install -e ./
@@ -66,7 +66,7 @@ Or you can pass a configure file:
 
 .. code:: bash
 
-  viralflow --build -singFilePath ./Singularityfile_test
+  viralflow --build -singFilePath ./Singularityfile
   viralflow --runContainer -inArgsFile ./test_files/test_args.conf
 
 Building and running a ViralFlow docker container
