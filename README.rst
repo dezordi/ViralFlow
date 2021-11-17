@@ -74,7 +74,7 @@ Building and running a ViralFlow docker container
 .. code:: bash
 
   viralflow --build -containerService docker
-  viralflow --runContainer -inArgsFile ./test_files/test_args_docker.conf
+  viralflow --runContainer -containerService -inArgsFile ./test_files/test_args_docker.conf
 
 Run locally (Be sure all requirements are met on your machine)
 
