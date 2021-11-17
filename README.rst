@@ -87,6 +87,30 @@ Run locally (Be sure all requirements are met on your machine)
                   -nxtBin /path/to/nextclade \
                   -nxtDtset /path/to/nextclade/dataset/sars-cov-2/ -v
 
+Compile the outputs
+
+.. code:: bash
+
+  viralflow --compileOutput -inputDir <path/to/directory/with/results> -outDir <path/to/store/compiled/results>
+  #example
+  viralflow --compileOutput -inputDir ./test_files/ -outDir ./test_files/
+
+Check negative controls
+
+.. code:: bash
+
+  viralflow --checkNegControls -negControlLabels <negative_control_sample_code> -pangoCSV <path/to/compiled/pango.csv>
+  #example
+  viralflow --checkNegControls -negControlLabels Cneg_R1 -pangoCSV ./test_files/RESULTS/pango.csv
+
+Get lineage summary
+
+.. code:: bash
+
+  viralflow --getLineageSummary -pangoCSV <path/to/compiled/pango.csv> -chromCSV <path/to/compiled/chromossomes.csv> -outDir <path/to/store/summaries>
+  #example
+  viralflow --getLineageSummary -pangoCSV ./test_files/RESULTS/pango.csv -chromCSV ./test_files/RESULTS/chromossomes.csv -outDir ./test_files/RESULTS/
+
 =====
 Files info
 =====
