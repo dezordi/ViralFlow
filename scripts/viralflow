@@ -492,17 +492,30 @@ if run is True:
 if runContainer is True:
     # sanity check
     # TODO: Check container path
-    viralflow.containers.run_sing_container(containerImg, args.inArgsFile,
-                                            inputDir,
-                                            referenceGenome,
-                                            adaptersFile,
-                                            threads=totalCpus,
-                                            cpus_pprc=cpusPerSample,
-                                            depth=depth,
-                                            min_len=minLen,
-                                            min_dp_intrahost=minDpIntrahost,
-                                            trim_len=trimLen,
-                                            sing_call=singPath)
+    if containerService == 'sing':
+        viralflow.containers.run_sing_container(containerImg, args.inArgsFile,
+                                                inputDir,
+                                                referenceGenome,
+                                                adaptersFile,
+                                                threads=totalCpus,
+                                                cpus_pprc=cpusPerSample,
+                                                depth=depth,
+                                                min_len=minLen,
+                                                min_dp_intrahost=minDpIntrahost,
+                                                trim_len=trimLen,
+                                                sing_call=singPath)
+    else:
+        viralflow.containers.run_docker_container(containerImg, args.inArgsFile,
+                                                inputDir,
+                                                referenceGenome,
+                                                adaptersFile,
+                                                threads=totalCpus,
+                                                cpus_pprc=cpusPerSample,
+                                                depth=depth,
+                                                min_len=minLen,
+                                                min_dp_intrahost=minDpIntrahost,
+                                                trim_len=trimLen)
+
 if compileOutput:
     # compile samples results into single csv
     out_dir = inputDir+'RESULTS/'
