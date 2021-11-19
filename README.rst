@@ -23,7 +23,7 @@ Dependencies
     * numpy 1.20.3
     * biopython 1.74
 * mafft v7.453 (2019/Nov/8)
-* nextclade 0.14.4
+* nextclade 1.4.5
 * pangolin v3.1.11
 * bedtools v2.27.1
 * bamdst 1.0.9
@@ -39,7 +39,7 @@ You can install viralflow via pip
 
   git clone https://github.com/dezordi/ViralFlow.git
   cd ViralFlow/
-  git checkout develop
+  git checkout docker
   conda env create -f envs/viralflow.yml
   conda activate viralflow
   pip install -e ./
@@ -66,14 +66,15 @@ Or you can pass a configure file:
 
 .. code:: bash
 
-  viralflow --build -singFilePath ./Singularityfile_test
+  viralflow --build -singFilePath ./Singularityfile
   viralflow --runContainer -inArgsFile ./test_files/test_args.conf
 
 Building and running a ViralFlow docker container
 
 .. code:: bash
 
-  in prep
+  viralflow --build -containerService docker
+  viralflow --runContainer -containerService docker -inArgsFile ./test_files/test_args_docker.conf
 
 Run locally (Be sure all requirements are met on your machine)
 
@@ -85,6 +86,30 @@ Run locally (Be sure all requirements are met on your machine)
                   -minLen 75 -minDpIntrahost 100 -trimLen 75 \
                   -nxtBin /path/to/nextclade \
                   -nxtDtset /path/to/nextclade/dataset/sars-cov-2/ -v
+
+Compile the outputs
+
+.. code:: bash
+
+  viralflow --compileOutput -inputDir <path/to/directory/with/results> -outDir <path/to/store/compiled/results>
+  #example
+  viralflow --compileOutput -inputDir ./test_files/ -outDir ./test_files/
+
+Check negative controls
+
+.. code:: bash
+
+  viralflow --checkNegControls -negControlLabels <negative_control_sample_code> -pangoCSV <path/to/compiled/pango.csv>
+  #example
+  viralflow --checkNegControls -negControlLabels Cneg_R1 -pangoCSV ./test_files/RESULTS/pango.csv
+
+Get lineage summary
+
+.. code:: bash
+
+  viralflow --getLineageSummary -pangoCSV <path/to/compiled/pango.csv> -chromCSV <path/to/compiled/chromossomes.csv> -outDir <path/to/store/summaries>
+  #example
+  viralflow --getLineageSummary -pangoCSV ./test_files/RESULTS/pango.csv -chromCSV ./test_files/RESULTS/chromossomes.csv -outDir ./test_files/RESULTS/
 
 =====
 Files info

@@ -1,0 +1,120 @@
+#================================================================
+# HEADER
+#================================================================
+#% USAGE
+#%    $bash sars2_assembly_singularity <REFERENCEGENOME> <001.fastq.gz> <002.fastq.gz> <PREFIX> <NUM_THREADS> <DEPTH> <MIN_LEN> <ADAPTERS> <DP_INTRAHOST> <TRIMM_LEN>
+#%
+#% DESCRIPTION
+#%    This script performs a reference guided genome assembly of SARS-CoV-2 using singularity. Python scripts were developed based on the wuhan SARS-CoV-2 reference genome NC_045512.2.
+#%    The workflow was developed to work with Illumina paired-end reads. Tests with other technologies should be performed.
+#%
+#% OPTIONS
+#%    <REFERENCEGENOME>    -   Fasta file with reference genome
+#%    <001.fastq.gz>       -   Fasqt file with positive sense reads (R1)
+#%    <002.fastq.gz>       -   Fastq file with negative sense reads (R2)
+#%    <PREFIX>             -   Prefix string to store results and to rename consensus genome
+#%    <NUM_THREADS>        -   Number of threads
+#%    <DEPTH>              -   Minimum depth to mask unanssembled regions
+#%    <MIN_LEN>            -   Minimum length to trimm sequences
+#%    <ADAPTERS>           -   Fasta file with adapters used in the sequencing analysis
+#%    <DP_INTRAHOST>       -   Minimum depth to consider a intrahost minor allele, optional, default = 100
+#%    <TRIM_LEN>           -   Length to trimm front and tail of reads, optional, default = 0
+#%
+#% EXAMPLES
+#%    $bash sars2_assembly_singularity reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa
+#%    $bash sars2_assembly_singularity reference.fasta code_R1.fastq.gz code_R2.fastq.gz prefix_name 8 5 75 adapters.fa 50 5
+#%
+#% DEPENDENCIES
+#%    BWA Version: 0.7.17-r1198-dirty
+#%    samtools 1.7 Using htslib 1.7-2
+#%    fastp 0.20.1
+#%    iVar version 1.3.1
+#%    bam-readcount version: 0.8.0-unstable-7-625eea2
+#%    Python 3.7.10
+#%    mafft v7.310 (2017/Mar/17)
+#%    nextclade 0.14.2
+#%    pangolin 3.1.11
+#%    bedtools v2.26.0
+#%    bamdst 1.0.6
+#%    seqtk 1.3-r106
+#%
+#================================================================
+#- IMPLEMENTATION
+#-    version         $sars2_assembly 0.0.5
+#-    authors         Filipe Dezordi and Gabriel Wallau
+#-    maintainer      Filipe Dezordi (zimmer.filipe@gmail.com)
+#-    username        dezordi
+#-    license         GPL
+#-    information     dezordi.github.io
+#================================================================
+#  HISTORY
+#     2021/04/17 : dezordi : Script creation
+#     2021/06/22 : dezordi : Update, improve indels recognition into intrahost variant analysis
+#     2021/09/11 : dezordi : Update, improve consensus assembly of low quality mapping regions, insertion of exact coverage percentage based on depth treshold, create arguments to modify depth treshold of intrahost minor alleles and to trimm reads.
+#
+#================================================================
+# ACTIVATE CONDA AND PANGOLIN
+#================================================================
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/root/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+echo "Activating conda via bash"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/root/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/root/miniconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/root/miniconda3/bin/:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+echo "Activating pangolin"
+conda activate pangolin
+#================================================================
+# ARGUMENTS
+#================================================================
+#ARGS_FILE=$1
+FASTA=$1 #reference genome
+#THREADS=$2 #number of threads
+#DEPTH=$3 #minimum depth to mask regions
+#MIN_LEN=$4 #minimum length to trimm reads
+#ADAPTERS=$5 #fasta file with adapters
+#CPUS_PER_SAMPLE=$6 #cpus to use per sample
+#DP_INTRAHOST=${6-100} #minimum dp for intrahost analysis
+#TRIMM_LEN=${7-0} #length to trim front and tail reads with fastp
+
+#================================================================
+# WORKFLOW
+#================================================================
+echo '| ---  ENV PARAMETERS --- |'
+echo 'args_file_in = '$FASTA
+echo $0
+echo $1
+echo $2
+echo $3
+#echo 'fastq_R1 = '$FASTQ1
+#echo 'fastq_R2 = '$FASTQ2
+#echo 'prefix_out='$PREFIXOUT
+
+#echo 'reference = '$FASTA
+#echo 'adapters = '$ADAPTERS
+#echo 'cpus = '$THREADS
+#echo 'cpus_per_sample = '$CPUS_PER_SAMPLE
+#echo 'depth =' $DEPTH
+#echo 'min_len =' $MIN_LEN
+#echo 'adapters = '$ADAPTERS
+#echo 'DP_INTRAHOST = '$DP_INTRAHOST
+#echo 'TRIMM_LEN = '$TRIMM_LEN
+echo '| ----------------------- |'
+ls /data/
+
+viralflow --run -inArgsFile /data/$FASTA --onContainer
+
+#viralflow --run  -inputDir /data/ -referenceGenome $FASTA \
+#                 -adaptersFile $ADAPTERS -totalCpus $THREADS -depth $DEPTH \
+#                 -minLen $MIN_LEN -minDpIntrahost $DP_INTRAHOST \
+#                 -trimLen $TRIMM_LEN \
+#                 -nxtBin /app/nextclade/nextclade-Linux-x86_64 \
+#                 -nxtDtset /app/nextclade/dtset/sars-cov-2/ -v
