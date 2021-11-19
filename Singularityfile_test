@@ -18,12 +18,6 @@ Stage: spython-base
 
 %post
  /bin/bash -c "source /home/pango_update"
- # set app
- mkdir /app
- cd /app/
- git clone https://github.com/dezordi/ViralFlow.git
- cd ViralFlow/
- git checkout develop
  cd /
  # set output dir
  mkdir /data/
@@ -49,11 +43,14 @@ Stage: spython-base
  echo "Activating pangolin"
  conda activate pangolin
 
- # install viralflow
- cd /app/ViralFlow/
- git checkout new_cli
+ # set app
+ mkdir /app
+ # install ViralFlow
+ cd /app/
+ git clone https://github.com/dezordi/ViralFlow.git
+ cd ViralFlow/
+ git checkout develop
  pip install -e ./
- cd /
 
  # get nexclade dataset
  mkdir /app/nextclade/
