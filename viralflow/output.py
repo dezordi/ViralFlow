@@ -207,7 +207,7 @@ def compile_output_fls(data_dir, out_dir, depth):
                 if len(val_mut_df) == 0:
                     print(f"WARNING: no mutation data for {cod}")
                     mut_lst = []
-                if len(val_mut_df) >= 0:
+                if len(val_mut_df) > 0:
                     mut_lst = val_mut_df.apply(get_mut, axis=1).values
 
                 dct = {'cod': cod, 'mut': mut_lst}
