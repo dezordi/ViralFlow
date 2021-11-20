@@ -65,4 +65,4 @@ Stage: spython-base
  pip install pandas
  pip install --upgrade numpy
 %runscript
-	/bin/bash -c "source /app/ViralFlow/sars2_assembly_singularity_test $FASTA $FASTQ1 $FASTQ2 $PREFIXOUT $THREADS $DEPTH $MIN_LEN $ADAPTERS $DP_INTRAHOST $TRIMM_LEN"
+	/bin/bash -c "source /app/ViralFlow/viralflow_singularity $FASTA $FASTQ1 $FASTQ2 $PREFIXOUT $THREADS $DEPTH $MIN_LEN $ADAPTERS $DP_INTRAHOST $TRIMM_LEN"
