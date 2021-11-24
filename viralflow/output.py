@@ -317,7 +317,7 @@ def get_lineages_summary(pango_csv, chromosomes_csv, outdir):
     count lineages on a given pangolin dataframe
     """
     print("@ compute lineage summary ")
-    pango_df = pd.read_csv(pango_csv)
+    pango_df = pd.read_csv(pango_csv, index_col=False)
     print(f"  > {len(pango_df)} total samples")
     lineage_df = pango_df["lineage"].value_counts()
     lineage_df.to_csv(outdir + "/lineage_summary.csv", index=False)
@@ -325,8 +325,8 @@ def get_lineages_summary(pango_csv, chromosomes_csv, outdir):
     print(lineage_df)
 
     print("@ generating short summary [sample, depth, coverage, lineage]...")
-    chrm_df = pd.read_csv(chromosomes_csv, index_col=0)
-    pang_df = pd.read_csv(pango_csv, index_col=0)
+    chrm_df = pd.read_csv(chromosomes_csv, index_col=False)
+    pang_df = pd.read_csv(pango_csv, index_col=False)
     # get short summary csv
     short_summary_df = load_short_summary_df(chrm_df, pang_df)
     short_summary_df.to_csv(outdir + "/short_summary.csv", index=False)
