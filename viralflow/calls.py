@@ -78,11 +78,14 @@ def run_bwa_idex(input_file, out_dir):
     """Perform bwa index analysis"""
     bwa_index = f"bwa index {input_file}"
     os.system(bwa_index)
+    # TODO : we need to handle this with proper popen treatment ###############
+    #        check why the __run_command is not working
     # p_bwa_idx = __run_command(bwa_index)
     # write log file
     # __write_popen_logs(p_bwa_idx, prfx_wdir+'_1_bwa_idx')
     # check if errors
     # __check_status(p_bwa_idx, prfx_wdir+'_1_bwa_idx_err.log', 'BWA INDEX')
+    # #########################################################################
 
 
 def run_fastp(fastq1, fastq2, prefixout, threads, adapters, min_len, trimm, out_dir):
@@ -131,7 +134,6 @@ def run_fastp(fastq1, fastq2, prefixout, threads, adapters, min_len, trimm, out_
     var_opt = f"-l {min_len} -f {trimm} -t {trimm} -F {trimm} -T {trimm} "
     cte_opt = "--cut_front --cut_tail --qualified_quality_phred 20 "
     fastp = "fastp  " + input_opts + prefix_opt + cte_opt + var_opt + threads_opt
-    # fastp = shlex.split(fastp)
 
     # run command
     cmd_fastp = __run_command(fastp)
@@ -232,76 +234,60 @@ def run_ivar(reference_fasta, prefixout, out_dir, depth):
     # Call variants
     ivar_1 = f"| ivar variants -p {prfx_wdir} -q 30 -t 0.05 "
     cmd_ivar_1 = mpileup_str + ivar_1
-    # print("COMMAND:")
-    # print(cmd_ivar_1)
 
-    # WARNING #################################################################
+    # WARNING -----------------------------------------------------------------
     # for some reason, using shellx using "|" doesn't work very well. For now
     # os.system() works just fine, but THIS SHOULD BE FIX in the future
     # so we get more log output control
     os.system(cmd_ivar_1)
+
+    # TODO : check how to fix __run_command to handle such case ###############
     # p_ivar_1 = __run_command(cmd_ivar_1)
     # __write_popen_logs(p_ivar_1, prfx_wdir+'_ivar_1')
     # __check_status(p_ivar_1, prfx_wdir+'_ivar_1_err.log', 'IVAR_variants')
+    # #########################################################################
 
     # IVAR STEP 2 -------------------------------------------------------------
     # Mount consensus for a given minimum depth
     ivar_2 = f"| ivar consensus -p {prfx_wdir} -q 30 -t 0 -m {depth} -n N"
     cmd_ivar_2 = mpileup_str + ivar_2
-    # print("COMMAND:")
-    # print(cmd_ivar_2)
+    # WARNING -----------------------------------------------------------------
+    # same problem here =/
     os.system(cmd_ivar_2)
+
+    # TODO : fix it ###########################################################
     # p_ivar_2 = __run_command(cmd_ivar_2)
     # __write_popen_logs(p_ivar_2, prfx_wdir+'_ivar_2')
     # __check_status(p_ivar_2, prfx_wdir+'_ivar_2_err.log', "IVAR_consensus")
+    # #########################################################################
 
     # IVAR STEP 3 -------------------------------------------------------------
     d = f"-m {depth}"
     ivar_3 = f"| ivar consensus -p {prfx_wdir}.ivar060 -q 30 -t 0.60 -n N " + d
     cmd_ivar_3 = mpileup_str + ivar_3
-    # print('COMMAND:')
-    # print(cmd_ivar_3)
+    # WARNING -----------------------------------------------------------------
+    # you got the geez by now
     os.system(cmd_ivar_3)
 
+    # TODO : fix it ###########################################################
     # p_ivar_3 = __run_command(cmd_ivar_3)
     # __write_popen_logs(p_ivar_3, prfx_wdir+'_ivar_3')
     # __check_status(p_ivar_3, prfx_wdir+'_ivar_3_err.log', 'IVAR_consencus_60')
+    # #########################################################################
 
     # EDIT FILES --------------------------------------------------------------
-    #
+    # rename files
     mv_str = f"mv {prfx_wdir}.fa {prfx_wdir}.depth{depth}.fa"
     os.system(mv_str)
 
     mv_str = f"mv {prfx_wdir}.ivar060.fa {prfx_wdir}.depth{depth}.amb.fa"
     os.system(mv_str)
-
+    #
     mv_str = f"sed -i -e 's/>.*/>{prefixout}/g' {prfx_wdir}.depth{depth}.fa"
     os.system(mv_str)
 
-    mv_str = f"sed -i -e 's/>.*/>{prefixout}/g' {prfx_wdir}.depth{depth}.amb.fa "
+    mv_str = f"sed -i -e 's/>.*/>{prefixout}/g' {prfx_wdir}.depth{depth}.amb.fa"
     os.system(mv_str)
-
-    """
-
-    s1_str = f"sed -i -e 's/>.*/>|'{prfx_wdir}'/g' {prfx_wdir}.depth{depth}.fa"
-    os.system(s1_str)
-
-    s2_str = f"sed -i -e 's/__/\//g' -e 's/--/|/g' {prfx_wdir}.depth{depth}.fa"
-    os.system(s2_str)
-
-    mv_str = f"mv {prfx_wdir}.ivar060.fa {prfx_wdir}.depth{depth}.amb.fa"
-    os.system(mv_str)
-
-    s3_str = f"sed -i -e 's/>.*/>|'{prfx_wdir}'/g' {prfx_wdir}.depth{depth}.amb.fa"
-    os.system(s3_str)
-
-    s4_str = f"sed -i -e 's/__/\//g' -e 's/--/|/g' {prfx_wdir}.depth{depth}.amb.fa"
-
-    os.system(s4_str)
-    """
-    # p_ivar_4 = __run_command(edit_str)
-    # __write_popen_logs(p_ivar_4, prfx_wdir+'_ivar_4')
-    # __check_status(p_ivar_4, prfx_wdir+'_ivar_4_err.log', 'IVAR_edit_file')
 
 
 def get_minor_variants(reference_genome, prefixout, depth, threads, outdir):
@@ -318,8 +304,6 @@ def get_minor_variants(reference_genome, prefixout, depth, threads, outdir):
     cmd_bwa_read = subprocess.Popen(bwa_read, stdout=bamread_output)
     cmd_bwa_read.wait()
     # run command and store sdtout on bam read
-    # print("COMMAND:")
-    # print(bwa_read)
     # WARNING #################################################################
     # For some reason, using the __run_command stuck the pipeline at cmd.wait()
     # for now, os.system get the job done, but this needs to be fixed.
@@ -342,8 +326,6 @@ def get_minor_variants(reference_genome, prefixout, depth, threads, outdir):
     mafft = (
         "mafft --keeplength " + input_fa + t_str + f" {reference_genome}"
     )  # > {prfx_wdir}.depth{depth}.fa.algn"
-    # print("COMMAND:")
-    # print(mafft)
     cmd_mafft = __run_command(mafft)
     log_prfx = prfx_wdir + "_2_mafft"
     __write_popen_logs(cmd_mafft, log_prfx)
@@ -380,16 +362,13 @@ def get_variant_naming(
         cmd_str = "cat " + consensus_fa + minor_var_fa + f" > " + all_fa
         os.system(cmd_str)
         input_seqs = all_fa
-        # p_cat = __run_command(cmd_str)
-        # __write_popen_logs(p_cat, prfx_wdir+'_4_cat')
-        # __check_status(p_cat, prfx_wdir+'_4_cat', 'COMPILE VARIANTS')
 
-    # single sequence, use consensus fasta as input
+    # if single sequence, use consensus fasta as input
     if num_lines == 1:
         input_seqs = consensus_fa
         output_nxt = f"{prfx_wdir}.depth{depth}.fa.nextclade.csv"
-        # output_prfx+".fa.nextclade.csv"
         output_pgl = output_prfx + ".fa.pango.csv"
+
     # if no sequence, something went wrong on previous step
     if num_lines == 0:
         raise Exception("No sequence at " + intrahost_tsv)
@@ -403,12 +382,7 @@ def get_variant_naming(
     nxtdst_str = f" --input-dataset={nxt_dataset}"
     out_csv = f" --output-csv={prfx_wdir}.depth{depth}.all.fa.nextclade.csv"
     out_str = f" --output-dir={out_dir}"
-    # nxt_str = "nextclade -i "+input_seqs + job_str + " -c  "+output_nxt
     nxt_str = nxt_bin + in_str + job_str + ref_str + nxtdst_str + out_csv + out_str
-    # print("COMMAND NEXTCLADE:")
-    # print(nxt_str)
-    # os.system(nxt_str)
-    # print(nxt_str)
     p_nxt = __run_command(nxt_str)
     __write_popen_logs(p_nxt, prfx_wdir + "_4_nextclade")
     __check_status(p_nxt, prfx_wdir + "_4_nextclade_err.log", "NEXTCLADE")
@@ -422,6 +396,7 @@ def get_variant_naming(
     p_pgl = __run_command(pgl_str)
     __write_popen_logs(p_pgl, prfx_wdir + "_4_pangolin")
     __check_status(p_pgl, prfx_wdir + "_4_pangolin", "PANGOLIN")
+    # -------------------------------------------------------------------------
 
 
 def do_assembly_metrics(prefixout, outdir):

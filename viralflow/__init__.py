@@ -68,7 +68,6 @@ def get_fastq_pairs(input_dir, format=tuple(["fastq.gz", "fq.gz"])):
     # get fastq.gz files
     files_at_dir = os.listdir(input_dir)
     fastq_lst = [x for x in files_at_dir if x.endswith(format)]
-    # print(fastq_lst)
 
     # get R1 and R2 pairs
     pairs = []

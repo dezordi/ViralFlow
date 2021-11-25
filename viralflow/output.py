@@ -32,6 +32,9 @@ def get_consensus_seq(fasta_path, cod):
 
 
 def get_mut(row):
+    """
+    get mutation data on a single string
+    """
     return row["REF"] + str(row["POS"]) + row["ALT"]
 
 
@@ -39,8 +42,9 @@ def parse_fabc(fbc_path):
     """
     parse depth data on 'fa.bc' file
     """
+    # load file
     fl = open(fbc_path, "r")
-
+    # get only pos and depth per line and return data as dataframe
     pos_lst = []
     depth_lst = []
     for l in fl:
@@ -65,6 +69,9 @@ def __check_if_outfls_exist(cod, out_fls_lst, mut_fl):
     """
     Check if expected files exist
     """
+    # for a list of expected files, check if they exist at specified path
+    # if not, then print a warning, store missing error data on a dictionary
+    # and return it
     err_dct_lst = []
     for fl in out_fls_lst:
         try:
@@ -209,10 +216,10 @@ def compile_output_fls(data_dir, out_dir, depth):
                 dpth_df = parse_fabc(depth_fl)
                 dpth_df["cod"] = [cod]
                 dpth_lst.append(dpth_df)
-        # if name.endswith('intrahost.short.tsv')
+
     print(f"  > Total {c} samples processed")
 
-    # mount compileds dataframes
+    # mount compiled dataframes
     if c == 0:
         print("ERROR: No ViralFlow output files found")
         sys.exit(1)
@@ -255,8 +262,10 @@ def get_controls_lineages(control_lbl_lst, pango_df):
         else:
             return False
 
+    # load only control slice
     ctrl_bool_tbl = pango_df.apply(__get_ctrls, axis=1)
     control_slice_df = pango_df.loc[ctrl_bool_tbl]
+    # get control unique strains
     control_lngs = control_slice_df.lineage.unique()
     return control_lngs
 
@@ -316,23 +325,20 @@ def get_lineages_summary(pango_csv, chromosomes_csv, outdir):
     """
     count lineages on a given pangolin dataframe
     """
+    # load pango df
     print("@ compute lineage summary ")
     pango_df = pd.read_csv(pango_csv, index_col=False)
+
     print(f"  > {len(pango_df)} total samples")
     lineage_df = pango_df["lineage"].value_counts()
     lineage_df.to_csv(outdir + "/lineage_summary.csv", index=False)
     print(f"  > {outdir}lineage_summary.csv")
     print(lineage_df)
 
+    # write short summary csv
     print("@ generating short summary [sample, depth, coverage, lineage]...")
     chrm_df = pd.read_csv(chromosomes_csv, index_col=False)
-    pang_df = pd.read_csv(pango_csv, index_col=False)
-    # get short summary csv
-    short_summary_df = load_short_summary_df(chrm_df, pang_df)
+    short_summary_df = load_short_summary_df(chrm_df, pango_df)
     short_summary_df.to_csv(outdir + "/short_summary.csv", index=False)
     print(f"  > {outdir}short_summary.csv")
     return lineage_df, short_summary_df
-
-
-# def get_short_summary(pango_csv, chromosomes_csv, ):
-# load chromossomes and mix with pango strain

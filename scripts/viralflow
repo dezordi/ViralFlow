@@ -8,8 +8,8 @@ import subprocess
 import shlex
 
 __author__ = "Antonio Marinho da Silva Neto"
-#__copyright__ = "Copyright 2021, Rede Genomica Fiocruz"
-#__credits__ = []
+# __copyright__ = "Copyright 2021, Rede Genomica Fiocruz"
+# __credits__ = []
 __license__ = "GPL"
 __version__ = "0.1"
 __maintainer__ = "Antonio Marinho da Silva Neto"
@@ -17,7 +17,7 @@ __email__ = "antonio.marinho@fiocruz.br"
 __status__ = "Prototype"
 
 # -- Docstring -----------------------------------------------------------------
-'''
+"""
 viralflow
 ----
 
@@ -33,7 +33,7 @@ Input
 
 WARNING:
 
-'''
+"""
 
 # --- FUNCTIONS ---------------------------------------------------------------
 # SANITY CHECK
@@ -41,170 +41,252 @@ WARNING:
 
 def __checkIfPathExists(str, argName):
     try:
-        assert(Path(str).exists())
-    except(AssertionError):
-        print(f'ERROR: {argName} provided ({str}) does not exist.')
+        assert Path(str).exists()
+    except (AssertionError):
+        print(f"ERROR: {argName} provided ({str}) does not exist.")
         exit(1)
 
 
 def __checkIfIsFile(str, argName):
     try:
-        assert(Path(str).is_file())
-    except(AssertionError):
-        print(f'ERROR: {argName} provided ({str}) is not a file.')
+        assert Path(str).is_file()
+    except (AssertionError):
+        print(f"ERROR: {argName} provided ({str}) is not a file.")
         exit(1)
 
 
 def __checkIfIsDir(str, argName):
     try:
-        assert(Path(str).is_dir())
-    except(AssertionError):
-        print(f'ERROR: {argName} provided ({str}) is not a dir.')
+        assert Path(str).is_dir()
+    except (AssertionError):
+        print(f"ERROR: {argName} provided ({str}) is not a dir.")
         exit(1)
 
-#
 
+# ------------------------------------
 
+# input args file load
 def getArgsDct(in_flpath):
-    '''
-    '''
-    valid_args = ['outDir', 'singFilePath', 'containerName', 'singOpt',
-                  'inputDir', 'referenceGenome', 'totalCpus', 'minLen',
-                  'adaptersFile', 'containerImg', 'depth', 'minDpIntrahost', 'trimLen',
-                  'cpusPerSample', 'totalCpus', 'nxtBin', 'nxtDtset',
-                  'pangoCSV']
+    """
+    load text file containing viralflow arguments
+    """
+    valid_args = [
+        "outDir",
+        "singFilePath",
+        "containerName",
+        "singOpt",
+        "inputDir",
+        "referenceGenome",
+        "totalCpus",
+        "minLen",
+        "adaptersFile",
+        "containerImg",
+        "depth",
+        "minDpIntrahost",
+        "trimLen",
+        "cpusPerSample",
+        "totalCpus",
+        "nxtBin",
+        "nxtDtset",
+        "pangoCSV",
+    ]
 
-    valid_modes = ['singPath', 'build', 'run', 'runContainer', 'compileOutput',
-                   'checkNegControls', 'negControlLabels', 'getLineageSummary']
+    valid_modes = [
+        "singPath",
+        "build",
+        "run",
+        "runContainer",
+        "compileOutput",
+        "checkNegControls",
+        "negControlLabels",
+        "getLineageSummary",
+    ]
 
-    in_file = open(in_flpath, 'r')
+    in_file = open(in_flpath, "r")
     dct = {}
     for l in in_file:
-        if (l in ['', ' ', '\n']) or l.startswith('#'):
+        if (l in ["", " ", "\n"]) or l.startswith("#"):
             continue
-        l_dt = l.replace('\n', '').split(' ')
+        l_dt = l.replace("\n", "").split(" ")
 
         key = l_dt[0]
         if (key not in valid_args) and (key not in valid_modes):
-            raise Exception(f'ERROR: {key} not a valid argument')
+            raise Exception(f"ERROR: {key} not a valid argument")
         if key in valid_modes:
             vls = True
             dct[key] = vls
             continue
         if key in valid_args:
-            vls_1 = l_dt[1:len(l_dt)]
+            vls_1 = l_dt[1 : len(l_dt)]
             vls = []
             for v in vls_1:
-                if v in ['']:
+                if v in [""]:
                     continue
                 vls.append(v)
-            if (len(vls) == 1):
+            if len(vls) == 1:
                 dct[key] = vls[0]
             if len(vls) > 1:
                 dct[key] = vls
             continue
     return dct
 
+
 # -----------------------------------------------------------------------------
 
 
-dsc = '''
-'''
+dsc = """
+"""
 
 # get viralflow path
 script_file = _path = os.path.realpath(__file__)
-viralflow_path = '/'.join(script_file.split('/')[0:-2])+'/'
+viralflow_path = "/".join(script_file.split("/")[0:-2]) + "/"
 
 
 # ---- INPUT ------------------------------------------------------------------
 parser = argparse.ArgumentParser(description=dsc)
 # --- general -----------------------------------------------------------------
-parser.add_argument('-inArgsFile', type=str, default=None,
-                    help='txt containing arguments to use')
+parser.add_argument(
+    "-inArgsFile", type=str, default=None, help="txt containing arguments to use"
+)
 
-parser.add_argument('-singPath', type=str, help='singularity path',
-                    default='/usr/local/bin/singularity')
+parser.add_argument(
+    "-singPath", type=str, help="singularity path", default="/usr/local/bin/singularity"
+)
 
 # --- Build mode --------------------------------------------------------------
-parser.add_argument('--build', action='store_true', help='set build mode on')
+parser.add_argument("--build", action="store_true", help="set build mode on")
 
-parser.add_argument('-containerService', type=str, help="Container service to be used, options: 'docker' or 'sing', default = sing",
-                    default='sing', choices=['docker','sing'])
+parser.add_argument(
+    "-containerService",
+    type=str,
+    help="Container service to be used, options: 'docker' or 'sing', default = sing",
+    default="sing",
+    choices=["docker", "sing"],
+)
 
-parser.add_argument('-outDir', type=str, default=os.getcwd()+'/',
-                    help='set directory path for output (default = working dir)')
+parser.add_argument(
+    "-outDir",
+    type=str,
+    default=os.getcwd() + "/",
+    help="set directory path for output (default = working dir)",
+)
 
-parser.add_argument('-singFilePath', type=str, help='Singularityfile path',
-                    default=viralflow_path+'Singularityfile_test')
+parser.add_argument(
+    "-singFilePath",
+    type=str,
+    help="Singularityfile path",
+    default=viralflow_path + "Singularityfile_test",
+)
 
-parser.add_argument('-dockerFilePath', type=str, help='Dockerfile path',
-                    default=viralflow_path)
+parser.add_argument(
+    "-dockerFilePath", type=str, help="Dockerfile path", default=viralflow_path
+)
 
-parser.add_argument('-containerName', type=str, help='set container name',
-                    default='viralflow_container')
+parser.add_argument(
+    "-containerName", type=str, help="set container name", default="viralflow_container"
+)
 
-parser.add_argument('-singOpt', type=str, help='singularity build option',
-                    default='--fakeroot --sandbox')
+parser.add_argument(
+    "-singOpt",
+    type=str,
+    help="singularity build option",
+    default="--fakeroot --sandbox",
+)
 
-parser.add_argument('-dockerOpt', type=str, help='singularity build option',
-                    default=None)
+parser.add_argument(
+    "-dockerOpt", type=str, help="singularity build option", default=None
+)
 
 # --- Run mode -----------------------------------------------------------------
-parser.add_argument('--run', action='store_true', help='set run local mode on')
+parser.add_argument("--run", action="store_true", help="set run local mode on")
 
-parser.add_argument('--runContainer', action='store_true',
-                    help='Run singularity or docker container')
+parser.add_argument(
+    "--runContainer", action="store_true", help="Run singularity or docker container"
+)
 
-parser.add_argument('-inputDir', type=str,
-                    help='set input directory path')
+parser.add_argument("-inputDir", type=str, help="set input directory path")
 
-parser.add_argument('-containerImg', type=str, default=None,
-                    help='path for viralflow container')
+parser.add_argument(
+    "-containerImg", type=str, default=None, help="path for viralflow container"
+)
 
-parser.add_argument('-referenceGenome', type=str,
-                    help='name of reference genome file at input dir')
+parser.add_argument(
+    "-referenceGenome", type=str, help="name of reference genome file at input dir"
+)
 
-parser.add_argument('-adaptersFile', type=str,
-                    help='adapters file name at input dir')
+parser.add_argument("-adaptersFile", type=str, help="adapters file name at input dir")
 
-parser.add_argument('-depth', type=int, default=5, help='minimum depth to mask unanssembled regions (default=5)')
+parser.add_argument(
+    "-depth",
+    type=int,
+    default=5,
+    help="minimum depth to mask unanssembled regions (default=5)",
+)
 
-parser.add_argument('-minLen', type=int, default=75,
-                    help='minimum length to trimm sequences (default = 75)')
+parser.add_argument(
+    "-minLen",
+    type=int,
+    default=75,
+    help="minimum length to trimm sequences (default = 75)",
+)
 
-parser.add_argument('-minDpIntrahost', type=int, default=100, 
-                    help='minimum depth value to consider intrahost minor allele (default = 100)')
+parser.add_argument(
+    "-minDpIntrahost",
+    type=int,
+    default=100,
+    help="minimum depth value to consider intrahost minor allele (default = 100)",
+)
 
-parser.add_argument('-trimLen', type=int, default=0, 
-                    help='length to trimm front and tail of reads on fastp analysis (default = 0)')
+parser.add_argument(
+    "-trimLen",
+    type=int,
+    default=0,
+    help="length to trimm front and tail of reads on fastp analysis (default = 0)",
+)
 
-parser.add_argument('-totalCpus', type=int, default=1,
-                    help='total of cpus for parallel assemblies (default = 1)')
+parser.add_argument(
+    "-totalCpus",
+    type=int,
+    default=1,
+    help="total of cpus for parallel assemblies (default = 1)",
+)
 
-parser.add_argument('-cpusPerSample', type=int, default=None,
-                    help='cpus to use on individual sample run (default = auto)')
+parser.add_argument(
+    "-cpusPerSample",
+    type=int,
+    default=None,
+    help="cpus to use on individual sample run (default = auto)",
+)
 
-parser.add_argument('-nxtBin', type=str, default='nextclade',
-                    help='path for nextclade command (default=nextclade)')
+parser.add_argument(
+    "-nxtBin",
+    type=str,
+    default="nextclade",
+    help="path for nextclade command (default=nextclade)",
+)
 
-parser.add_argument('-nxtDtset', type=str, default=None,
-                    help='path for nextclade dataset dir')
-parser.add_argument('-v', '--verbose', action='store_true',
-                    help='increase output verbosity')
+parser.add_argument(
+    "-nxtDtset", type=str, default=None, help="path for nextclade dataset dir"
+)
+parser.add_argument(
+    "-v", "--verbose", action="store_true", help="increase output verbosity"
+)
 # --- OUTPUT MODE -------------------------------------------------------------
-parser.add_argument('--compileOutput', action='store_true',
-                    help='compile output file of a given dir')
-parser.add_argument('--checkNegControls', action='store_true',
-                    help='check for possible negative control contamination ')
-parser.add_argument('-negControlLabels', nargs='+',
-                    help='negative control labels')
-parser.add_argument('-pangoCSV', type=str, default=None,
-                    help='pango csv filepath')
-parser.add_argument('--getLineageSummary', action='store_true',
-                    help=' compute lineage summary')
-parser.add_argument('-chromCSV', type=str, default=None,
-                    help='chromosomes csv path')
-parser.add_argument('--onContainer', action='store_true')
+parser.add_argument(
+    "--compileOutput", action="store_true", help="compile output file of a given dir"
+)
+parser.add_argument(
+    "--checkNegControls",
+    action="store_true",
+    help="check for possible negative control contamination ",
+)
+parser.add_argument("-negControlLabels", nargs="+", help="negative control labels")
+parser.add_argument("-pangoCSV", type=str, default=None, help="pango csv filepath")
+parser.add_argument(
+    "--getLineageSummary", action="store_true", help=" compute lineage summary"
+)
+parser.add_argument("-chromCSV", type=str, default=None, help="chromosomes csv path")
+parser.add_argument("--onContainer", action="store_true")
 args = parser.parse_args()
 # -----------------------------------------------------------------------------
 # set args default behaviour
@@ -241,125 +323,124 @@ negControlLabels = args.negControlLabels
 pangoCSV = args.pangoCSV
 chromCSV = args.chromCSV
 
-isModeSet = any([build, run, runContainer, compileOutput, getLineageSummary,
-                 checkNegControls])
+isModeSet = any(
+    [build, run, runContainer, compileOutput, getLineageSummary, checkNegControls]
+)
 
 if args.inArgsFile is not None:
     args_dct = getArgsDct(args.inArgsFile)
     ks = args_dct.keys()
-    if 'outDir' in ks:
-        outDir = args_dct['outDir']
+    if "outDir" in ks:
+        outDir = args_dct["outDir"]
     # parse modes (command modes on command line gets priority over in args file)
     if isModeSet is False:
-        if 'build' in ks:
+        if "build" in ks:
             build = True
 
-        if 'run' in ks:
+        if "run" in ks:
             run = True
 
-        if 'runContainer' in ks:
+        if "runContainer" in ks:
             runContainer = True
 
-        if 'compileOutput' in ks:
+        if "compileOutput" in ks:
             compileOutput = True
 
-        if 'getLineageSummary' in ks:
+        if "getLineageSummary" in ks:
             getLineageSummary = True
 
-        if 'checkNegControls' in ks:
+        if "checkNegControls" in ks:
             checkNegControls = True
 
     # parse args
-    if 'containerService' in ks:
-        containerService = args_dct['containerService']
-    if 'singFilePath' in ks:
-        singFilePath = args_dct['singFilePath']
-    if 'dockerFilePath' in ks:
-        dockerFilePath = args_dct['dockerFilePath']
-    if 'containerName' in ks:
-        containerName = args_dct['containerName']
-    if 'singOpt' in ks:
-        singOpt = args_dct['singOpt']
-    if 'dockerOpt' in ks:
-        dockerOpt = args_dct['dockerOpt']
-    if 'singPath' in ks:
-        singPath = args_dct['singPath']
-    if 'containerImg' in ks:
-        containerImg = args_dct['containerImg']
-    if 'inputDir' in ks:
-        inputDir = args_dct['inputDir']
-    if 'referenceGenome' in ks:
-        referenceGenome = args_dct['referenceGenome']
-    if 'adaptersFile' in ks:
-        adaptersFile = args_dct['adaptersFile']
-    if 'depth' in ks:
-        depth = int(args_dct['depth'])
-    if 'minLen' in ks:
-        minLen = int(args_dct['minLen'])
-    if 'minDpIntrahost' in ks:
-        minDpIntrahost = args_dct['minDpIntrahost']
-    if 'trimLen' in ks:
-        trimLen = int(args_dct['trimLen'])
-    if 'totalCpus' in ks:
-        totalCpus = int(args_dct['totalCpus'])
-    if 'cpusPerSample' in ks:
-        cpusPerSample = int(args_dct['cpusPerSample'])
-    if 'nxtBin' in ks:
-        nxtBin = args_dct['nxtBin']
-    if 'nxtDtset' in ks:
-        nxtDtset = args_dct['nxtDtset']
-    if 'negControlLabels' in ks:
-        negControlLabels = args_dct['negControlLabels']
-    if 'pangoCSV' in ks:
-        pangoCSV = args_dct['pangoCSV']
-    if 'chromCSV' in ks:
-        chromCSV = args_dct['chromCSV']
+    if "containerService" in ks:
+        containerService = args_dct["containerService"]
+    if "singFilePath" in ks:
+        singFilePath = args_dct["singFilePath"]
+    if "dockerFilePath" in ks:
+        dockerFilePath = args_dct["dockerFilePath"]
+    if "containerName" in ks:
+        containerName = args_dct["containerName"]
+    if "singOpt" in ks:
+        singOpt = args_dct["singOpt"]
+    if "dockerOpt" in ks:
+        dockerOpt = args_dct["dockerOpt"]
+    if "singPath" in ks:
+        singPath = args_dct["singPath"]
+    if "containerImg" in ks:
+        containerImg = args_dct["containerImg"]
+    if "inputDir" in ks:
+        inputDir = args_dct["inputDir"]
+    if "referenceGenome" in ks:
+        referenceGenome = args_dct["referenceGenome"]
+    if "adaptersFile" in ks:
+        adaptersFile = args_dct["adaptersFile"]
+    if "depth" in ks:
+        depth = int(args_dct["depth"])
+    if "minLen" in ks:
+        minLen = int(args_dct["minLen"])
+    if "minDpIntrahost" in ks:
+        minDpIntrahost = args_dct["minDpIntrahost"]
+    if "trimLen" in ks:
+        trimLen = int(args_dct["trimLen"])
+    if "totalCpus" in ks:
+        totalCpus = int(args_dct["totalCpus"])
+    if "cpusPerSample" in ks:
+        cpusPerSample = int(args_dct["cpusPerSample"])
+    if "nxtBin" in ks:
+        nxtBin = args_dct["nxtBin"]
+    if "nxtDtset" in ks:
+        nxtDtset = args_dct["nxtDtset"]
+    if "negControlLabels" in ks:
+        negControlLabels = args_dct["negControlLabels"]
+    if "pangoCSV" in ks:
+        pangoCSV = args_dct["pangoCSV"]
+    if "chromCSV" in ks:
+        chromCSV = args_dct["chromCSV"]
 
 
-if outDir.endswith('/') is False:
-    outDir += '/'
+if outDir.endswith("/") is False:
+    outDir += "/"
 
-print('| --------------------------------------------------------------------|')
-print('|                            >> ViralFlow <<')
-print('|                               v0.0.6.dev')
-print('|                            made by Wallau Lab ')
-print('|                      Aggeu Magalhães Research Institute')
-print('|                             FIOCRUZ - Pernambuco')
-print('| --------------------------------------------------------------------|')
-print('| ')
-print('| ')
-print('| --------------------------------------------------------------------|')
-print('| Author:')
-print('|    Filipe Z. Dezordi (zimmer.filipe@gmail.com)')
-print('| More information at: ')
-print('|    https://github.com/dezordi/ViralFlow/')
-print('| --------------------------------------------------------------------|')
-print('| --------------------------------------------------------------------|')
+print("| --------------------------------------------------------------------|")
+print("|                            >> ViralFlow <<")
+print("|                               v0.0.6.dev")
+print("|                            made by Wallau Lab ")
+print("|                      Aggeu Magalhães Research Institute")
+print("|                             FIOCRUZ - Pernambuco")
+print("| --------------------------------------------------------------------|")
+print("| ")
+print("| ")
+print("| --------------------------------------------------------------------|")
+print("| Author:")
+print("|    Filipe Z. Dezordi (zimmer.filipe@gmail.com)")
+print("| More information at: ")
+print("|    https://github.com/dezordi/ViralFlow/")
+print("| --------------------------------------------------------------------|")
+print("| --------------------------------------------------------------------|")
 print("| USAGE:")
-print('| * build containers ')
-print('| >$ viralflow --build -singFilePath /path/to/ViralFlow/Singularityfile')
-print('| --------------------------------------------------------------------|')
-print('| HOW TO CITE:')
-print('| ')
-print('| [PrePrint]')
-print('| ViralFlow: an automated workflow for SARS-CoV-2 genome assembly, ')
-print('| lineage assignment, mutations and intrahost variants detection')
-print('| medRxiv 2021.10.01.21264424;')
-print('| doi: https://doi.org/10.1101/2021.10.01.21264424')
-print('| --------------------------------------------------------------------|')
+print("| * build containers ")
+print("| >$ viralflow --build -singFilePath /path/to/ViralFlow/Singularityfile")
+print("| --------------------------------------------------------------------|")
+print("| HOW TO CITE:")
+print("| ")
+print("| [PrePrint]")
+print("| ViralFlow: an automated workflow for SARS-CoV-2 genome assembly, ")
+print("| lineage assignment, mutations and intrahost variants detection")
+print("| medRxiv 2021.10.01.21264424;")
+print("| doi: https://doi.org/10.1101/2021.10.01.21264424")
+print("| --------------------------------------------------------------------|")
 
 # sanity check ----------------------------------------------------------------
-# check singularity path validity
-#try:
-#    assert(Path(args.singPath).exists())
-#except(AssertionError):
-#    print('ERROR :', args.singPath, ' Singularity path does not exists.')
-#    exit(1)
 # check if mode was set
-if (build is False) and (run is False) and (runContainer is False) \
-                    and (compileOutput is False) \
-                    and (checkNegControls is False) \
-                    and (getLineageSummary is False):
+if (
+    (build is False)
+    and (run is False)
+    and (runContainer is False)
+    and (compileOutput is False)
+    and (checkNegControls is False)
+    and (getLineageSummary is False)
+):
     s = "use either '--build', '--run', '--runContainer',"
     s1 = "'--compileOutput', '--checkNegControls' or --getLineageSummary"
     print(f"ERROR : a mode must be set ({s+s1}).")
@@ -368,162 +449,183 @@ if (build is False) and (run is False) and (runContainer is False) \
 # -----------------------------------------------------------------------------
 
 
-print('| Parameters')
-print('| ----------')
+print("| Parameters")
+print("| ----------")
 if build is True:
-    print('|    BUILD MODE ON      |')
-    print('| output_dir    : ', outDir)
-    if containerService == 'sing':
-        print('| singFilePath  : ', singFilePath)
-        print('| containerName : ', containerName)
-        print('| singOpt       : ', singOpt)
-        print('| singPath      : ', singPath)
+    print("|    BUILD MODE ON      |")
+    print("| output_dir    : ", outDir)
+    if containerService == "sing":
+        print("| singFilePath  : ", singFilePath)
+        print("| containerName : ", containerName)
+        print("| singOpt       : ", singOpt)
+        print("| singPath      : ", singPath)
     else:
-        print('| dockerFilePath  : ', dockerFilePath)
-        print('| containerName   : ', containerName)
-        print('| dockerOpt       : ', dockerOpt)
+        print("| dockerFilePath  : ", dockerFilePath)
+        print("| containerName   : ", containerName)
+        print("| dockerOpt       : ", dockerOpt)
 if (run is True) or (runContainer is True):
-    print('|      RUN MODE ON      |')
+    print("|      RUN MODE ON      |")
     if runContainer is True:
-        if containerService == 'sing':
-            print('| singPath        : ', singPath)
-            print('| containerImg    : ', containerImg)
-    print('| inputDir        : ', inputDir)
-    print('| referenceGenome : ', referenceGenome)
-    print('| adaptersFile    : ', adaptersFile)
-    print('| depth           : ', depth)
-    print('| minLen          : ', minLen)
-    print('| minDpIntrahost  : ', minDpIntrahost)
-    print('| trimLen         : ', trimLen)
-    print('| totalCpus       : ', totalCpus)
-    print('| cpusPerSample   : ', cpusPerSample)
-    print('| nxtBin          : ', nxtBin)
-    print('| nxtDtset        : ', nxtDtset)
-    print('| onContainer     : ', args.onContainer)
+        if containerService == "sing":
+            print("| singPath        : ", singPath)
+            print("| containerImg    : ", containerImg)
+    print("| inputDir        : ", inputDir)
+    print("| referenceGenome : ", referenceGenome)
+    print("| adaptersFile    : ", adaptersFile)
+    print("| depth           : ", depth)
+    print("| minLen          : ", minLen)
+    print("| minDpIntrahost  : ", minDpIntrahost)
+    print("| trimLen         : ", trimLen)
+    print("| totalCpus       : ", totalCpus)
+    print("| cpusPerSample   : ", cpusPerSample)
+    print("| nxtBin          : ", nxtBin)
+    print("| nxtDtset        : ", nxtDtset)
+    print("| onContainer     : ", args.onContainer)
 if compileOutput:
-    print('| OUTPUT PROCESSING MODE ON |')
-    print('| inputDir        : ', inputDir)
-    print('| depth           : ', depth)
+    print("| OUTPUT PROCESSING MODE ON |")
+    print("| inputDir        : ", inputDir)
+    print("| depth           : ", depth)
     if inputDir == None:
-        print('ERROR: No input dir specified')
+        print("ERROR: No input dir specified")
         exit(1)
 if checkNegControls:
-    print('| CHECK CONTROLS LINEAGES |')
-    print('| negControlLabels : ', negControlLabels)
-    print('| pangoCSV         : ', pangoCSV)
+    print("| CHECK CONTROLS LINEAGES |")
+    print("| negControlLabels : ", negControlLabels)
+    print("| pangoCSV         : ", pangoCSV)
     if negControlLabels is None:
-        print('ERROR: No control labels provided')
+        print("ERROR: No control labels provided")
         exit(1)
     if pangoCSV is None:
-        print('ERROR: No pangolin csv file path provided')
+        print("ERROR: No pangolin csv file path provided")
         exit(1)
 if getLineageSummary:
-    print('| LINEAGES SUMMARY |')
-    print('| pangoCSV         : ', pangoCSV)
-    print('| chromCSV         : ', chromCSV)
-    print('| outDir           : ', outDir)
+    print("| LINEAGES SUMMARY |")
+    print("| pangoCSV         : ", pangoCSV)
+    print("| chromCSV         : ", chromCSV)
+    print("| outDir           : ", outDir)
     if pangoCSV is None:
-        print('ERROR: No pangolin csv file path provided')
+        print("ERROR: No pangolin csv file path provided")
         exit(1)
     if chromCSV is None:
-        print('ERROR: No chromosomes csv file path provided')
+        print("ERROR: No chromosomes csv file path provided")
         exit(1)
 
     if outDir is None:
-        print('ERROR: No output directory provided')
+        print("ERROR: No output directory provided")
         exit(1)
 
-print('| --------------------------------------------------------------------|')
+print("| --------------------------------------------------------------------|")
 
 # Build mode
 if build is True:
     # TODO: check input (sanity test)
-    if containerService == 'sing':
+    if containerService == "sing":
         try:
-            assert(singFilePath is not None)
-        except(AssertionError):
-            print('ERROR : Singularityfile path must be provided.')
+            assert singFilePath is not None
+        except (AssertionError):
+            print("ERROR : Singularityfile path must be provided.")
             exit(1)
-        print('@ building container ', outDir+containerName)
-        viralflow.containers.buildSing(outDir, singFilePath,
-                                    container_name=containerName,
-                                    sing_path=singPath,
-                                    sing_opt=singOpt)
+        print("@ building container ", outDir + containerName)
+        viralflow.containers.buildSing(
+            outDir,
+            singFilePath,
+            container_name=containerName,
+            sing_path=singPath,
+            sing_opt=singOpt,
+        )
     else:
-        print('@ building container ', containerName)
-        viralflow.containers.buildDocker(dockerFilePath,
-                                    container_name=containerName,
-                                    docker_opt=dockerOpt)
+        print("@ building container ", containerName)
+        viralflow.containers.buildDocker(
+            dockerFilePath, container_name=containerName, docker_opt=dockerOpt
+        )
 
 
 # Run mode
 if run is True:
-    # TODO: hide std error from terminal and store at log
-
+    # if on container
     if args.onContainer:
-        print('*on container')
-        __checkIfIsFile('/data/'+referenceGenome, 'referenceGenome')
-        __checkIfIsFile('/data/'+adaptersFile, 'adaptersFile')
-        viralflow.run_viralflow_pp('/data/', referenceGenome,
-                                   adaptersFile, depth, minLen,
-                                   minDpIntrahost, trimLen,
-                                   '/app/nextclade/dtset/sars-cov-2/',
-                                   nxt_bin='/app/nextclade/nextclade-Linux-x86_64',
-                                   cpus_total=totalCpus,
-                                   cpus_pprc=cpusPerSample,
-                                   verbose=args.verbose)
+        print("*on container")
+        __checkIfIsFile("/data/" + referenceGenome, "referenceGenome")
+        __checkIfIsFile("/data/" + adaptersFile, "adaptersFile")
+        viralflow.run_viralflow_pp(
+            "/data/",
+            referenceGenome,
+            adaptersFile,
+            depth,
+            minLen,
+            minDpIntrahost,
+            trimLen,
+            "/app/nextclade/dtset/sars-cov-2/",
+            nxt_bin="/app/nextclade/nextclade-Linux-x86_64",
+            cpus_total=totalCpus,
+            cpus_pprc=cpusPerSample,
+            verbose=args.verbose,
+        )
     else:
         # --- sanity check ---------------------------------------------------
         # check dirs
-        __checkIfIsDir(inputDir, 'inputDir')
+        __checkIfIsDir(inputDir, "inputDir")
         # check files
-        __checkIfIsFile(inputDir+referenceGenome, 'referenceGenome')
-        __checkIfIsFile(inputDir+adaptersFile, 'adaptersFile')
+        __checkIfIsFile(inputDir + referenceGenome, "referenceGenome")
+        __checkIfIsFile(inputDir + adaptersFile, "adaptersFile")
         # ---------------------------------------------------------------------
 
-        __checkIfIsDir(nxtDtset, 'nxtDtset')
-        viralflow.run_viralflow_pp(inputDir, referenceGenome, adaptersFile,
-                                   depth, minLen, minDpIntrahost, trimLen,
-                                   nxtDtset, nxt_bin=nxtBin,
-                                   cpus_total=totalCpus,
-                                   cpus_pprc=cpusPerSample,
-                                   verbose=args.verbose)
+        __checkIfIsDir(nxtDtset, "nxtDtset")
+        viralflow.run_viralflow_pp(
+            inputDir,
+            referenceGenome,
+            adaptersFile,
+            depth,
+            minLen,
+            minDpIntrahost,
+            trimLen,
+            nxtDtset,
+            nxt_bin=nxtBin,
+            cpus_total=totalCpus,
+            cpus_pprc=cpusPerSample,
+            verbose=args.verbose,
+        )
 
 if runContainer is True:
     # sanity check
     # TODO: Check container path
-    if containerService == 'sing':
-        viralflow.containers.run_sing_container(containerImg, args.inArgsFile,
-                                                inputDir,
-                                                referenceGenome,
-                                                adaptersFile,
-                                                threads=totalCpus,
-                                                cpus_pprc=cpusPerSample,
-                                                depth=depth,
-                                                min_len=minLen,
-                                                min_dp_intrahost=minDpIntrahost,
-                                                trim_len=trimLen,
-                                                sing_call=singPath)
+    if containerService == "sing":
+        viralflow.containers.run_sing_container(
+            containerImg,
+            args.inArgsFile,
+            inputDir,
+            referenceGenome,
+            adaptersFile,
+            threads=totalCpus,
+            cpus_pprc=cpusPerSample,
+            depth=depth,
+            min_len=minLen,
+            min_dp_intrahost=minDpIntrahost,
+            trim_len=trimLen,
+            sing_call=singPath,
+        )
     else:
-        viralflow.containers.run_docker_container(containerImg, args.inArgsFile,
-                                                inputDir,
-                                                referenceGenome,
-                                                adaptersFile,
-                                                threads=totalCpus,
-                                                cpus_pprc=cpusPerSample,
-                                                depth=depth,
-                                                min_len=minLen,
-                                                min_dp_intrahost=minDpIntrahost,
-                                                trim_len=trimLen)
+        viralflow.containers.run_docker_container(
+            containerImg,
+            args.inArgsFile,
+            inputDir,
+            referenceGenome,
+            adaptersFile,
+            threads=totalCpus,
+            cpus_pprc=cpusPerSample,
+            depth=depth,
+            min_len=minLen,
+            min_dp_intrahost=minDpIntrahost,
+            trim_len=trimLen,
+        )
 
 if compileOutput:
     # compile samples results into single csv
-    out_dir = inputDir+'RESULTS/'
+    out_dir = inputDir + "RESULTS/"
     viralflow.output.compile_output_fls(inputDir, out_dir, depth)
 
 if checkNegControls:
-    viralflow.output.check_controls_lineages(negControlLabels,
-                                             pangoCSV)
+    viralflow.output.check_controls_lineages(negControlLabels, pangoCSV)
 if getLineageSummary:
     viralflow.output.get_lineages_summary(pangoCSV, chromCSV, outDir)
-print('| --- DONE --- |')
+print("| --- DONE --- |")

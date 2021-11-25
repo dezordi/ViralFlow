@@ -63,7 +63,7 @@ def run_step_1(
     f = time.time()
     if verbose is True:
         print(" > total execution time : ", f - s)
-    # TODO check output for possible errors
+    # TODO : check output for possible errors ################################
 
 
 def run_step_2(ref_gnm, prefixout, threads, outdir, depth, verbose=True):
@@ -94,7 +94,7 @@ def run_step_2(ref_gnm, prefixout, threads, outdir, depth, verbose=True):
         print("@ get minor variants data...")
 
     viralflow.calls.get_minor_variants(ref_gnm, prefixout, depth, threads, outdir)
-    # TODO check output for possible errors
+    # TODO check output for possible errors ##################################
 
 
 def run_step_3(
@@ -140,21 +140,22 @@ def run_step_3(
         print("     - ", alignment_file)
 
     s = time.time()
-    # get viralflow path
-
+    # WARNING -----------------------------------------------------------------
+    # For now we gonna keep using the intrahost_script, but this should be
+    # rewritten as a callable function
     os.system(
         f"python {VIRALFLOW_PATH}/viralflow/intrahost_script.py \
     -in {prfx_wdir}.depth{depth}.fa.bc -al {prfx_wdir}.depth{depth}.fa.algn \
     -dp {intrahost_depth}"
     )
-
+    # TODO : Filipe, this one is yours. #######################################
     # viralflow.intrahost.get_instrahost_tsv(bam_rc_file, alignment_file,
     #                                       per_limit=per_limit,
     #                                       depth_value=depth_number)
     f = time.time()
     if verbose is True:
         print(" > total execution time : ", f - s)
-    # TODO check output for possible errors
+    # TODO: check output for possible errors ##################################
 
 
 def run_step_4(
@@ -179,7 +180,7 @@ def run_step_4(
     viralflow.calls.get_variant_naming(
         prefixout, depth, threads, out_dir, ref_gnm, nxtdst_str, nxt_bin=nxt_bin
     )
-    # TODO check output for possible errors
+    # TODO: check output for possible errors ##################################
 
 
 def run_step_5(prefixout, outdir, verbose=True):
@@ -188,7 +189,7 @@ def run_step_5(prefixout, outdir, verbose=True):
         print(">--- STEP 5 ---<")
         print("@ computings assembly metrics...")
     viralflow.calls.do_assembly_metrics(prefixout, outdir)
-    # TODO check output for possible errors
+    # TODO: check output for possible errors #################################
 
 
 def run_pipeline(
