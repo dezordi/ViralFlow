@@ -325,6 +325,16 @@ def get_lineages_summary(pango_csv, chromosomes_csv, outdir):
     """
     count lineages on a given pangolin dataframe
     """
+
+    def isMinor(row):
+        """
+        locate minor row on short summary
+        """
+        if row["taxon"].endswith("_minor"):
+            return True
+        else:
+            return False
+
     # load pango df
     print("@ compute lineage summary ")
     pango_df = pd.read_csv(pango_csv, index_col=False)
@@ -335,10 +345,23 @@ def get_lineages_summary(pango_csv, chromosomes_csv, outdir):
     print(f"  > {outdir}lineage_summary.csv")
     print(lineage_df)
 
-    # write short summary csv
+    # short summary
     print("@ generating short summary [sample, depth, coverage, lineage]...")
     chrm_df = pd.read_csv(chromosomes_csv, index_col=False)
     short_summary_df = load_short_summary_df(chrm_df, pango_df)
-    short_summary_df.to_csv(outdir + "/short_summary.csv", index=False)
-    print(f"  > {outdir}short_summary.csv")
+    # split minors from majors data
+    minor_btable = short_summary_df.apply(isMinor, axis=1)
+    minors_df = short_summary_df.loc[minor_btable]
+    major_df = short_summary_df.loc[~minor_btable]
+    # check for empty dataframes
+    if len(minors_df) == 0:
+        print("  NOTE: No minor sequences available")
+    if len(major_df) == 0:
+        print("  WARNING: No major sequence available.")
+    # write csvs
+    major_df.to_csv(outdir + "major_summary.csv", index=False)
+    print(f"  > {outdir}major_summary.csv")
+    minors_df.to_csv(outdir + "minor_summary.csv", index=False)
+    print(f"  > {outdir}minor_summary.csv")
+
     return lineage_df, short_summary_df
