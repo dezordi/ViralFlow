@@ -1,5 +1,6 @@
 import os
 import subprocess
+from shutil import which
 
 __author__ = "Antonio Marinho da Silva Neto"
 __copyright__ = "Copyright 2021, Rede Genomica Fiocruz"
@@ -83,12 +84,13 @@ def buildDocker(dockerfl_path, container_name="viralflow_container", docker_opt=
     """
     # ---- sanity check -------------------------------------------------------
     # check if docker is installed
-    """
     try:
-        #
-    except():
-        #
-    """
+        docker_path = which('docker')
+        assert os.path.exists(docker_path)
+    except(AssertionError):
+        msg_1 = "docker is not installed. Be sure that docker is installed."
+        raise Exception(msg_1)
+    
     # -------------------------------------------------------------------------
     # run command
     print(container_name)
