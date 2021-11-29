@@ -1,6 +1,7 @@
 import os
 import subprocess
 from shutil import which
+import sys
 
 __author__ = "Antonio Marinho da Silva Neto"
 __copyright__ = "Copyright 2021, Rede Genomica Fiocruz"
@@ -46,7 +47,9 @@ def buildSing(
     except (AssertionError):
         msg_1 = sing_path + " does not exist, be sure singularity is available"
         msg_2 = " and the path provided is correct"
-        raise Exception(msg_1 + msg_2)
+        print('\n'+'ERROR: '+msg_1+msg_2)
+        sys.exit(1)
+        #raise Exception(msg_1 + msg_2)
 
     # check if singularity file path is correct
     try:
@@ -54,13 +57,18 @@ def buildSing(
     except (AssertionError):
         msg_1 = singfl_path + " does not exist. Be sure a valid Singularityfile "
         msg_2 = " is provided."
-        raise Exception(msg_1 + msg_2)
+        print('\n'+'ERROR: '+msg_1+msg_2)
+        sys.exit(1)
+        #raise Exception(msg_1 + msg_2)
 
     # check output_dir
     try:
         assert os.path.isdir(output_dir)
     except (AssertionError):
-        raise Exception(output_dir + " is not a valid directory.")
+        print('\n'+'ERROR: '+output_dir + " is not a valid directory.")
+        sys.exit(1)
+        #raise Exception(output_dir + " is not a valid directory.")
+
 
     # -------------------------------------------------------------------------
     # run command
@@ -84,12 +92,22 @@ def buildDocker(dockerfl_path, container_name="viralflow_container", docker_opt=
     """
     # ---- sanity check -------------------------------------------------------
     # check if docker is installed
+    docker_path = which('docker')
     try:
-        docker_path = which('docker')
-        assert os.path.exists(docker_path)
+        assert os.path.exists(str(docker_path))
     except(AssertionError):
-        msg_1 = "docker is not installed. Be sure that docker is installed."
-        raise Exception(msg_1)
+        msg_1 = "Docker is not installed. Be sure that Docker is installed."
+        print('\n'+'ERROR: '+msg_1)
+        sys.exit(1)
+
+    # check if Docker file path is correct
+    try:
+        assert os.path.exists(dockerfl_path+'Dockerfile')
+    except (AssertionError):
+        msg_1 = dockerfl_path + " does not exist. Be sure a valid Dockerfile."
+        msg_2 = " is provided."
+        print('\n'+'ERROR: '+msg_1+msg_2)
+        sys.exit(1)
     
     # -------------------------------------------------------------------------
     # run command
