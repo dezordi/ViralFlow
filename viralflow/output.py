@@ -10,7 +10,7 @@ import sys
 def load_short_summary_df(chrm_df, pang_df):
     """ """
     # get slices
-    chrms_slice = chrm_df[["cod", " Avg depth", " Coverage%"]]
+    chrms_slice = chrm_df[["cod", " Avg depth"]]
     pang_slice = pang_df[["cod", "taxon", "lineage", "scorpio_call"]]
     # merge dataframes
     short_summary = pd.merge(chrms_slice, pang_slice, right_on="cod", left_on="cod")
@@ -29,6 +29,46 @@ def get_consensus_seq(fasta_path, cod):
                 assert cod in line
             else:
                 return line
+
+
+def computeCoverage(seq):
+    """
+    (N - total bases) / total_bases
+    """
+    total_N = sum([1 for i in seq if i == "N"])
+    total_bases = len(seq)
+    return (total_bases - total_N) / total_bases
+
+
+def loadCoverageDF(multifasta_path):
+    """
+    Compute coverage for each sequence and return sample cod, sequence and
+    coverage.
+
+    Parameters
+    ----------
+    multifasta_path:<str>
+        path for fasta file containing samples consensus sequence
+    Returns
+    -------
+    pd.DataFrame
+    """
+
+    with open(multifasta_path, "r") as fasta_fl:
+        seq = ""
+        cod = ""
+        dct_lst = []
+        for line in fasta_fl:
+            if line.startswith(">"):
+                if seq != "" and cod != "":
+                    cov = computeCoverage(seq)
+                    dct_lst.append({"seq": seq, "cod": cod, "coverage": cov})
+                cod = line.replace(">", "").replace(" ", "").replace("\n", "")
+            else:
+                seq += line.replace("\n", "")
+        cov = computeCoverage(seq)
+        dct_lst.append({"seq": seq, "cod": cod, "coverage": cov})
+    return pd.DataFrame(dct_lst)
 
 
 def get_mut(row):
@@ -321,7 +361,7 @@ def check_controls_lineages(control_lbl_lst, pango_csv):
 # --- Data summary ------------------------------------------------------------
 
 
-def get_lineages_summary(pango_csv, chromosomes_csv, outdir):
+def get_lineages_summary(pango_csv, chromosomes_csv, outdir, multifasta):
     """
     count lineages on a given pangolin dataframe
     """
@@ -349,6 +389,10 @@ def get_lineages_summary(pango_csv, chromosomes_csv, outdir):
     print("@ generating short summary [sample, depth, coverage, lineage]...")
     chrm_df = pd.read_csv(chromosomes_csv, index_col=False)
     short_summary_df = load_short_summary_df(chrm_df, pango_df)
+    # multifasta_path = outdir + "seqbatch.fa"
+    cov_df = loadCoverageDF(multifasta)
+    short_summary_df = short_summary_df.merge(cov_df, on="cod")
+
     # split minors from majors data
     minor_btable = short_summary_df.apply(isMinor, axis=1)
     minors_df = short_summary_df.loc[minor_btable]
