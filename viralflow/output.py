@@ -62,7 +62,7 @@ def loadCoverageDF(multifasta_path):
             if line.startswith(">"):
                 if seq != "" and cod != "":
                     cov = computeCoverage(seq)
-                    dct_lst.append({"seq": seq, "cod": cod, "coverage": cov})
+                    dct_lst.append({"cod": cod, "coverage": cov})  # , "seq": seq})
                 cod = line.replace(">", "").replace(" ", "").replace("\n", "")
             else:
                 seq += line.replace("\n", "")
