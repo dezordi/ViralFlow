@@ -5,8 +5,9 @@ This repository contains a set of scripts to performs a reference guided genome 
 
 If you use this workflow for academic purposes, please cite: `ViralFlow: an automated workflow for SARS-CoV-2 genome assembly, lineage assignment, mutations and intrahost variants detection <https://www.medrxiv.org/content/10.1101/2021.10.01.21264424v1>`_.
 
-.. image:: images/workflow.png
+.. image:: images/workflow_v006.png
    :width: 600
+   :align: center
 
 =====
 Dependencies
@@ -39,7 +40,7 @@ You can install viralflow via pip
 
   git clone https://github.com/dezordi/ViralFlow.git
   cd ViralFlow/
-  git checkout docker
+  git checkout develop
   conda env create -f envs/viralflow.yml
   conda activate viralflow
   pip install -e ./
@@ -109,7 +110,7 @@ Get lineage summary
 
   viralflow --getLineageSummary -pangoCSV <path/to/compiled/pango.csv> -chromCSV <path/to/compiled/chromossomes.csv> -outDir <path/to/store/summaries>
   #example
-  viralflow --getLineageSummary -pangoCSV ./test_files/RESULTS/pango.csv -chromCSV ./test_files/RESULTS/chromossomes.csv -outDir ./test_files/RESULTS/
+  viralflow --getLineageSummary -pangoCSV ./test_files/RESULTS/pango.csv -chromCSV ./test_files/RESULTS/chromossomes.csv -multifasta ./test_files/RESULTS/seqbatch.fa -outDir ./test_files/RESULTS/
 
 =====
 Files info

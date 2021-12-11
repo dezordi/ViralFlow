@@ -129,7 +129,7 @@ def run_fastp(fastq1, fastq2, prefixout, threads, adapters, min_len, trimm, out_
     input_opts = f"-i {fastq1} -I {fastq2} --adapter_fasta {adapters} "
     threads_opt = f"--thread {threads} "
     prefix_opt = (
-        f"-o {prfx_wdir}.R1.fq.gz -O {prfx_wdir}.R2.fq.gz -h {prfx_wdir}.quality.html "
+        f"-o {prfx_wdir}.R1.fq.gz -O {prfx_wdir}.R2.fq.gz -h {prfx_wdir}.fastp.html -j {prfx_wdir}.fastp.json "
     )
     var_opt = f"-l {min_len} -f {trimm} -t {trimm} -F {trimm} -T {trimm} "
     cte_opt = "--cut_front --cut_tail --qualified_quality_phred 20 "
