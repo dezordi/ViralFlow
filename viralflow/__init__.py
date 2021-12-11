@@ -275,7 +275,7 @@ def run_viralflow_pp(
     for pair in pairs_lst:
         R1 = pair[0]
         R2 = pair[1]
-        prefix_out = R1.split(".")[0]
+        prefix_out = R1.split("_R1")[0]
         kwarg = {
             "fastq_R1": input_dir + R1,
             "fastq_R2": input_dir + R2,
