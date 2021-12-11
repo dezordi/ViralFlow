@@ -5,7 +5,7 @@ This repository contains a set of scripts to performs a reference guided genome 
 
 If you use this workflow for academic purposes, please cite: `ViralFlow: an automated workflow for SARS-CoV-2 genome assembly, lineage assignment, mutations and intrahost variants detection <https://www.medrxiv.org/content/10.1101/2021.10.01.21264424v1>`_.
 
-.. image:: images/workflow_v006.png
+.. image:: images/workflow_develop.png
    :width: 600
    :align: center
 
