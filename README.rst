@@ -163,7 +163,8 @@ Results directory structure
      ├-code.depthX.fa.bc.intrahost.tsv                     ### tsv file with minor variant informations
      ├-code.depthX.fa.bc.intrahost.short.tsv               ### short tsv file with minor variant informations
      ├-code.depthX.fa.algn.minor.fa                        ### fasta file with minor consensus genome
-     ├-code.quality.html                                   ### html file with quality controll informations
+     ├-code.fastp.html                                     ### html file with fastp quality controll informations
+     ├-code.fastp.json                                     ### json file with fastp quality controll informations
      ├-code.sorted.bam                                     ### sorted bam file
      ├-code.sorted.bam.bai                                 ### index of sorted bam file
      ├-code.time.txt                                       ### time in minutes of each step of analysis.
