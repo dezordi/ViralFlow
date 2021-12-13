@@ -41,7 +41,6 @@ Stage: spython-base
  cd /app/
  git clone https://github.com/dezordi/ViralFlow.git
  cd ViralFlow/
- git checkout develop
  pip install -e ./
 
 %runscript

@@ -40,7 +40,6 @@ You can install viralflow via pip
 
   git clone https://github.com/dezordi/ViralFlow.git
   cd ViralFlow/
-  git checkout develop
   conda env create -f envs/viralflow.yml
   conda activate viralflow
   pip install -e ./

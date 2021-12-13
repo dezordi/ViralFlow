@@ -13,7 +13,6 @@ RUN /bin/bash -c "source /home/pango_update" && \
     cd /app/ && \ 
     git clone https://github.com/dezordi/ViralFlow.git && \
     cd ViralFlow/ && \
-    git checkout develop && \
     /bin/bash -c "source /app/ViralFlow/conda_activate" && \
     pip install -e ./
 
