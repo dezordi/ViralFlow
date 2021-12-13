@@ -67,7 +67,7 @@ def loadCoverageDF(multifasta_path):
             else:
                 seq += line.replace("\n", "")
         cov = computeCoverage(seq)
-        dct_lst.append({"seq": seq, "cod": cod, "coverage": cov})
+        dct_lst.append({"cod": cod, "coverage": cov})  # ,"seq": seq,})
     return pd.DataFrame(dct_lst)
 
 
