@@ -188,7 +188,7 @@ def compile_output_fls(data_dir, out_dir, depth):
                     skip_lst.append(cod)
                     continue
                 # write to multifasta
-                multifas_fl.write("> " + cod + "\n")
+                multifas_fl.write(">" + cod + "\n")
                 multifas_fl.write(seq + "\n")
                 # continue
                 # -- SET EXPECTED OUTPUT FILES --------------------------------
@@ -373,7 +373,10 @@ def get_lineages_summary(pango_csv, chromosomes_csv, outdir, multifasta):
 
     print(f"  > {len(pango_df)} total samples")
     lineage_df = pango_df["lineage"].value_counts()
-    lineage_df.to_csv(outdir + "/lineage_summary.csv", index=False)
+    lineage_df = lineage_df.rename_axis('lineage')
+    lineage_df = lineage_df.rename('count')
+    #lineage_df =  lineage_df.Series.rename(index='lineage')
+    lineage_df.to_csv(outdir + "/lineage_summary.csv", index=True)
     print(f"  > {outdir}lineage_summary.csv")
     print(lineage_df)
 
