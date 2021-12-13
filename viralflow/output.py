@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import sys
+from Bio import SeqIO
 
 # get list of results dir
 # === FUNCTIONS ===============================================================
@@ -53,21 +54,12 @@ def loadCoverageDF(multifasta_path):
     -------
     pd.DataFrame
     """
-
-    with open(multifasta_path, "r") as fasta_fl:
-        seq = ""
-        cod = ""
-        dct_lst = []
-        for line in fasta_fl:
-            if line.startswith(">"):
-                if seq != "" and cod != "":
-                    cov = computeCoverage(seq)
-                    dct_lst.append({"cod": cod, "coverage": cov})  # , "seq": seq})
-                cod = line.replace(">", "").replace(" ", "").replace("\n", "")
-            else:
-                seq += line.replace("\n", "")
+    dct_lst = []
+    for record in SeqIO.parse(multifasta_path,"fasta"):
+        cod = record.id
+        seq = record.seq
         cov = computeCoverage(seq)
-        dct_lst.append({"cod": cod, "coverage": cov})  # ,"seq": seq,})
+        dct_lst.append({"cod": cod, "coverage": cov})
     return pd.DataFrame(dct_lst)
 
 
