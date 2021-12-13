@@ -54,13 +54,8 @@ Building and running a ViralFlow singularity container
 
 .. code:: bash
 
-  viralflow --build -singFilePath /path/to/ViralFlow/Singularityfile_test
-  viralflow --runContainer -inputDir path/to/input/  \
-                           -referenceGenome reference_genome.fasta \
-                           -adaptersFile adapters.fasta -totalCpus 4 \
-                           -depth 5 -minLen 75 \
-                           -containerImg /path/to/viralflow_container \
-                           -minDpIntrahost 100 -trimLen 0
+  viralflow --build -singFilePath /path/to/ViralFlow/Singularityfile
+  viralflow --runContainer -inArgsFile /path/to/args_file
 
 Or you can pass a configure file:
 
