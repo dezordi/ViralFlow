@@ -50,21 +50,14 @@ The recommended way to run ViralFlow is via **Singularity container**, be sure `
 Quick guide
 ====
 
-Building and running a ViralFlow singularity container
-
-.. code:: bash
-
-  viralflow --build -singFilePath /path/to/ViralFlow/Singularityfile
-  viralflow --runContainer -inArgsFile /path/to/args_file
-
-Or you can pass a configure file:
+Building and running ViralFlow with singularity container
 
 .. code:: bash
 
   viralflow --build -singFilePath ./Singularityfile
   viralflow --runContainer -inArgsFile ./test_files/test_args.conf
 
-Building and running a ViralFlow docker container
+Building and running ViralFlow with docker container
 
 .. code:: bash
 
