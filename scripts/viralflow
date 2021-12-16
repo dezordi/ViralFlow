@@ -232,9 +232,8 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "-pangoUpdate",
-    type=bool,
-    default=None,
+    "--pangoUpdate",
+    action="store_true",
     help="perform a pangolin update before run",
 )
 
@@ -575,6 +574,7 @@ if run is True:
             adaptersFile,
             depth,
             minLen,
+            pangoUpdate,
             minDpIntrahost,
             trimLen,
             "/app/nextclade/dtset/sars-cov-2/",
@@ -599,6 +599,7 @@ if run is True:
             adaptersFile,
             depth,
             minLen,
+            pangoUpdate,
             minDpIntrahost,
             trimLen,
             nxtDtset,
@@ -618,6 +619,7 @@ if runContainer is True:
             inputDir,
             referenceGenome,
             adaptersFile,
+            pangoUpdate=pangoUpdate,
             threads=totalCpus,
             cpus_pprc=cpusPerSample,
             depth=depth,
@@ -637,6 +639,7 @@ if runContainer is True:
             cpus_pprc=cpusPerSample,
             depth=depth,
             min_len=minLen,
+            pangoUpdate=pangoUpdate,
             min_dp_intrahost=minDpIntrahost,
             trim_len=trimLen,
         )

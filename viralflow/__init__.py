@@ -118,7 +118,7 @@ def run_sing_cont_pp(kwargs):
         threads=threads,
         depth=depth,
         min_len=min_len,
-        pangoUpdate =pangoUpdate,
+        pangoUpdate=pangoUpdate,
         min_dp_intrahost=min_dp_intrahost,
         trim_len=trim_len,
         sing_call=sing_call,
@@ -264,7 +264,7 @@ def run_viralflow_pp(
         "threads": cpus_pprc,
         "depth": depth,
         "min_len": min_len,
-        "pangoUpdate":pangoUpdate,
+        "pangoUpdate": pangoUpdate,
         "min_dp_intrahost": min_dp_intrahost,
         "trim_len": trim_len,
         "nxt_dataset": nxt_dataset,
@@ -274,7 +274,7 @@ def run_viralflow_pp(
 
     # do the ref genome indexing
     rgm = input_dir + ref_gnm
-    viralflow.pipeline.run_step_0(rgm, input_dir,pangoUpdate,verbose=verbose)
+    viralflow.pipeline.run_step_0(rgm, input_dir,pangoUpdate=pangoUpdate,verbose=verbose)
     # get kwargs list
     kwargs_lst = []
 

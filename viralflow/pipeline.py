@@ -12,10 +12,11 @@ script_file = _path = os.path.realpath(__file__)
 VIRALFLOW_PATH = "/".join(script_file.split("/")[0:-2]) + "/"
 
 
-def run_step_0(reference_genome, pangoUpdate, outdir, verbose=False):
+def run_step_0(reference_genome, outdir, pangoUpdate, verbose=False):
     """
     reference genome index mapping
     """
+    print(f"OIIIIaaaa{pangoUpdate}")
     if pangoUpdate == True:
         if verbose is True:
             print("@ running pangolin update...")
