@@ -100,6 +100,7 @@ def run_sing_cont_pp(kwargs):
     threads = kwargs["threads"]
     depth = kwargs["depth"]
     min_len = kwargs["min_len"]
+    pangoUpdate = kwargs["pangoUpdate"]
     min_dp_intrahost = kwargs["min_dp_intrahost"]
     trim_len = kwargs["trim_len"]
     sing_call = kwargs["sing_call"]
@@ -117,6 +118,7 @@ def run_sing_cont_pp(kwargs):
         threads=threads,
         depth=depth,
         min_len=min_len,
+        pangoUpdate =pangoUpdate,
         min_dp_intrahost=min_dp_intrahost,
         trim_len=trim_len,
         sing_call=sing_call,
@@ -137,6 +139,7 @@ def run_pipeline_pp(kwargs):
     threads = kwargs["threads"]
     depth = kwargs["depth"]
     min_len = kwargs["min_len"]
+    pangoUpdate = kwargs["pangoUpdate"]
     trim = kwargs["trim_len"]
     intrahost_depth = kwargs["min_dp_intrahost"]
     nxt_dataset = kwargs["nxt_dataset"]
@@ -153,6 +156,7 @@ def run_pipeline_pp(kwargs):
         threads,
         depth,
         min_len,
+        pangoUpdate,
         trim,
         intrahost_depth,
         nxt_dataset,
@@ -168,6 +172,7 @@ def run_viralflow_pp(
     adapters_file,
     depth,
     min_len,
+    pangoUpdate,
     min_dp_intrahost,
     trim_len,
     nxt_dataset,
@@ -259,6 +264,7 @@ def run_viralflow_pp(
         "threads": cpus_pprc,
         "depth": depth,
         "min_len": min_len,
+        "pangoUpdate":pangoUpdate,
         "min_dp_intrahost": min_dp_intrahost,
         "trim_len": trim_len,
         "nxt_dataset": nxt_dataset,
@@ -268,7 +274,7 @@ def run_viralflow_pp(
 
     # do the ref genome indexing
     rgm = input_dir + ref_gnm
-    viralflow.pipeline.run_step_0(rgm, input_dir, verbose=verbose)
+    viralflow.pipeline.run_step_0(rgm, input_dir,pangoUpdate,verbose=verbose)
     # get kwargs list
     kwargs_lst = []
 

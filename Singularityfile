@@ -41,7 +41,7 @@ Stage: spython-base
  cd /app/
  git clone https://github.com/dezordi/ViralFlow.git
  cd ViralFlow/
- git checkout pango_update
+ git checkout pango_update --no-guess
  pip install -e ./
 
 %runscript

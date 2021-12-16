@@ -79,6 +79,7 @@ def getArgsDct(in_flpath):
         "referenceGenome",
         "totalCpus",
         "minLen",
+        "pangoUpdate",
         "adaptersFile",
         "containerImg",
         "depth",
@@ -231,6 +232,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "-pangoUpdate",
+    type=bool,
+    default=None,
+    help="perform a pangolin update before run",
+)
+
+parser.add_argument(
     "-minDpIntrahost",
     type=int,
     default=100,
@@ -317,6 +325,7 @@ referenceGenome = args.referenceGenome
 adaptersFile = args.adaptersFile
 depth = args.depth
 minLen = args.minLen
+pangoUpdate = args.pangoUpdate
 minDpIntrahost = args.minDpIntrahost
 trimLen = args.trimLen
 totalCpus = args.totalCpus
@@ -384,6 +393,8 @@ if args.inArgsFile is not None:
         depth = int(args_dct["depth"])
     if "minLen" in ks:
         minLen = int(args_dct["minLen"])
+    if "pangoUpdate" in ks:
+        pangoUpdate = True
     if "minDpIntrahost" in ks:
         minDpIntrahost = args_dct["minDpIntrahost"]
     if "trimLen" in ks:
@@ -480,6 +491,7 @@ if (run is True) or (runContainer is True):
     print("| adaptersFile    : ", adaptersFile)
     print("| depth           : ", depth)
     print("| minLen          : ", minLen)
+    print("| pangoUpdate     : ", pangoUpdate)
     print("| minDpIntrahost  : ", minDpIntrahost)
     print("| trimLen         : ", trimLen)
     print("| totalCpus       : ", totalCpus)
