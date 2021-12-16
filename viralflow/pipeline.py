@@ -12,15 +12,13 @@ script_file = _path = os.path.realpath(__file__)
 VIRALFLOW_PATH = "/".join(script_file.split("/")[0:-2]) + "/"
 
 
-def run_step_0(reference_genome, outdir, pangoUpdate, verbose=False):
+def run_step_0(reference_genome, outdir, verbose=False):
     """
     reference genome index mapping
     """
-    print(f"OIIIIaaaa{pangoUpdate}")
-    if pangoUpdate == True:
-        if verbose is True:
-            print("@ running pangolin update...")
-        viralflow.calls.pango_update()
+    if verbose is True:
+        print("@ running pangolin update...")
+    viralflow.calls.pango_update()
     if verbose is True:
         print("@ running bwa index...")
     s = time.time()
@@ -207,7 +205,6 @@ def run_pipeline(
     threads,
     depth,
     min_len,
-    pangoUpdate,
     trim,
     intrahost_depth,
     nxt_dataset,
@@ -228,7 +225,7 @@ def run_pipeline(
         )
         os.system("mkdir " + outdir)
     if skip_0 is False:
-        run_step_0(ref_gnm, outdir, pangoUpdate,prefixout, verbose=verbose)
+        run_step_0(ref_gnm, outdir, prefixout, verbose=verbose)
 
     run_step_1(
         fastq1,

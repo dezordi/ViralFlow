@@ -129,7 +129,6 @@ def run_sing_container(
     input_dir,
     ref_gnm,
     adapters_file,
-    pangoUpdate,
     threads=1,
     depth=5,
     min_len=75,
@@ -202,7 +201,6 @@ def run_sing_container(
     # cmd += '--env DP_INTRAHOST='+str(min_dp_intrahost)+' '
     # cmd += '--env TRIMM_LEN='+str(trim_len)+' '
     cmd += "--writable-tmpfs " + container_img
-    print(f"OIII {cmd} {pangoUpdate}")
     # run command
     if dry is True:
         print(cmd)
