@@ -268,7 +268,7 @@ def run_viralflow_pp(
 
     # do the ref genome indexing
     rgm = input_dir + ref_gnm
-    viralflow.pipeline.run_step_0(rgm, input_dir,verbose=verbose)
+    viralflow.pipeline.run_step_0(rgm, input_dir, verbose=verbose)
     # get kwargs list
     kwargs_lst = []
 
