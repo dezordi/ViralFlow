@@ -17,6 +17,9 @@ def run_step_0(reference_genome, outdir, verbose=False):
     reference genome index mapping
     """
     if verbose is True:
+        print("@ running pangolin update...")
+    viralflow.calls.pango_update()
+    if verbose is True:
         print("@ running bwa index...")
     s = time.time()
     viralflow.calls.run_bwa_idex(reference_genome, outdir)
