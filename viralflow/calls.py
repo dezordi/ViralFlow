@@ -87,6 +87,9 @@ def run_bwa_idex(input_file, out_dir):
     # __check_status(p_bwa_idx, prfx_wdir+'_1_bwa_idx_err.log', 'BWA INDEX')
     # #########################################################################
 
+def pango_update():
+    pango_update = "pangolin --update"
+    os.system(pango_update)
 
 def run_fastp(fastq1, fastq2, prefixout, threads, adapters, min_len, trimm, out_dir):
     """
