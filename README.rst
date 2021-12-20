@@ -119,6 +119,19 @@ viralflow --runContainer
 
 This option can be used if the user have singularity or docker pre installed into the local machine. A file with paremeters should be parsed in the argument -inArgisfile (see Quick guide). The following arguments can be parsed:
 
+.. code-block:: text
+
+  inputDir                   ### The path to directory with fastq.gz files -- e.g. ./test_files;
+  referenceGenome            ### The name of fasta file with reference genome, this file should be inside the directory with fastq.gz files (inputDir) -- e.g. reference.fasta;
+  adaptersFile               ### The name of fasta file with adapters, this file should be inside the directory with fastq.gz files (inputDir) -- e.g. ART_adapters.fa;
+  totalCpus                  ### Total CPU number used in workflow -- e.g. 2;
+  depth 5                    ### Minimum depth to consider a sequenced nucleotide -- e.g. 5;
+  minLen 75                  ### Minimum length to maintain reads after fastp processing -- e.g. 75;
+  containerImg               ### Container image -- e.g. ./viralflow_container with Singularity or viralflow_container:latest with Docker; 
+  minDpIntrahost 100         ### Minimum depth to consider an iSNV -- e.g. 100;
+  trimLen 0                  ### Length to trim read extremities -- e.g. 0;
+  cpusPerSample 1            ### Number of CPUs per sample during analysis.
+
 viralflow --compileOutput
 -------
 
@@ -174,22 +187,6 @@ This option summarize the lineage information;
      ├-major_summary.csv     ### csv file with depth, coverage, and lineage of major consensus genomes;
      ├-minor_summary.csv     ### csv file with depth, coverage, and lineage of minor consensus genomes;
      └-lineage_summary.csv   ### csv file lineage count of batch analysis.
-
-
-.. code-block:: text
-
-  inputDir                   ### The path to directory with fastq.gz files -- e.g. ./test_files;
-  referenceGenome            ### The name of fasta file with reference genome, this file should be inside the directory with fastq.gz files (inputDir) -- e.g. reference.fasta;
-  adaptersFile               ### The name of fasta file with adapters, this file should be inside the directory with fastq.gz files (inputDir) -- e.g. ART_adapters.fa;
-  totalCpus                  ### Total CPU number used in workflow -- e.g. 2;
-  depth 5                    ### Minimum depth to consider a sequenced nucleotide -- e.g. 5;
-  minLen 75                  ### Minimum length to maintain reads after fastp processing -- e.g. 75;
-  containerImg               ### Container image -- e.g. ./viralflow_container with Singularity or viralflow_container:latest with Docker; 
-  minDpIntrahost 100         ### Minimum depth to consider an iSNV -- e.g. 100;
-  trimLen 0                  ### Length to trim read extremities -- e.g. 0;
-  cpusPerSample 1            ### Number of CPUs per sample during analysis.
-
-
 
 =====
 Files info
