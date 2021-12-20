@@ -50,6 +50,17 @@ The recommended way to run ViralFlow is via **Singularity container**, be sure `
 Quick guide
 ====
 
+Run locally (Be sure all requirements are met on your machine)
+
+.. code:: bash
+
+  viralflow --run -inputDir path/to/input/data/ \
+                  -referenceGenome $FASTA \
+                  -adaptersFile adapters.fasta -totalCpus 4 -depth 5 \
+                  -minLen 75 -minDpIntrahost 100 -trimLen 75 \
+                  -nxtBin /path/to/nextclade \
+                  -nxtDtset /path/to/nextclade/dataset/sars-cov-2/ -v
+
 Building and running ViralFlow with singularity container
 
 .. code:: bash
@@ -64,16 +75,6 @@ Building and running ViralFlow with docker container
   viralflow --build -containerService docker
   viralflow --runContainer -containerService docker -inArgsFile ./test_files/test_args_docker.conf
 
-Run locally (Be sure all requirements are met on your machine)
-
-.. code:: bash
-
-  viralflow --run -inputDir path/to/input/data/ \
-                  -referenceGenome $FASTA \
-                  -adaptersFile adapters.fasta -totalCpus 4 -depth 5 \
-                  -minLen 75 -minDpIntrahost 100 -trimLen 75 \
-                  -nxtBin /path/to/nextclade \
-                  -nxtDtset /path/to/nextclade/dataset/sars-cov-2/ -v
 
 Compile the outputs
 
@@ -100,8 +101,101 @@ Get lineage summary
   viralflow --getLineageSummary -pangoCSV ./test_files/RESULTS/pango.csv -chromCSV ./test_files/RESULTS/chromossomes.csv -multifasta ./test_files/RESULTS/seqbatch.fa -outDir ./test_files/RESULTS/
 
 =====
+Explained Usage
+=====
+
+Reference Genome
+-------
+
+We recommend the use of wuhan SARS-CoV-2 reference genome NC_045512.2, which is included in the ./test_files/reference.fasta.
+
+viralflow --run
+-------
+
+This option can be used if the user compile all the dependencies into the local machine.
+
+viralflow --runContainer
+-------
+
+This option can be used if the user have singularity or docker pre installed into the local machine. A file with paremeters should be parsed in the argument -inArgisfile (see Quick guide). The following arguments can be parsed:
+
+viralflow --compileOutput
+-------
+
+This option compile all the outpus generated in a batch of samples, resulting in the following directory structure:
+
+.. code-block:: text
+
+    inputDir/
+    ├-reference.fasta
+    ├-code1_R1.fastq.gz
+    ├-code1_R2.fastq.gz
+    ├-code2_R1.fastq.gz
+    ├-code2_R2.fastq.gz
+    ├-adapters.fasta
+    ├-code1.results/
+    ├-code2.results/
+    └-RESULTS/
+     ├-chromosomes.csv       ### csv file with compiled bamdst information;
+     ├-erross_detected.csv   ### csv file with errors detected by sample;
+     ├-mutations.csv         ### csv file with nucleotidic mutations by sample;
+     ├-nextclade.csv         ### csv file with compiled nextclade information;
+     ├-pango.csv             ### csv file with compiled pangolin information;
+     └-seqbatch.fa           ### fasta file with consensus sequences;
+
+viralflow --checkNegControls
+-------
+
+This option check if some sample have the same linage of negative control.
+
+viralflow --getLineageSummary
+-------
+
+This option summarize the lineage information;
+
+.. code-block:: text
+
+    inputDir/
+    ├-reference.fasta
+    ├-code1_R1.fastq.gz
+    ├-code1_R2.fastq.gz
+    ├-code2_R1.fastq.gz
+    ├-code2_R2.fastq.gz
+    ├-adapters.fasta
+    ├-code1.results/
+    ├-code2.results/
+    └-RESULTS/
+     ├-chromosomes.csv       ### csv file with compiled bamdst information;
+     ├-erross_detected.csv   ### csv file with errors detected by sample;
+     ├-mutations.csv         ### csv file with nucleotidic mutations by sample;
+     ├-nextclade.csv         ### csv file with compiled nextclade information;
+     ├-pango.csv             ### csv file with compiled pangolin information;
+     ├-seqbatch.fa           ### fasta file with consensus sequences;
+     ├-major_summary.csv     ### csv file with depth, coverage, and lineage of major consensus genomes;
+     ├-minor_summary.csv     ### csv file with depth, coverage, and lineage of minor consensus genomes;
+     └-lineage_summary.csv   ### csv file lineage count of batch analysis.
+
+
+.. code-block:: text
+
+  inputDir                   ### The path to directory with fastq.gz files -- e.g. ./test_files;
+  referenceGenome            ### The name of fasta file with reference genome, this file should be inside the directory with fastq.gz files (inputDir) -- e.g. reference.fasta;
+  adaptersFile               ### The name of fasta file with adapters, this file should be inside the directory with fastq.gz files (inputDir) -- e.g. ART_adapters.fa;
+  totalCpus                  ### Total CPU number used in workflow -- e.g. 2;
+  depth 5                    ### Minimum depth to consider a sequenced nucleotide -- e.g. 5;
+  minLen 75                  ### Minimum length to maintain reads after fastp processing -- e.g. 75;
+  containerImg               ### Container image -- e.g. ./viralflow_container with Singularity or viralflow_container:latest with Docker; 
+  minDpIntrahost 100         ### Minimum depth to consider an iSNV -- e.g. 100;
+  trimLen 0                  ### Length to trim read extremities -- e.g. 0;
+  cpusPerSample 1            ### Number of CPUs per sample during analysis.
+
+
+
+=====
 Files info
 =====
+
+After running, a directory .results will be created for each sample.
 
 Repository directory structure
 
@@ -125,7 +219,7 @@ Repository directory structure
     └-images:
       └-workflow.png                        ### image of workflow
 
-Results directory structure
+Results directory structure for each sample
 
 .. code-block:: text
 
