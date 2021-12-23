@@ -55,7 +55,7 @@ def loadCoverageDF(multifasta_path):
     pd.DataFrame
     """
     dct_lst = []
-    for record in SeqIO.parse(multifasta_path,"fasta"):
+    for record in SeqIO.parse(multifasta_path, "fasta"):
         cod = record.id
         seq = record.seq
         cov = computeCoverage(seq)
@@ -139,7 +139,7 @@ def compile_output_fls(data_dir, out_dir, depth):
     except (AssertionError):
         print("@ creating output dir")
         os.system("mkdir " + out_dir)
-    if out_dir.endswith("/"):
+    if out_dir.endswith("/") is False:
         out_dir += "/"
     print("@ compiling output files")
     # create multifasta file
@@ -373,9 +373,9 @@ def get_lineages_summary(pango_csv, chromosomes_csv, outdir, multifasta):
 
     print(f"  > {len(pango_df)} total samples")
     lineage_df = pango_df["lineage"].value_counts()
-    lineage_df = lineage_df.rename_axis('lineage')
-    lineage_df = lineage_df.rename('count')
-    #lineage_df =  lineage_df.Series.rename(index='lineage')
+    lineage_df = lineage_df.rename_axis("lineage")
+    lineage_df = lineage_df.rename("count")
+    # lineage_df =  lineage_df.Series.rename(index='lineage')
     lineage_df.to_csv(outdir + "/lineage_summary.csv", index=True)
     print(f"  > {outdir}lineage_summary.csv")
     print(lineage_df)

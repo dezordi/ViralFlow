@@ -167,8 +167,8 @@ parser.add_argument(
 parser.add_argument(
     "-outDir",
     type=str,
-    default=os.getcwd() + "/",
-    help="set directory path for output (default = working dir)",
+    default=os.getcwd() + "/RESULTS/",
+    help="set directory path for output (default = working dir s+ /RESULTS/)",
 )
 
 parser.add_argument(
@@ -631,8 +631,7 @@ if runContainer is True:
 
 if compileOutput:
     # compile samples results into single csv
-    out_dir = inputDir + "RESULTS/"
-    viralflow.output.compile_output_fls(inputDir, out_dir, depth)
+    viralflow.output.compile_output_fls(inputDir, outDir, depth)
 
 if checkNegControls:
     viralflow.output.check_controls_lineages(negControlLabels, pangoCSV)
