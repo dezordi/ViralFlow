@@ -175,7 +175,7 @@ parser.add_argument(
     "-singFilePath",
     type=str,
     help="Singularityfile path",
-    default=viralflow_path + "Singularityfile_test",
+    default=viralflow_path + "Singularityfile",
 )
 
 parser.add_argument(
@@ -459,6 +459,8 @@ print("| Parameters")
 print("| ----------")
 if build is True:
     print("|    BUILD MODE ON      |")
+    if outDir.endswith("/RESULTS/"):
+        outDir = os.getcwd() + "/"
     print("| output_dir    : ", outDir)
     if containerService == "sing":
         print("| singFilePath  : ", singFilePath)
