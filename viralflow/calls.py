@@ -231,7 +231,7 @@ def run_ivar(reference_fasta, prefixout, out_dir, depth):
     prfx_wdir = out_dir + prefixout
     mpi_p = f"-d 50000 --reference {reference_fasta} -a "
     out_flnm = f"-B {prfx_wdir}.sorted.bam "
-    mpileup_str = "samtools mpileup " + mpi_p + out_flnm
+    mpileup_str = "samtools mpileup -aa " + mpi_p + out_flnm
 
     # IVAR STEP 1 -------------------------------------------------------------
     # Call variants
