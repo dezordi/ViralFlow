@@ -57,7 +57,7 @@ Run locally (Be sure all requirements are met on your machine)
   viralflow --run -inputDir path/to/input/data/ \
                   -referenceGenome $FASTA \
                   -adaptersFile adapters.fasta -totalCpus 4 -depth 5 \
-                  -minLen 75 -minDpIntrahost 100 -trimLen 75 \
+                  -minLen 75 -minDpIntrahost 100 -trimLen 0 \
                   -nxtBin /path/to/nextclade \
                   -nxtDtset /path/to/nextclade/dataset/sars-cov-2/ -v
 
