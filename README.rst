@@ -82,7 +82,7 @@ Compile the outputs
 
   viralflow --compileOutput -inputDir <path/to/directory/with/results> -outDir <path/to/store/compiled/results>
   #example
-  viralflow --compileOutput -inputDir ./test_files/ -outDir ./test_files/
+  viralflow --compileOutput -inputDir ./test_files/ -outDir ./test_files/RESULTS/
 
 Check negative controls
 
