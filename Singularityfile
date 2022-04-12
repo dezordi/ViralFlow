@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: dezordi/viralflow:0.0.6
+From: dezordi/viralflow:0.0.6.2
 Stage: spython-base
 
 %environment

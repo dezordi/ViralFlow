@@ -1,4 +1,4 @@
-FROM dezordi/viralflow:0.0.6
+FROM dezordi/viralflow:0.0.6.2
 
 ENV INPUT_DIR='' \
     REFERENCE='' \
