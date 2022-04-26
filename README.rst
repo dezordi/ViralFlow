@@ -25,7 +25,7 @@ Dependencies
     * biopython 1.74
 * mafft v7.453 (2019/Nov/8)
 * nextclade 1.4.5
-* pangolin v3.1.11
+* pangolin v4.0.5
 * bedtools v2.27.1
 * bamdst 1.0.9
 * seqtk 1.3-r106
