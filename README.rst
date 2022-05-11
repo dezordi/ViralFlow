@@ -46,6 +46,21 @@ You can install viralflow via pip
 
 The recommended way to run ViralFlow is via **Singularity container**, be sure `Singularity is installed <https://hub.docker.com/repository/docker/dezordi/iam_sarscov2/>`_. But you can also run via Docker and with local environment. If you plan to run on your local environment, be sure all requirements are met.
 
+=====
+Frequent Questions
+=====
+
+* Should I build the docker/singularity containers every single run?
+Answer: No, the viralflow --build command should be performed only one time, in each new run, the pangolin tool will be updated automatically.
+* Should I pass and adapters file?
+Answer: Yes, in the current version of viralflow the argument of adapters file (primers used in the PCR analysis) is obligatory. Future versions will be more flexible in this part. If you aren't working with amplicon sequencing, you can pass an empty file as an argument.
+* My viralflow run froze after the consensus generation step, why?
+Answer: Check if you already don't have directory results (prefix.results) in the output directory, if you have, the bamdst tool will stop asking if you want to replace the original bamdst outputs, you can digit 2x y (yes), or delete the previous results and re-run the viralflow.
+* My viralflow run gets an error in the pangolin update step, why?
+Answer: This can occur for 2 reasons: The first one is related to problems in your local internet, the pangolin update should be performed in an environment with internet access. The second one is owing possible new versions of the pangolin tool, which depends on new dependencies, our team normally fixes it in a mean time of 2 days after the new pangolin versions.
+* Can I use the viralflow for other viruses?
+Answer: Yes, but you need to change the genomic regions on the intrahost_script.py, and ignore the pangolin and nextclade outputs. We are working on a more flexible version of the workflow to automatically deal with those details.
+
 ====
 Quick guide
 ====
@@ -253,5 +268,4 @@ Disclaimer
 =====
 * The adapters and reference file should be in the same directory of fastq files.
 * The minor consensus version is based only on replacing the nucleotide from the consensus (majority consensus) with the minor allele (supported by 5 to 49% of the reads), without any statistical method to reconstruct quasispecies genomic populations. For minor variants with percentage near of 50%, the results of this step should be curated mannualy owing the possibility of different frequencies from ivar and bamreadcount analysis.
-* Using Dockerfile or Singularity a pangolin update will be performed automatically, but periodical updates are recommended (re-building the docker image);
 * More information `Here <https://dezordi.github.io/>`_;
