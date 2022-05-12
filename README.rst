@@ -1,7 +1,7 @@
 ViralFlow
 =========
 
-This repository contains the code  of Viralflow, a workflow to performs a reference guided genome assembly of SARS-CoV-2. Python scripts were developed based on the wuhan SARS-CoV-2 reference genome NC_045512.2. The workflow was developed to work with Illumina paired-end reads. Tests with other technologies should be performed.
+This repository contains the ViralFlow code, a workflow that performs reference guided genome assembly of SARS-CoV-2 and a number of additional analyses. Python scripts were developed based on the Wuhan SARS-CoV-2 reference genome NC_045512.2. The workflow was developed to work with Illumina paired-end reads. Other sequencing technologies were not accessed so far and any attempt to run ViralFlow with reads from other platforms should be carefully evaluated. The ViralFlow authors can not provide support for other sequencing platforms for now.
 
 If you use this workflow for academic purposes, please cite: `ViralFlow: A Versatile Automated Workflow for SARS-CoV-2 Genome Assembly, Lineage Assignment, Mutations and Intrahost Variant Detection <https://www.mdpi.com/1999-4915/14/2/217>`_.
 
@@ -30,6 +30,11 @@ Dependencies
 * bamdst 1.0.9
 * seqtk 1.3-r106
 
+To container modes:
+
+* singularity-ce version ≥ 3.8.0
+* Docker version ≥ 20.10.12
+
 =====
 How to install
 =====
@@ -47,28 +52,69 @@ You can install viralflow via pip
 The recommended way to run ViralFlow is via **Singularity container**, be sure `Singularity is installed <https://hub.docker.com/repository/docker/dezordi/iam_sarscov2/>`_. But you can also run via Docker and with local environment. If you plan to run on your local environment, be sure all requirements are met.
 
 =====
-Frequent Questions
+How to install Singularity to run ViralFlow using singularity container
 =====
 
-* Should I build the docker/singularity containers every single run?
+You can check the complete documentation `Here <https://sylabs.io/guides/3.8/admin-guide/installation.html/>`_.
 
-Answer: No, the viralflow --build command should be performed only one time, in each new run, the pangolin tool will be updated automatically.
+.. code-block:: text
+   
+   #install dependencies
+   
+   sudo apt-get update && sudo apt-get install -y \
+    build-essential \
+    uuid-dev \
+    libgpgme-dev \
+    squashfs-tools \
+    libseccomp-dev \
+    wget \
+    pkg-config \
+    git \
+    cryptsetup-bin
 
-* Should I pass and adapters file?
+   #install GO
+   
+   export VERSION=1.14.12 OS=linux ARCH=amd64 && \
+    wget https://dl.google.com/go/go$VERSION.$OS-$ARCH.tar.gz && \
+    sudo tar -C /usr/local -xzvf go$VERSION.$OS-$ARCH.tar.gz && \
+    rm go$VERSION.$OS-$ARCH.tar.gz
+    
+   echo 'export GOPATH=${HOME}/go' >> ~/.bashrc && \
+    echo 'export PATH=/usr/local/go/bin:${PATH}:${GOPATH}/bin' >> ~/.bashrc && \
+    source ~/.bashrc
+    
+   #download singularity
+   
+   git clone https://github.com/sylabs/singularity.git && \
+    cd SingularityCE && \
+    git checkout v3.8.0
+   
+   #compile singularity
+   
+   ./mconfig && \
+    make -C ./builddir && \
+    sudo make -C ./builddir install
 
-Answer: Yes, in the current version of viralflow the argument of adapters file (primers used in the PCR analysis) is obligatory. Future versions will be more flexible in this part. If you aren't working with amplicon sequencing, you can pass an empty file as an argument.
+=====
+How to install Docker to run ViralFlow using docker container
+=====
 
-* My viralflow run froze after the consensus generation step, why?
+You can check the complete documentation `Here <https://docs.docker.com/engine/install/ubuntu/>`_.
 
-Answer: Check if you already don't have directory results (prefix.results) in the output directory, if you have, the bamdst tool will stop asking if you want to replace the original bamdst outputs, you can digit 2x y (yes), or delete the previous results and re-run the viralflow.
-
-* My viralflow run gets an error in the pangolin update step, why?
-
-Answer: This can occur for 2 reasons: The first one is related to problems in your local internet, the pangolin update should be performed in an environment with internet access. The second one is owing possible new versions of the pangolin tool, which depends on new dependencies, our team normally fixes it in a mean time of 2 days after the new pangolin versions.
-
-* Can I use the viralflow for other viruses?
-
-Answer: Yes, but you need to change the genomic regions on the intrahost_script.py, and ignore the pangolin and nextclade outputs. We are working on a more flexible version of the workflow to automatically deal with those details.
+.. code-block:: text
+   
+   #install
+   
+   curl -fsSL https://get.docker.com | bash 
+   sudo usermod -aG docker <your_username>
+   docker version
+   docker container ls
+   systemctl enable docker
+   
+   #check installation
+   
+   docker container ls
+   docker container run -ti hello-world
 
 ====
 Quick guide
@@ -131,17 +177,17 @@ Explained Usage
 Reference Genome
 -------
 
-We recommend the use of wuhan SARS-CoV-2 reference genome NC_045512.2, which is included in the ./test_files/reference.fasta.
+We recommend the use of the Wuhan SARS-CoV-2 reference genome NC_045512.2, which is included in the ./test_files/reference.fasta.
 
 viralflow --run
 -------
 
-This option can be used if the user compile all the dependencies into the local machine.
+This option can be used if the user compiles all the dependencies into the local machine.
 
 viralflow --runContainer
 -------
 
-This option can be used if the user have singularity or docker pre installed into the local machine. A file with paremeters should be parsed in the argument -inArgisfile (see Quick guide). The following arguments can be parsed:
+This option can be used if the user has singularity or docker pre installed into the local machine. A file with parameters should be parsed in the argument -inArgisfile (see Quick guide). The following arguments can be parsed:
 
 .. code-block:: text
 
@@ -159,7 +205,7 @@ This option can be used if the user have singularity or docker pre installed int
 viralflow --compileOutput
 -------
 
-This option compile all the outpus generated in a batch of samples, resulting in the following directory structure:
+This option compile all the output generated in a batch of samples, resulting in the following directory structure:
 
 .. code-block:: text
 
@@ -188,7 +234,7 @@ This option check if some sample have the same linage of negative control.
 viralflow --getLineageSummary
 -------
 
-This option summarize the lineage information;
+This option summarize the lineage information.
 
 .. code-block:: text
 
@@ -216,7 +262,7 @@ This option summarize the lineage information;
 Files info
 =====
 
-After running, a directory .results will be created for each sample.
+After running, a directory *.results will be created for each sample.
 
 Repository directory structure
 
@@ -273,8 +319,32 @@ Results directory structure for each sample
      └-code.tsv                                            ### tsv output from iVar with the frequencies of iSNVs
 
 =====
+Frequently Asked Questions
+=====
+
+* Should I build the docker/singularity containers every single run?
+
+Answer: No, ViralFlow --build command should be performed only one time. Obs. in each new run using the once built ViralFlow image pangolin tool will be updated automatically.
+
+* Should I necessarily provide as input the adapters file to ViralFlow?
+
+Answer: Yes, in the current version of ViralFlow the argument of adapters file (primers used in the PCR amplification step) is mandatory. More flexibility of this parameter will be implemented in the next versions of ViralFlow. If you are not working with amplicon sequencing, you can pass an empty file as an argument.
+
+* My ViralFlow run froze after the consensus generation step, why?
+
+Answer: Check if you have directory results (prefix.results) in the output directory. If that is the case bamdst tool will stop and ask if you want to replace the original bamdst outputs, you can digit 2x y (yes) in the terminal that was running the ViralFlow or delete the previous results and re-run pipeline.
+
+* My ViralFlow run reports an error in the pangolin update step, why?
+
+Answer: It can happen for 2 reasons: The first one is related to problems in your local internet, the pangolin update should be performed in an environment with internet access. The second one is owing to possible new versions of the pangolin tool, which depends on new dependencies. Our team normally fixes it in a meantime of 2 days after the new pangolin versions.
+
+* Can I use the ViralFlow for other viruses?
+
+Answer: Yes, but you will need to change the genomic regions on the intrahost_script.py because it is hardcoded with Wuhan SARS-CoV-2 reference genome NC_045512.2 positions. You will need to replace these genomic positions with the annotation of the virus you are interested in. Moreover, you should ignore the pangolin and nextclade outputs since they are tailored for SARS-CoV-2 for now. We are working on a more flexible version of the workflow where the users will be able to more easily work with amplicon based sequencing of other viruses.
+
+=====
 Disclaimer
 =====
 * The adapters and reference file should be in the same directory of fastq files.
-* The minor consensus version is based only on replacing the nucleotide from the consensus (majority consensus) with the minor allele (supported by 5 to 49% of the reads), without any statistical method to reconstruct quasispecies genomic populations. For minor variants with percentage near of 50%, the results of this step should be curated mannualy owing the possibility of different frequencies from ivar and bamreadcount analysis.
+* The minor consensus version is based only on replacing the nucleotide from the consensus (majority consensus) with the minor allele (supported by 5 to 49% of the reads), ViralFlow is not based on statistical methods to reconstruct quasispecies genomic populations. For minor variants with a percentage near 50%, the results of this step should be curated manually owing to the possibility of different frequencies from ivar and bamreadcount analysis.
 * More information `Here <https://dezordi.github.io/>`_;
