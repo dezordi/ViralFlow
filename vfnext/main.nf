@@ -1,5 +1,11 @@
 #!/usr/bin/env nextflow
 
+
+// -----------------------------------------------------------------------------
+// TODO: - create container recipe for ivar + samtools
+//       - Check with Filipe the if ivar step can be done just after the bwa index
+// -----------------------------------------------------------------------------
+
 // enable dsl2
 nextflow.enable.dsl = 2
 
@@ -7,6 +13,8 @@ nextflow.enable.dsl = 2
 include { indexReferenceBWA } from './modules/bwaIndex.nf'
 include { runFastp } from './modules/fastp.nf'
 include { align2ref } from './modules/align2ref.nf'
+include { runIvar } from './modules/runIvar.nf'
+
 // I got some of the code from the FASTQC PIPELINE (https://github.com/angelovangel/nxf-fastqc/blob/master/main.nf)
 
 /*
@@ -66,7 +74,10 @@ workflow {
    //align 2 reference
    align2ref_In_ch = reads_ch.combine(bwaidx_Output_ch)
    align2ref(align2ref_In_ch)
-   //align2ref(reads_ch)
+   align2ref.out.set { align2ref_Out_ch }
+   // ivar
+   ivar_In_ch = channel.from(params.referenceGenome, params.depth, align2ref_Out_ch)
+   runIvar(align2ref_Out_ch)
 }
 
 // -------------- Check if everything went okay -------------------------------

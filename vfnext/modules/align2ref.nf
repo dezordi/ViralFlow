@@ -3,9 +3,8 @@ process align2ref{
     tuple val(sample_id), path(reads), path(fasta_amb), path(fasta_ann), path(fasta_bwt), path(fasta_pac), path(fasta_sa)
 //    path("*.fasta*")
 
-//  output:
-//    path("${sample_id}.bam")
-//    path("${sample_id}.sorted.bam")
+  output:
+    tuple val(sample_id), path("*.bam")
 
 
   script:
