@@ -5,6 +5,13 @@ __pycache__/
 
 # C extensions
 *.so
+# container
+
+viralflow_container/
+
+vfnext/.nextflow*
+vfnext/work
+out_dir
 
 # Distribution / packaging
 .Python
@@ -131,3 +138,7 @@ dmypy.json
 # dev_stuff
 test.py
 test/
+
+# mounted containers
+
+./vfnext/containers/*.sif
