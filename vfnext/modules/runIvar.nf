@@ -3,6 +3,9 @@ process runIvar{
   input:
     tuple val(sample_id), path(bams)
 
+  output:
+    tuple val(sample_id), path("*.depth*.fa")
+
   script:
     sorted_bam = "${bams[0].getSimpleName()}.sorted.bam"
     ref_gnm = "${params.referenceGenome}"
