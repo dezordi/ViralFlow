@@ -14,6 +14,8 @@ include { indexReferenceBWA } from './modules/bwaIndex.nf'
 include { runFastp } from './modules/fastp.nf'
 include { align2ref } from './modules/align2ref.nf'
 include { runIvar } from './modules/runIvar.nf'
+include { runReadCounts } from './modules/runReadCounts.nf'
+include { alignConsensus2Ref } from './modules/alignConsensus2Ref.nf'
 
 // I got some of the code from the FASTQC PIPELINE (https://github.com/angelovangel/nxf-fastqc/blob/master/main.nf)
 
@@ -50,7 +52,6 @@ log.info """
          """
          .stripIndent()
 
-
 //  The default workflow
 workflow {
    //println "\nI want to do the genome indexing of $params.referenceGenome and put the output at $params.outDir"
@@ -76,8 +77,14 @@ workflow {
    align2ref(align2ref_In_ch)
    align2ref.out.set { align2ref_Out_ch }
    // ivar
-   ivar_In_ch = channel.from(params.referenceGenome, params.depth, align2ref_Out_ch)
+   //ivar_In_ch = channel.from(params.referenceGenome, params.depth, align2ref_Out_ch)
    runIvar(align2ref_Out_ch)
+   runIvar.out.set { runIvar_Out_ch }
+   // readcounts
+   runReadCounts(align2ref_Out_ch)
+
+   //align consensus to ref
+   alignConsensus2Ref(runIvar.out)
 }
 
 // -------------- Check if everything went okay -------------------------------
