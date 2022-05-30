@@ -107,6 +107,7 @@ You can check the complete documentation `Here <https://docs.docker.com/engine/i
    
    curl -fsSL https://get.docker.com | bash 
    sudo usermod -aG docker <your_username>
+   newgrp docker
    docker version
    docker container ls
    systemctl enable docker
