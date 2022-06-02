@@ -16,7 +16,7 @@ include { align2ref } from './modules/align2ref.nf'
 include { runIvar } from './modules/runIvar.nf'
 include { runReadCounts } from './modules/runReadCounts.nf'
 include { alignConsensus2Ref } from './modules/alignConsensus2Ref.nf'
-
+include { runIntraHostScript } from './modules/runIntraHostScript.nf'
 // I got some of the code from the FASTQC PIPELINE (https://github.com/angelovangel/nxf-fastqc/blob/master/main.nf)
 
 /*
@@ -52,6 +52,27 @@ log.info """
          """
          .stripIndent()
 
+
+
+process doAssemblyMetrics {
+
+  input:
+  tuple val(sample_id), path(sorted_bam)
+
+  //output:
+  //tuple path("*.sorted.bed"), path("*region.tsv.gz")
+
+  script:
+  """
+  bedtools bamtobed -i ${sample_id}.sorted.bam > ${sample_id}.sorted.bed
+  samtools view ${sample_id}.sorted.bam -u > ${sample_id}.sorted2.bam
+  bamdst -p ${sample_id}.sorted.bed -o ./ ${sample_id}.sorted2.bam
+  #tail test.bam | hexdump -C
+  gunzip ./region.tsv.gz
+  gunzip ./depth.tsv.gz
+  """
+}
+
 //  The default workflow
 workflow {
    //println "\nI want to do the genome indexing of $params.referenceGenome and put the output at $params.outDir"
@@ -82,9 +103,16 @@ workflow {
    runIvar.out.set { runIvar_Out_ch }
    // readcounts
    runReadCounts(align2ref_Out_ch)
-
+   runReadCounts.out.set {runReadCounts_Out_ch}
    //align consensus to ref
    alignConsensus2Ref(runIvar.out)
+   alignConsensus2Ref.out.set {alignCon_Out_ch}
+
+   //run intrahost
+   intraHost_In_ch = alignCon_Out_ch.join(runReadCounts_Out_ch)
+   runIntraHostScript(intraHost_In_ch)
+   // Assembly Metrics
+   // doAssemblyMetrics(align2ref_Out_ch)
 }
 
 // -------------- Check if everything went okay -------------------------------

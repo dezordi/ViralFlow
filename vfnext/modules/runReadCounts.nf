@@ -3,7 +3,7 @@ process runReadCounts{
   tuple val(sample_id), path(bams)
 
   output:
-  path("${sample_id}.depth${d}.fa.bc")
+  tuple val(sample_id), path("${sample_id}.depth${d}.fa.bc")
 
   script:
   sorted_bam = "${bams[0].getSimpleName()}.sorted.bam"
