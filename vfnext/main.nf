@@ -17,6 +17,7 @@ include { runIvar } from './modules/runIvar.nf'
 include { runReadCounts } from './modules/runReadCounts.nf'
 include { alignConsensus2Ref } from './modules/alignConsensus2Ref.nf'
 include { runIntraHostScript } from './modules/runIntraHostScript.nf'
+include { runPangolin } from './modules/runPangolin.nf'
 // I got some of the code from the FASTQC PIPELINE (https://github.com/angelovangel/nxf-fastqc/blob/master/main.nf)
 
 /*
@@ -73,6 +74,11 @@ process doAssemblyMetrics {
   """
 }
 
+// process runNextClade {
+
+
+//}
+
 //  The default workflow
 workflow {
    //println "\nI want to do the genome indexing of $params.referenceGenome and put the output at $params.outDir"
@@ -111,6 +117,13 @@ workflow {
    //run intrahost
    intraHost_In_ch = alignCon_Out_ch.join(runReadCounts_Out_ch)
    runIntraHostScript(intraHost_In_ch)
+   runIntraHostScript.out.set {runIntraHostScript_Out_ch}
+
+   // run Pangolin
+   runPangolin_In_ch = runIntraHostScript_Out_ch.join(runIvar_Out_ch)
+   //runPangolin_In_ch.view()
+   runPangolin(runPangolin_In_ch)
+
    // Assembly Metrics
    // doAssemblyMetrics(align2ref_Out_ch)
 }
