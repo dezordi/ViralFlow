@@ -93,6 +93,9 @@ workflow {
 
    // Assembly Metrics
    runPicard(align2ref_Out_ch)
+   runPicard.out.set {runPicard_Out_ch}
+   fixWGS_In_ch =runPicard_Out_ch.join(runIvar_Out_ch)
+   fixWGS(fixWGS_In_ch)
 
    //run intrahost
    intraHost_In_ch = alignCon_Out_ch.join(runReadCounts_Out_ch)
@@ -100,10 +103,10 @@ workflow {
    runIntraHostScript.out.set {runIntraHostScript_Out_ch}
 
    // run Variant Naming (Pangolin and Nextclade)
-   runVarianNaming_In_ch = runIntraHostScript_Out_ch.join(runIvar_Out_ch)
+   runVariantNaming_In_ch = runIntraHostScript_Out_ch.join(runIvar_Out_ch)
    //runPangolin_In_ch.view()
-   runPangolin(runVarianNaming_In_ch)
-   runNextClade(runVarianNaming_In_ch)
+   runPangolin(runVariantNaming_In_ch)
+   runNextClade(runVariantNaming_In_ch)
 }
 
 // -------------- Check if everything went okay -------------------------------

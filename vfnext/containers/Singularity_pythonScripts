@@ -3,7 +3,7 @@ From: python:3.8-slim-bullseye
 Stage: spython-base
 
 %files
-./intrahost_files/* ./
+./python_scripts/* ./
 
 %post
 # Copy sample_vcf_to_zarr.py to WORKDIR

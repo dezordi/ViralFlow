@@ -1,6 +1,9 @@
 process runPicard {
   input:
-  tuple val(sample_id), path(bams)
+    tuple val(sample_id), path(bams)
+
+  output:
+    tuple val(sample_id), path("wgs")
 
   script:
   sorted_bam = "${sample_id}.sorted.bam"
