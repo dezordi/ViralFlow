@@ -1,4 +1,5 @@
 process align2ref{
+  publishDir "${params.outDir}/${sample_id}_results/"
   input:
     tuple val(sample_id), path(reads), path(fasta_amb), path(fasta_ann), path(fasta_bwt), path(fasta_pac), path(fasta_sa)
 //    path("*.fasta*")

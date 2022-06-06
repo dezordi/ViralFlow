@@ -1,4 +1,6 @@
 process runPicard {
+  publishDir "${params.outDir}/${sample_id}_results/"
+
   input:
     tuple val(sample_id), path(bams)
 

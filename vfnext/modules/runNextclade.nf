@@ -1,6 +1,11 @@
 process runNextClade {
+  publishDir "${params.outDir}/${sample_id}_results/"
+
   input:
   tuple val(sample_id), path(intrahost_tsvs), path(algn_fasta), path(consensus_fa)
+
+  output:
+  tuple path("*.csv"), path("*.fasta")
 
   shell:
   nxt_dataset = "${workflow.projectDir}/containers/nextclade_dataset/sars-cov-2/"

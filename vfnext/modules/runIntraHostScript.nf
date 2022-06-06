@@ -1,4 +1,5 @@
 process runIntraHostScript{
+  publishDir "${params.outDir}/${sample_id}_results/"
 
   input:
      tuple val(sample_id), path(fa_bc), path(fa_algn)
