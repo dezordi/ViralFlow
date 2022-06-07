@@ -74,7 +74,6 @@ workflow {
    //bwaidx_Output_ch.view()
    // run fastp
    runFastp(reads_ch)
-   runFastp.out.set { fastp_Output_ch }
    //fastp_Output_ch.view()
 
    //align 2 reference
