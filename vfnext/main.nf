@@ -90,7 +90,7 @@ workflow {
    runReadCounts.out.set {runReadCounts_Out_ch}
 
    //align consensus to ref
-   alignConsensus2Ref(runIvar.out)
+   alignConsensus2Ref(runIvar_Out_ch)
    alignConsensus2Ref.out.set {alignCon_Out_ch}
 
    // Assembly Metrics

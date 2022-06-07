@@ -1,7 +1,8 @@
 process fixWGS {
   publishDir "${params.outDir}/${sample_id}_results/"
   input:
-     tuple val(sample_id), path(wgs), path(consensus)
+     tuple val(sample_id), path(wgs), path(consensus), path(ivar_txt), path(mut_tsv)
+     //temporary solution, no need for ivar_txt and mut_tsv
   output:
      path("${sample_id}.metrics.genome.tsv")
   script:

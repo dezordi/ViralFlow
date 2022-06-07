@@ -4,7 +4,7 @@ process runIvar{
     tuple val(sample_id), path(bams)
 
   output:
-    tuple val(sample_id), path("*.depth*.fa")
+    tuple val(sample_id), path("*.depth*.fa"), path("*.txt"), path("${sample_id}.tsv")
 
   script:
     sorted_bam = "${bams[0].getSimpleName()}.sorted.bam"

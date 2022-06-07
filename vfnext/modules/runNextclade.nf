@@ -2,8 +2,8 @@ process runNextClade {
   publishDir "${params.outDir}/${sample_id}_results/"
 
   input:
-  tuple val(sample_id), path(intrahost_tsvs), path(algn_fasta), path(consensus_fa)
-
+  tuple val(sample_id), path(intrahost_tsvs), path(algn_fasta), path(consensus_fa), path(ivar_txt), path(mut_tsv)
+  // temporary solution, no need for ivar_txt and mut_tsv
   output:
   tuple path("*.csv"), path("*.fasta")
 
