@@ -16,6 +16,6 @@ process indexReferenceBWA {
         bwa=params.bwa
 
         """
-        ${bwa} index -a bwtsw -p ${ref_fa} $PWD/input/${ref_fa}
+        ${bwa} index -a bwtsw -p ${ref_fa} ${ref_fa}
         """
 }

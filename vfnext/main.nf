@@ -64,7 +64,7 @@ workflow {
    // for bwa index
    refgen_ch = channel.fromPath(params.referenceGenome)
    //refgen_ch.view()
-   reads_ch = channel.fromFilePairs('input/*_R{1,2}*.fq.gz')
+   reads_ch = channel.fromFilePairs("${params.inDir}/*_R{1,2}*.fq.gz")
    //reads_ch.view()
 
    // run indexing, open the bwa index output channel
