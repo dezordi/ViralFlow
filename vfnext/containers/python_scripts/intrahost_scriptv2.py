@@ -199,6 +199,7 @@ def format_bam(bam_rc_file, gff_df):
                                 del_dict['del_depth_plus'].append(indel_plus)
                                 del_dict['del_depth_minus'].append(indel_minus)
             for index, row in gff_df.iterrows():
+                region = ""
                 if int(row['start']) <= int(var_pos) <= int(row['end']):
                     region = row['attributes']
                 else:

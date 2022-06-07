@@ -9,9 +9,10 @@ process runIntraHostScript{
 
   script:
      """
-     python /intrahost_script.py \
+     python /intrahost_scriptv2.py \
             -in ${sample_id}.depth${params.depth}.fa.bc \
             -al ${sample_id}.depth${params.depth}.fa.algn \
-            -dp ${params.minDpIntrahost}
+            -dp ${params.minDpIntrahost} \
+            -gf ${params.referenceGFF}
      """
 }

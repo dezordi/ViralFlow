@@ -38,6 +38,7 @@ log.info """
          --inDir            : ${params.inDir}
          --outDir           : ${params.outDir}
          --referenceGenome  : ${params.referenceGenome}
+         --referenceGFF     : ${params.referenceGFF}
          --adaptersFile     : ${params.adaptersFile}
          --threads          : ${params.threads}
          --minLen           : ${params.minLen}
