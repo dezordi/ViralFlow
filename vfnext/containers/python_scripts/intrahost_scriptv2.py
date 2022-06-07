@@ -202,7 +202,7 @@ def format_bam(bam_rc_file, gff_df):
                 if int(row['start']) <= int(var_pos) <= int(row['end']):
                     region = row['attributes']
                 else:
-                    regions = 'intergenic'
+                    region = 'intergenic'
             if 'pos' in del_dict and int(line[1]) in del_dict['pos']:
                 item_index = del_dict['pos'].index(int(line[1]))
                 out_list.append([prefix,var_pos,region,int(var_depth)+int(del_dict['del_depth'][item_index]),A_depth,A_plus,A_minus,C_depth,C_plus,C_minus,G_depth,G_plus,G_minus,T_depth,T_plus,T_minus,del_dict['del_depth'][item_index],del_dict['del_depth_plus'][item_index],del_dict['del_depth_minus'][item_index],del_dict['deletion'][item_index]])
