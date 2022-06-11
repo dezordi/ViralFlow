@@ -57,6 +57,7 @@ log.info """
          """
          .stripIndent()
 
+
 //  The default workflow
 workflow {
    //println "\nI want to do the genome indexing of $params.referenceGenome and put the output at $params.outDir"
@@ -105,9 +106,17 @@ workflow {
 
    // run Variant Naming (Pangolin and Nextclade)
    runVariantNaming_In_ch = runIntraHostScript_Out_ch.join(runIvar_Out_ch)
-   //runPangolin_In_ch.view()
    runPangolin(runVariantNaming_In_ch)
    runNextClade(runVariantNaming_In_ch)
+
+   // GAMBIARRA ALLERT --------------------------------------------------------
+   // Pangolin is the last ones to run, so will use it as a trigger to
+   // the output compilation/
+   // for the final version, need to find a better way. Maybe split and set
+   // as individual post analysis workflow
+   final_trigger = runPangolin.out.collect()
+   compileOutputs(final_trigger)
+
 }
 
 // -------------- Check if everything went okay -------------------------------
