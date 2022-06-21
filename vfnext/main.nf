@@ -21,6 +21,7 @@ include { runPangolin } from './modules/runPangolin.nf'
 include { runNextClade } from './modules/runNextclade.nf'
 include { runPicard } from './modules/runPicard.nf'
 include { fixWGS } from './modules/fixWGS.nf'
+include { compileOutputs } from './modules/compileOutput.nf'
 // I got some of the code from the FASTQC PIPELINE (https://github.com/angelovangel/nxf-fastqc/blob/master/main.nf)
 
 /*
