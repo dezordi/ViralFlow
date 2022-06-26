@@ -107,7 +107,7 @@ workflow {
 
    //run intrahost
    intraHost_In_ch = alignCon_Out_ch.join(runReadCounts_Out_ch)
-   runIntraHostScript(intraHost_In_ch)
+   runIntraHostScript(intraHost_In_ch, ref_gff)
    runIntraHostScript.out.set {runIntraHostScript_Out_ch}
 
    // run Variant Naming (Pangolin and Nextclade)
