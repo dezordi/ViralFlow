@@ -2,17 +2,16 @@ process align2ref{
   publishDir "${params.outDir}/${sample_id}_results/"
   input:
     tuple val(sample_id), path(reads), path(fasta_amb), path(fasta_ann), path(fasta_bwt), path(fasta_pac), path(fasta_sa)
-//    path("*.fasta*")
+    path(ref_fa)
 
   output:
     tuple val(sample_id), path("*.bam")
 
-
   script:
     """
     # run aligner -------------------------------------------------------------
-    ln -s ${params.referenceGenome} ./${fasta_amb.getSimpleName()}.fasta
-    bwa mem -t ${params.threads} ./${fasta_amb.getSimpleName()}.fasta ${reads[0]} ${reads[1]} \
+    #ln -s ${ref_fa} ./${fasta_amb.getSimpleName()}.fasta
+    bwa mem -t ${params.threads} ./${ref_fa} ${reads[0]} ${reads[1]} \
             -o ${sample_id}.bam
 
     # Sort alignments by leftmost coordinates ---------------------------------

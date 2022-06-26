@@ -50,7 +50,7 @@ log.info """
          --depth            : ${params.depth}
          --minDpIntrahost   : ${params.minDpIntrahost}
          --trimLen          : ${params.trimLen}
-
+         --databaseDir      : ${params.databaseDir}
          Runtime data:
         -------------------------------------------
          Running with profile:   ${ANSI_GREEN}${workflow.profile}${ANSI_RESET}
@@ -68,16 +68,13 @@ workflow {
    //println "\nI want to do the genome indexing of $params.referenceGenome and put the output at $params.outDir"
    // STEP 0 ------------------------------------------------------------------
    // open input channels
-   refgen_ch = channel.fromPath(params.referenceGenome)
    processInputs()
-
    reads_ch = processInputs.out.reads_ch
    ref_gff = processInputs.out.ref_gff
    ref_fa = processInputs.out.ref_fa
-
    // STEP 1 ------------------------------------------------------------------
    // run indexing, open the bwa index output channel
-   indexReferenceBWA(refgen_ch)
+   indexReferenceBWA(ref_fa)
    indexReferenceBWA.out.set { bwaidx_Output_ch }
 
    // run fastp
@@ -85,10 +82,10 @@ workflow {
 
    //align 2 reference
    align2ref_In_ch = reads_ch.combine(bwaidx_Output_ch)
-   align2ref(align2ref_In_ch)
+   align2ref(align2ref_In_ch, ref_fa)
    align2ref.out.set { align2ref_Out_ch }
    // ivar
-   runIvar(align2ref_Out_ch)
+   runIvar(align2ref_Out_ch, ref_fa)
    runIvar.out.set { runIvar_Out_ch }
 
    // readcounts
@@ -96,11 +93,11 @@ workflow {
    runReadCounts.out.set {runReadCounts_Out_ch}
 
    //align consensus to ref
-   alignConsensus2Ref(runIvar_Out_ch)
+   alignConsensus2Ref(runIvar_Out_ch, ref_fa)
    alignConsensus2Ref.out.set {alignCon_Out_ch}
 
    // Assembly Metrics
-   runPicard(align2ref_Out_ch)
+   runPicard(align2ref_Out_ch, ref_fa)
    runPicard.out.set {runPicard_Out_ch}
    fixWGS_In_ch =runPicard_Out_ch.join(runIvar_Out_ch)
    fixWGS(fixWGS_In_ch)
@@ -113,7 +110,7 @@ workflow {
    // run Variant Naming (Pangolin and Nextclade)
    runVariantNaming_In_ch = runIntraHostScript_Out_ch.join(runIvar_Out_ch)
    runPangolin(runVariantNaming_In_ch)
-   runNextClade(runVariantNaming_In_ch)
+   runNextClade(runVariantNaming_In_ch, ref_fa)
 
    // GAMBIARRA ALLERT --------------------------------------------------------
    // Pangolin is the last ones to run, so will use it as a trigger to

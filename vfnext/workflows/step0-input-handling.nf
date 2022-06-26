@@ -116,11 +116,7 @@ workflow processInputs {
 
     // ---- get reference GFF and fasta ---------------------------------------
     // Setup values for supported virus
-    println("${params.virus}, EITA OH")
-    println("${!(params.virus=="custom")}, EITA OH")
-
     if (!(params.virus=="custom")){
-      println("EITA")
       if (params.virus=="sars-cov2"){
       ref_genome_code = "NC_045512.2"
       }
@@ -128,11 +124,13 @@ workflow processInputs {
       reference_fa = prepareDatabase.out.ref_fa
       reference_gff = prepareDatabase.out.ref_gff
     }
+
     // if custom virus, just emit the ref gff and fasta provided
-    if (params.virus="custom"){
+    if (params.virus=="custom"){
       reference_gff = params.referenceGFF
       reference_fa = params.referenceGenome
     }
+
     // get reads
     reads_channel = channel.fromFilePairs("${params.inDir}/*_R{1,2}*.fq.gz")
 

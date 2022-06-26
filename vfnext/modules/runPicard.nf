@@ -3,6 +3,7 @@ process runPicard {
 
   input:
     tuple val(sample_id), path(bams)
+    path(ref_fa)
 
   output:
     tuple val(sample_id), path("wgs")
@@ -12,11 +13,11 @@ process runPicard {
   java_cmd = "java -jar /app/picard.jar"
   """
   ${java_cmd} CollectWgsMetrics -I ${sorted_bam} \
-                                -R ${params.referenceGenome}\
+                                -R ${ref_fa}\
                                 -O wgs -CAP 99999
 
   ${java_cmd} CollectMultipleMetrics -I ${sorted_bam} \
-                                     -R ${params.referenceGenome}\
+                                     -R ${ref_fa}\
                                      -O metrics
   """
 }
