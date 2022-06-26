@@ -54,4 +54,7 @@ echo "  > Done <"
 
 echo "@ Building singularity_pythonScripts.sif..."
 singularity build --fakeroot singularity_pythonScripts.sif Singularity_pythonScripts
+
+echo "@ Building singularity_edirect.sif..."
+singularity build --fakeroot singularity_edirect.sif Singularity_edirect
 echo "  > Done <"
