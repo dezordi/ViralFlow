@@ -22,7 +22,10 @@ include { runNextClade } from './modules/runNextclade.nf'
 include { runPicard } from './modules/runPicard.nf'
 include { fixWGS } from './modules/fixWGS.nf'
 include { compileOutputs } from './modules/compileOutput.nf'
-// I got some of the code from the FASTQC PIPELINE (https://github.com/angelovangel/nxf-fastqc/blob/master/main.nf)
+include { processInputs } from './workflows/step0-input-handling.nf'
+
+// I got some of the code from the FASTQC PIPELINE
+// https://github.com/angelovangel/nxf-fastqc/blob/master/main.nf
 
 /*
 * ANSI escape codes to color output messages, get date to use in results folder name
@@ -33,11 +36,12 @@ ANSI_RESET = "\033[0m"
 
 log.info """
         ===========================================
-         VFNEXT_0.0 (dev : pre-alpha)
+         VFNEXT_0.1 (dev : alpha)
          Used parameters:
         -------------------------------------------
          --inDir            : ${params.inDir}
          --outDir           : ${params.outDir}
+         --virus            : ${params.virus}
          --referenceGenome  : ${params.referenceGenome}
          --referenceGFF     : ${params.referenceGFF}
          --adaptersFile     : ${params.adaptersFile}
@@ -62,30 +66,31 @@ log.info """
 //  The default workflow
 workflow {
    //println "\nI want to do the genome indexing of $params.referenceGenome and put the output at $params.outDir"
-   // STEP 1 ------------------------------------------------------------------
+   // STEP 0 ------------------------------------------------------------------
    // open input channels
-   // for bwa index
    refgen_ch = channel.fromPath(params.referenceGenome)
-   //refgen_ch.view()
-   reads_ch = channel.fromFilePairs("${params.inDir}/*_R{1,2}*.fq.gz")
-   //reads_ch.view()
+   processInputs()
 
+   reads_ch = processInputs.out.reads_ch
+   ref_gff = processInputs.out.ref_gff
+   ref_fa = processInputs.out.ref_fa
+
+   // STEP 1 ------------------------------------------------------------------
    // run indexing, open the bwa index output channel
    indexReferenceBWA(refgen_ch)
    indexReferenceBWA.out.set { bwaidx_Output_ch }
-   //bwaidx_Output_ch.view()
+
    // run fastp
    runFastp(reads_ch)
-   //fastp_Output_ch.view()
 
    //align 2 reference
    align2ref_In_ch = reads_ch.combine(bwaidx_Output_ch)
    align2ref(align2ref_In_ch)
    align2ref.out.set { align2ref_Out_ch }
    // ivar
-   //ivar_In_ch = channel.from(params.referenceGenome, params.depth, align2ref_Out_ch)
    runIvar(align2ref_Out_ch)
    runIvar.out.set { runIvar_Out_ch }
+
    // readcounts
    runReadCounts(align2ref_Out_ch)
    runReadCounts.out.set {runReadCounts_Out_ch}
