@@ -18,27 +18,44 @@ def validate_parameters() {
       log.error("An adapter file path must be provided")
       errors +=1
     }
+    // --- VIRUS FLAGS CHECK
+    // check if a valid virus flag was provided
     def valid_virus = ["sars-cov2","custom"]
-    // check if manifest file exists and if it was set
     if (!valid_virus.contains(params.virus)) {
       log.error("The virus provided (${params.virus}) is not valid.")
       errors += 1
     }
 
+    // be sure custom options were not set if a valid virus tag was provided
+    if (valid_virus.contains(params.virus)) {
+        if (!(params.referenceGFF==null)){
+          log.warn("The valid virus tag (${params.virus}) was provided, ingnoring the provided referenceGFF (${params.referenceGFF})")
+          params.referenceGFF=null
+        }
+        if (!(params.referenceGenome==null)){
+          log.warn("The valid virus tag (${params.virus}) was provided, ingnoring the provided referenceGenome (${params.referenceGenome})")
+          params.referenceGenome=null
+        }
+    }
+
     // if a custom virus, check if mandatory params were set
     if (params.virus=="custom"){
+
       if (params.refGenomeCode==null){
-        log.error{"For a 'custom' virus, a genomeCode must be provided "}
+        log.error("For a 'custom' virus, a genomeCode must be provided.")
         errors += 1
       }
+
       if (params.referenceGFF==null){
-        log.error{"For a 'custom' virus, a referenceGFF must be provided "}
+        log.error("A 'custom' virus tag was set, a referenceGFF must be provided.")
         errors += 1
       }
+
       if (params.referenceGenome==null){
-        log.error{"For a 'custom' virus, a reference fasta must be provided "}
+        log.error("For a 'custom' virus, a reference fasta must be provided.")
         errors += 1
       }
+
       else {
         ref_path = file(params.referenceGenome)
         if (!ref_path.isFile()){
