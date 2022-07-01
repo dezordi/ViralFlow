@@ -26,8 +26,8 @@ def validate_parameters() {
       errors += 1
     }
 
-    // be sure custom options were not set if a valid virus tag was provided
-    if (valid_virus.contains(params.virus)) {
+    // be sure custom only options were not set if a valid virus tag was provided
+    if (valid_virus.contains(params.virus) && !(params.virus == "custom")) {
         if (!(params.referenceGFF==null)){
           log.warn("The valid virus tag (${params.virus}) was provided, ingnoring the provided referenceGFF (${params.referenceGFF})")
           params.referenceGFF=null
