@@ -23,6 +23,7 @@ include { runPicard } from './modules/runPicard.nf'
 include { fixWGS } from './modules/fixWGS.nf'
 include { compileOutputs } from './modules/compileOutput.nf'
 include { processInputs } from './workflows/step0-input-handling.nf'
+include { genFaIdx } from './modules/genFaIdx.nf'
 
 // I got some of the code from the FASTQC PIPELINE
 // https://github.com/angelovangel/nxf-fastqc/blob/master/main.nf
@@ -72,10 +73,14 @@ workflow {
    reads_ch = processInputs.out.reads_ch
    ref_gff = processInputs.out.ref_gff
    ref_fa = processInputs.out.ref_fa
+   ref_gcode = processInputs.out.ref_gcode
+
    // STEP 1 ------------------------------------------------------------------
    // run indexing, open the bwa index output channel
    indexReferenceBWA(ref_fa)
    indexReferenceBWA.out.set { bwaidx_Output_ch }
+   genFaIdx(ref_fa)
+   genFaIdx.out.set {faIdx_ch}
 
    // run fastp
    runFastp(reads_ch)
