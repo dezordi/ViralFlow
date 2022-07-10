@@ -53,6 +53,8 @@ log.info """
          --minDpIntrahost   : ${params.minDpIntrahost}
          --trimLen          : ${params.trimLen}
          --databaseDir      : ${params.databaseDir}
+         --runSnpEff        : ${params.runSnpEff}
+
          Runtime data:
         -------------------------------------------
          Running with profile:   ${ANSI_GREEN}${workflow.profile}${ANSI_RESET}
@@ -99,9 +101,11 @@ workflow {
    runReadCounts.out.set {runReadCounts_Out_ch}
 
    // get VCFs
+
+  if (params.runSnpEff==true){
    runSnpEff(align2ref_Out_ch, ref_gcode, ref_fa,
             faIdx_ch)
-
+  }
    //align consensus to ref
    alignConsensus2Ref(runIvar_Out_ch, ref_fa)
    alignConsensus2Ref.out.set {alignCon_Out_ch}
