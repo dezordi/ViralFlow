@@ -123,15 +123,22 @@ workflow {
 
    // run Variant Naming (Pangolin and Nextclade)
    runVariantNaming_In_ch = runIntraHostScript_Out_ch.join(runIvar_Out_ch)
-   runPangolin(runVariantNaming_In_ch)
-   runNextClade(runVariantNaming_In_ch, ref_fa)
 
-   // GAMBIARRA ALLERT --------------------------------------------------------
-   // Pangolin is the last ones to run, so will use it as a trigger to
-   // the output compilation/
-   // for the final version, need to find a better way. Maybe split and set
-   // as individual post analysis workflow
-   final_trigger = runPangolin.out.collect()
+   if (params.virus=="sars-cov2"){
+     runPangolin(runVariantNaming_In_ch)
+     runNextClade(runVariantNaming_In_ch, ref_fa)
+     // GAMBIARRA ALLERT --------------------------------------------------------
+     // Pangolin is the last ones to run, so will use it as a trigger to
+     // the output compilation/
+     // for the final version, need to find a better way. Maybe split and set
+     // as individual post analysis workflow
+     final_trigger = runPangolin.out.collect()
+   }
+
+   if (params.virus="custom"){
+     // GAMBIARRA ALERT
+     final_trigger = runIntraHostScript.out.collect()
+   }
    compileOutputs(final_trigger)
 
 }
@@ -154,3 +161,13 @@ workflow.onComplete {
             .stripIndent()
     }
 }
+
+// TODO
+//  -- add input checks (falta do not allow custom values for prefefined virus)
+//  -- add viral database building (done)
+//  -- add custom virus mode (done)
+//  -- add snpEff (done)
+//  -- optional run for pangolin and nextclade (only for sars cov2)
+//  -- optional run for snpEff
+//  -- check if reads channels are empty
+//  -- check for fq.gz or fastq.gz
