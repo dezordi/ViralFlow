@@ -23,6 +23,7 @@ include { runPicard } from './modules/runPicard.nf'
 include { fixWGS } from './modules/fixWGS.nf'
 include { compileOutputs } from './modules/compileOutput.nf'
 include { processInputs } from './workflows/step0-input-handling.nf'
+include { runSnpEff } from './modules/runSnpEff.nf'
 include { genFaIdx } from './modules/genFaIdx.nf'
 
 // I got some of the code from the FASTQC PIPELINE
@@ -97,6 +98,10 @@ workflow {
    runReadCounts(align2ref_Out_ch)
    runReadCounts.out.set {runReadCounts_Out_ch}
 
+   // get VCFs
+   runSnpEff(align2ref_Out_ch, ref_gcode, ref_fa,
+            faIdx_ch)
+
    //align consensus to ref
    alignConsensus2Ref(runIvar_Out_ch, ref_fa)
    alignConsensus2Ref.out.set {alignCon_Out_ch}
@@ -133,9 +138,10 @@ workflow.onComplete {
         log.info """
             ===========================================
             ${ANSI_GREEN}Finished in ${workflow.duration}
-            See the report here ==> ${ANSI_RESET}$params.outDir/XXX_report.html
             """
             .stripIndent()
+            //See the report here ==> ${ANSI_RESET}$params.outDir/XXX_report.html
+
     } else {
         log.info """
             ===========================================

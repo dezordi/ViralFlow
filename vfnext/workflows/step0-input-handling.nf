@@ -118,9 +118,10 @@ workflow processInputs {
     // Setup values for supported virus
     if (!(params.virus=="custom")){
       if (params.virus=="sars-cov2"){
-      ref_genome_code = "NC_045512.2"
+        ref_gcode = "NC_045512.2"
       }
-      prepareDatabase(ref_genome_code)
+
+      prepareDatabase(ref_gcode)
       reference_fa = prepareDatabase.out.ref_fa
       reference_gff = prepareDatabase.out.ref_gff
     }
@@ -129,8 +130,8 @@ workflow processInputs {
     if (params.virus=="custom"){
       reference_gff = params.referenceGFF
       reference_fa = params.referenceGenome
+      ref_gcode = params.refGenomeCode
     }
-
     // get reads
     reads_channel = channel.fromFilePairs("${params.inDir}/*_R{1,2}*.fq.gz")
 
@@ -138,4 +139,5 @@ workflow processInputs {
     reads_ch = reads_channel
     ref_gff = reference_gff
     ref_fa = reference_fa
+    ref_gcode = ref_gcode
 }
