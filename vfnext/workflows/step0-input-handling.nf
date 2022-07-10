@@ -36,6 +36,11 @@ def validate_parameters() {
           log.warn("The valid virus tag (${params.virus}) was provided, ingnoring the provided referenceGenome (${params.referenceGenome})")
           params.referenceGenome=null
         }
+        if (!(params.refGenomeCode==null)){
+          log.warn("The valid virus tag (${params.virus}) was provided, ingnoring the provided refGenomeCode (${params.refGenomeCode})")
+          params.refGenomeCode=null
+        }
+
     }
 
     // if a custom virus, check if mandatory params were set
