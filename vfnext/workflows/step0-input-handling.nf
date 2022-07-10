@@ -138,7 +138,14 @@ workflow processInputs {
       ref_gcode = params.refGenomeCode
     }
     // get reads
-    reads_channel = channel.fromFilePairs("${params.inDir}/*_R{1,2}*.fq.gz")
+    reads_channel_fqgz = channel.fromFilePairs("${params.inDir}/*_R{1,2}*.fq.gz")
+    reads_channel_fagz = channel.fromFilePairs("${params.inDir}/*_R{1,2}*.fastq.gz")
+    reads_channel = reads_channel_fagz.concat(reads_channel_fqgz)
+
+    if (reads_channel.count()==0){
+      log.error("No fastq files found. Be sure your fastq can be found by '*_R{1,2}*.fq.gz'(or fasta.gz) wildcard.")
+      exit 1
+    }
 
   emit:
     reads_ch = reads_channel
