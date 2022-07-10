@@ -57,4 +57,8 @@ singularity build --fakeroot singularity_pythonScripts.sif Singularity_pythonScr
 
 echo "@ Building singularity_edirect.sif..."
 singularity build --fakeroot singularity_edirect.sif Singularity_edirect
+
+echo "@ Building singularity_snpeff.sif..."
+singularity build --fakeroot singularity_snpeff.sif Singularity_snpEff
+
 echo "  > Done <"
