@@ -51,7 +51,7 @@ nextflow run ../vfnext/main.nf \
 ## NOTES
 Paths provided for the parameters **must be absolute paths**
 
-Pangolin and Nextclade will only run when virus tag is set to 'sars-cov2'
+Pangolin, Nextclade and compile output steps will only run when virus tag is set to 'sars-cov2'
 
 ---
 ## Future Features
