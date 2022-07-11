@@ -133,13 +133,13 @@ workflow {
      // for the final version, need to find a better way. Maybe split and set
      // as individual post analysis workflow
      final_trigger = runPangolin.out.collect()
+     compileOutputs(final_trigger)
    }
 
    if (params.virus="custom"){
      // GAMBIARRA ALERT
      final_trigger = runIntraHostScript.out.collect()
    }
-   compileOutputs(final_trigger)
 
 }
 
