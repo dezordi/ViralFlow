@@ -35,5 +35,4 @@ process runNextClade {
   fi
 
   '''
-
 }

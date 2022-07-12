@@ -45,10 +45,16 @@ def get_nr_regions(gff_file):
     """
     gff3_head = ['seqid','source','type','start','end','score','strand','phase','attributes']
     df = pd.read_csv(gff_file, comment="#", sep ='\t', header = None, names = gff3_head)
-    df = df[df.type.str.contains('UTR') | df.type.str.contains('gene')]
-    df['attributes'] = df['attributes'].replace(r'.*gene\=','', regex = True)
-    df['attributes'] = df['attributes'].replace(r';.*','', regex = True)
-    df['attributes'] = df['attributes'].replace(r'ID=.*','UTR', regex = True)
+    if df['source'].str.contains('RefSeq').any():
+        df = df[df.type.str.contains('UTR') | df.type.str.contains('gene')]
+        df['attributes'] = df['attributes'].replace(r'.*gene\=','', regex = True)
+        df['attributes'] = df['attributes'].replace(r';.*','', regex = True)
+        df['attributes'] = df['attributes'].replace(r'ID=.*','UTR', regex = True)
+    elif df['source'].str.contains('Genbank').any():
+        df = df[df.type.str.contains('UTR') | df.type.str.contains('mature_protein_region_of_CDS')]
+        df['attributes'] = df['attributes'].replace(r'.*product\=','', regex = True)
+        df['attributes'] = df['attributes'].replace(r'.*;','', regex = True)
+        df['attributes'] = df['attributes'].replace(r'gbkey=.*','UTR', regex = True)
     df = df.drop_duplicates(subset=['start'], keep = 'first')
     df = df.drop_duplicates(subset=['end'], keep = 'first')
     return(df)
@@ -198,11 +204,11 @@ def format_bam(bam_rc_file, gff_df):
                                 del_dict['del_depth'].append(indel_depth)
                                 del_dict['del_depth_plus'].append(indel_plus)
                                 del_dict['del_depth_minus'].append(indel_minus)
+            region = ''
             for index, row in gff_df.iterrows():
-                region = ""
                 if int(row['start']) <= int(var_pos) <= int(row['end']):
                     region = row['attributes']
-                else:
+                if region == '':
                     region = 'intergenic'
             if 'pos' in del_dict and int(line[1]) in del_dict['pos']:
                 item_index = del_dict['pos'].index(int(line[1]))
@@ -489,6 +495,7 @@ gff_df = get_nr_regions(gff_file)
 
 if __name__ == '__main__':
     gff_df = get_nr_regions(gff_file)
+    print(gff_df)
     format_bam(bam_rc_file, gff_df)
     generate_intrahost(bam_rc_file+'.fmt.tsv')
     format_intrahost(bam_rc_file+'.fmt.minors.tsv')

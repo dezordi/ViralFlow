@@ -126,14 +126,14 @@ workflow {
 
    if (params.virus=="sars-cov2"){
      runPangolin(runVariantNaming_In_ch)
-     runNextClade(runVariantNaming_In_ch, ref_fa)
+     //runNextClade(runVariantNaming_In_ch, ref_fa)
      // GAMBIARRA ALLERT --------------------------------------------------------
      // Pangolin is the last ones to run, so will use it as a trigger to
      // the output compilation/
      // for the final version, need to find a better way. Maybe split and set
      // as individual post analysis workflow
-     final_trigger = runPangolin.out.collect()
-     compileOutputs(final_trigger)
+      final_trigger = runPangolin.out.collect()
+     // compileOutputs(final_trigger)
    }
 
    if (params.virus="custom"){
