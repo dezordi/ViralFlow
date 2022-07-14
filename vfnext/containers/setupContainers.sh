@@ -59,7 +59,7 @@ echo "@ Building singularity_edirect.sif..."
 singularity build --fakeroot singularity_edirect.sif Singularity_edirect
 
 echo "@ Building singularity_snpeff.sif..."
-singularity build --fakeroot singularity_snpeff.sif Singularity_snpEff
+singularity build --fakeroot --sandbox singularity_snpeff.sif Singularity_snpEff
 
 echo "@ Building singularity_samtools.sif..."
 singularity build --fakeroot singularity_samtools.sif docker://staphb/samtools:1.15
