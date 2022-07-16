@@ -44,6 +44,7 @@ log.info """
          --inDir            : ${params.inDir}
          --outDir           : ${params.outDir}
          --virus            : ${params.virus}
+         --refGenomeCode    : ${params.refGenomeCode}
          --referenceGenome  : ${params.referenceGenome}
          --referenceGFF     : ${params.referenceGFF}
          --adaptersFile     : ${params.adaptersFile}
@@ -101,8 +102,7 @@ workflow {
    runReadCounts.out.set {runReadCounts_Out_ch}
 
    // get VCFs
-
-  if (params.runSnpEff==true){
+  if (!(params.refGenomeCode==null) && (params.runSnpEff==true)) {
    runSnpEff(align2ref_Out_ch, ref_gcode, ref_fa,
             faIdx_ch)
   }

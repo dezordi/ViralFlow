@@ -42,37 +42,47 @@ def validate_parameters() {
         }
 
     }
-
+    // ------------------------------------------------------------------------
     // if a custom virus, check if mandatory params were set
     if (params.virus=="custom"){
-
+      // if a genome code was not provided, check if a gff and a ref fasta was
       if (params.refGenomeCode==null){
-        log.error("For a 'custom' virus, a genomeCode must be provided.")
-        errors += 1
-      }
-
-      if (params.referenceGFF==null){
-        log.error("A 'custom' virus tag was set, a referenceGFF must be provided.")
-        errors += 1
-      }
-
-      if (params.referenceGenome==null){
-        log.error("For a 'custom' virus, a reference fasta must be provided.")
-        errors += 1
-      }
-
-      else {
-        ref_path = file(params.referenceGenome)
-        if (!ref_path.isFile()){
-          log.error("${ref_path} is not a file.")
-          errors += 1
+        if (params.runSnpEff==true){
+          log.warn("The runSnpEff was set to ${params.runSnpEff}, but no refGenomeCode was provided.")
+          log.warn("SnpEff will not be run")
         }
-        if (!ref_path.exists()){
-          log.error("${ref_path} does not exists.")
+        if (params.referenceGFF==null){
+          log.error("A 'custom' virus tag was set and no refGenomeCode was provided, therefore a referenceGFF must be provided.")
           errors += 1
+        } else {
+          ref_gff_path = file(params.referenceGFF)
+          if (!ref_gff_path.isFile()){
+            log.error("${ref_gff_path} is not a file.")
+            errors += 1
+          }
+          if (!ref_gff_path.exists()){
+            log.error("${ref_gff_path} does not exists.")
+            errors += 1
+          }
+        }
+
+        if (params.referenceGenome==null){
+          log.error("A 'custom' virus tag was set and no refGenomeCode was provided, therefore a referenceGenome must be provided.")
+          errors += 1
+        } else {
+          ref_fa_path = file(params.referenceGenome)
+          if (!ref_fa_path.isFile()){
+            log.error("${ref_path} is not a file.")
+            errors += 1
+          }
+          if (!ref_fa_path.exists()){
+            log.error("${ref_path} does not exists.")
+            errors += 1
+          }
         }
       }
     }
+    // ------------------------------------------------------------------------
 
     // check if output dir exists, if not create the default
     if (params.outDir){
@@ -120,23 +130,35 @@ workflow processInputs {
     validate_parameters()
 
     // ---- get reference GFF and fasta ---------------------------------------
-    // Setup values for supported virus
+    // Setup ref code values for supported virus
+    ref_gcode = null
+    reference_fa = null
+    reference_gff = null
+
     if (!(params.virus=="custom")){
       if (params.virus=="sars-cov2"){
         ref_gcode = "NC_045512.2"
       }
+    }
 
+    // if custom virus, check if a genome code was provided, if not
+    // emit the ref gff and fasta provided
+    if (params.virus=="custom"){
+      if (!(params.refGenomeCode==null)){
+        ref_gcode = params.refGenomeCode
+      } else {
+        reference_gff = params.referenceGFF
+        reference_fa = params.referenceGenome
+      }
+    }
+
+    // if a genome code was provided, get the reference fasta and gff
+    if (!(ref_gcode==null)){
       prepareDatabase(ref_gcode)
       reference_fa = prepareDatabase.out.ref_fa
       reference_gff = prepareDatabase.out.ref_gff
     }
 
-    // if custom virus, just emit the ref gff and fasta provided
-    if (params.virus=="custom"){
-      reference_gff = params.referenceGFF
-      reference_fa = params.referenceGenome
-      ref_gcode = params.refGenomeCode
-    }
     // get reads
     reads_channel_fqgz = channel.fromFilePairs("${params.inDir}/*_R{1,2}*.fq.gz")
     reads_channel_fagz = channel.fromFilePairs("${params.inDir}/*_R{1,2}*.fastq.gz")
@@ -146,6 +168,8 @@ workflow processInputs {
       log.error("No fastq files found. Be sure your fastq can be found by '*_R{1,2}*.fq.gz'(or fasta.gz) wildcard.")
       exit 1
     }
+    // be sure a reference fasta and a reference gff was obtained
+    assert !(reference_fa == null) && !(reference_gff == null)
 
   emit:
     reads_ch = reads_channel
