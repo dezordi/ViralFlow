@@ -14,9 +14,24 @@ def validate_parameters() {
     // check if required params were provided and if files provided exists
 
     if (params.adaptersFile==null){
-      // TODO: make adapter file optional, usefull for metagenomics
-      log.error("An adapter file path must be provided")
+      //make adapter file optional, usefull for metagenomics
+      log.warn("An adapter file path was not provided. The pipeline will run fastp without considering adapters.")
+      }
+    // if only the flag is provided withou any value, it is considered as true
+    else if (params.adaptersFile==true){
+      log.error("the adapters file flag was set but no value provided")
       errors +=1
+    }
+    // if a path is provided, check if is valid
+    else if (!(params.adaptersFile==null)){
+        adapter_fl = file(params.adaptersFile)
+        if (!adapter_fl.isFile()){
+          log.error("${params.adaptersFile} is not a file.")
+          errors += 1
+    }
+
+
+      //errors +=1
     }
     // --- VIRUS FLAGS CHECK
     // check if a valid virus flag was provided
