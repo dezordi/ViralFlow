@@ -1,4 +1,5 @@
 process runSnpEff{
+  errorStrategy 'ignore'
   publishDir "${params.outDir}/${sample_id}_results/"
 
   input:
