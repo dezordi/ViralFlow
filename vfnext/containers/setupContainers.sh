@@ -26,8 +26,9 @@ echo "@ Building singularity_bedtools.sif..."
 singularity build singularity_bedtools.sif docker://staphb/bedtools
 echo "  > Done <"
 
-echo "@ Building nextclade_latest.sif..."
-singularity pull docker://nextstrain/nextclade
+echo "@ Building nextclade_2.4.0.sif..."
+singularity pull docker://nextstrain/nextclade:2.4.0
+
 echo "  > loading sars-cov2 nextclade dataset..."
 ./nextclade_latest.sif nextclade dataset get --name 'sars-cov-2' --output-dir 'nextclade_dataset/sars-cov-2'
 echo "  > Done <"
