@@ -30,7 +30,7 @@ echo "@ Building nextclade_2.4.0.sif..."
 singularity pull docker://nextstrain/nextclade:2.4.0
 
 echo "  > loading sars-cov2 nextclade dataset..."
-./nextclade_latest.sif nextclade dataset get --name 'sars-cov-2' --output-dir 'nextclade_dataset/sars-cov-2'
+./nextclade_2.4.0.sif nextclade dataset get --name 'sars-cov-2' --output-dir 'nextclade_dataset/sars-cov-2'
 echo "  > Done <"
 
 echo "@ Building pangolin_latest.sif..."
