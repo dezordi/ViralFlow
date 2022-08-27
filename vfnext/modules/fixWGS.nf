@@ -1,10 +1,15 @@
 process fixWGS {
+  
+  errorStrategy 'ignore'
   publishDir "${params.outDir}/${sample_id}_results/"
+
   input:
      tuple val(sample_id), path(wgs), path(consensus), path(ivar_txt), path(mut_tsv)
      //temporary solution, no need for ivar_txt and mut_tsv
+
   output:
      path("${sample_id}.metrics.genome.tsv")
+
   script:
      consensus_fa = "${sample_id}.depth${params.depth}.fa"
      """
@@ -12,18 +17,24 @@ process fixWGS {
      # ----- import libraries -------------------------------------------------
      import pandas as pd
      from Bio import SeqIO
+     import sys
      # ----- Function ---------------------------------------------------------
 
      def computeCoverage(consensus):
-         '''
-         (N - total bases) / total_bases
-         '''
-         for record in SeqIO.parse(consensus, "fasta"):
-             seq = record.seq
-         total_N = sum([1 for i in seq if i == "N"])
-         total_bases = len(seq)
-
-         return (total_bases - total_N) / total_bases
+        '''
+        (N - total bases) / total_bases
+        '''
+        for record in SeqIO.parse(consensus, "fasta"):
+           seq = record.seq
+        total_N = sum([1 for i in seq if i == "N"])
+        total_bases = len(seq)
+        try:
+            assert(total_bases > 0)      
+        except(AssertionError):
+            print("WARN: No sequence at ${consensus_fa}")
+            return 0
+        
+        return (total_bases - total_N) / total_bases
      # ------------------------------------------------------------------------
      # compute coverage
      exact_coverage = computeCoverage("${consensus_fa}")
