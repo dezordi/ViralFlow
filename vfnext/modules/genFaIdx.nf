@@ -2,7 +2,7 @@ process genFaIdx {
     /*
     * Indexes reference fasta file using bwa.
     */
-    publishDir "${params.outDir}/"
+    //publishDir "${params.outDir}/"
 
     input:
         path(reference_fasta)

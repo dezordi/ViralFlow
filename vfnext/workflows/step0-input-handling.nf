@@ -103,26 +103,26 @@ def validate_parameters() {
     if (params.outDir){
        outDir_path = file(params.outDir)
 
-       if (!outDir_path.isDirectory()){
-         log.error("${params.outDir} is not a directory")
-         error+=1
-       }
-
-       if (!outDir_path.exists()){
+      if (!outDir_path.exists()){
          log.warn("${params.outDir} does not exist, the directory will be created")
          outDir_path.mkdir()
        }
+      if (!(outDir_path.isDirectory())){
+         log.error("${params.outDir} is not a directory")
+         errors+=1
+       }
+
     }
     // check if input dir exists
     if (params.inDir==null){
         log.error("An input directory must be provided.")
-        error+=1
+        errors+=1
     }
     if (params.inDir){
       inDir_path = file(params.inDir)
       if (!inDir_path.isDirectory()){
         log.error("${params.inDir} is not a directory")
-        error+=1
+        errors+=1
       }
 
     }

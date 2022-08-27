@@ -4,7 +4,7 @@ process indexReferenceBWA {
     /**
     * Indexes reference fasta file using bwa.
     */
-    publishDir "${params.outDir}/"
+    //publishDir "${params.outDir}/"
 
     input:
         path(ref_fa)
