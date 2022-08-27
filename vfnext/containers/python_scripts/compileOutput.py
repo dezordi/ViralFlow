@@ -1,3 +1,4 @@
+from ast import Assert
 import os
 import pandas as pd
 import sys
@@ -218,26 +219,43 @@ def compile_output_fls(data_dir, out_dir, depth):
         sys.exit(1)
     if c > 0:
         print("@ writing compiled data")
-        all_pango_df = pd.concat(pango_df_lst, ignore_index=True)
-        all_nxtcd_df = pd.concat(nxtcd_df_lst, ignore_index=True)
-        #all_chrms_df = pd.concat(chrms_df_lst, ignore_index=True)
-        all_mut_df = pd.concat(mut_df_lst, ignore_index=True)
-        #all_dpth_df = pd.concat(dpth_lst, ignore_index=True)
+
+        try:
+            assert(len(pango_df_lst)>0)
+            all_pango_df = pd.concat(pango_df_lst, ignore_index=True)
+            all_pango_df.to_csv(out_dir + "/pango.csv", index=False)
+            print("  > pango.csv")
+        except(AssertionError):
+            print("WARN: No data from pangolin")
+        
+        try:
+            assert(len(nxtcd_df_lst)>0)
+            all_nxtcd_df = pd.concat(nxtcd_df_lst, ignore_index=True)
+            all_nxtcd_df.to_csv(out_dir + "/nextclade.csv", index=False)
+            print("  > nextclade.csv")
+        except(AssertionError):
+            print("WARN: No data from Nextclade")
+        
+        try:
+            assert(len(mut_df_lst)>0)
+            all_mut_df = pd.concat(mut_df_lst, ignore_index=True)
+            all_mut_df.to_csv(out_dir + "/mutations.csv", index=False)
+            print("  > mutations.csv")
+        except(AssertionError):
+            print("WARN: No mutation data")
+
         errors_df = pd.DataFrame(err_dct_lst)
-        # write csvs
-        all_pango_df.to_csv(out_dir + "/pango.csv", index=False)
-        print("  > pango.csv")
-        all_nxtcd_df.to_csv(out_dir + "/nextclade.csv", index=False)
-        print("  > nextclade.csv")
-        #all_chrms_df.to_csv(out_dir + "/chromossomes.csv", index=False)
-        #print("  > chromossomes.csv")
-        all_mut_df.to_csv(out_dir + "/mutations.csv", index=False)
-        print("  > mutations.csv")
-        #all_dpth_df.to_csv(out_dir + "/depth.csv", index=False)
-        print("  > depth.csv")
         errors_df.to_csv(out_dir + "/errors_detected.csv", index=False)
         print("  > errors_detected.csv")
 
+        # write csvs
+        #all_chrms_df = pd.concat(chrms_df_lst, ignore_index=True)
+        #all_dpth_df = pd.concat(dpth_lst, ignore_index=True)
+        #all_chrms_df.to_csv(out_dir + "/chromossomes.csv", index=False)
+        #print("  > chromossomes.csv")
+        #all_dpth_df.to_csv(out_dir + "/depth.csv", index=False)
+        #print("  > depth.csv")
+        
     print(" :: DONE ::")
 # -----------------------------------------------------------------------------
 

@@ -51,7 +51,7 @@ log.info """
          --databaseDir      : ${params.databaseDir}
          --runSnpEff        : ${params.runSnpEff}
 
-        * Only required if "custom" virus
+        * Only required for "custom" virus
          Runtime data:
         -------------------------------------------
          Running with profile:   ${ANSI_GREEN}${workflow.profile}${ANSI_RESET}
