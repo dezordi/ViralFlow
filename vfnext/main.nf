@@ -1,11 +1,5 @@
 #!/usr/bin/env nextflow
 
-
-// -----------------------------------------------------------------------------
-// TODO: - create container recipe for ivar + samtools
-//       - Check with Filipe the if ivar step can be done just after the bwa index
-// -----------------------------------------------------------------------------
-
 // enable dsl2
 nextflow.enable.dsl = 2
 
@@ -25,6 +19,7 @@ include { compileOutputs } from './modules/compileOutput.nf'
 include { processInputs } from './workflows/step0-input-handling.nf'
 include { runSnpEff } from './modules/runSnpEff.nf'
 include { genFaIdx } from './modules/genFaIdx.nf'
+include { getMappedReads } from './modules/getMappedReads.nf'
 
 // I got some of the code from the FASTQC PIPELINE
 // https://github.com/angelovangel/nxf-fastqc/blob/master/main.nf
@@ -94,6 +89,10 @@ workflow {
    align2ref_In_ch = reads_ch.combine(bwaidx_Output_ch)
    align2ref(align2ref_In_ch, ref_fa)
    align2ref.out.set { align2ref_Out_ch }
+  
+   // get mapped reads
+   getMappedReads(align2ref_Out_ch) 
+  
    // ivar
    runIvar(align2ref_Out_ch, ref_fa)
    runIvar.out.set { runIvar_Out_ch }
@@ -116,7 +115,7 @@ workflow {
    // Assembly Metrics
    runPicard(align2ref_Out_ch, ref_fa)
    runPicard.out.set {runPicard_Out_ch}
-   fixWGS_In_ch =runPicard_Out_ch.join(runIvar_Out_ch)
+   fixWGS_In_ch = runPicard_Out_ch.join(runIvar_Out_ch)
    fixWGS(fixWGS_In_ch)
 
    //run intrahost
@@ -164,13 +163,3 @@ workflow.onComplete {
             .stripIndent()
     }
 }
-
-// TODO
-//  -- add input checks (falta do not allow custom values for prefefined virus)
-//  -- add viral database building (done)
-//  -- add custom virus mode (done)
-//  -- add snpEff (done)
-//  -- optional run for pangolin and nextclade (only for sars cov2)
-//  -- optional run for snpEff
-//  -- check if reads channels are empty
-//  -- check for fq.gz or fastq.gz
