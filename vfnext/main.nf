@@ -44,9 +44,9 @@ log.info """
          --inDir            : ${params.inDir}
          --outDir           : ${params.outDir}
          --virus            : ${params.virus}
-         --refGenomeCode    : ${params.refGenomeCode}
-         --referenceGenome  : ${params.referenceGenome}
-         --referenceGFF     : ${params.referenceGFF}
+         --refGenomeCode   *: ${params.refGenomeCode}
+         --referenceGenome *: ${params.referenceGenome}
+         --referenceGFF    *: ${params.referenceGFF}
          --adaptersFile     : ${params.adaptersFile}
          --threads          : ${params.threads}
          --minLen           : ${params.minLen}
@@ -56,6 +56,7 @@ log.info """
          --databaseDir      : ${params.databaseDir}
          --runSnpEff        : ${params.runSnpEff}
 
+        * Only required if "custom" virus
          Runtime data:
         -------------------------------------------
          Running with profile:   ${ANSI_GREEN}${workflow.profile}${ANSI_RESET}
@@ -102,9 +103,11 @@ workflow {
    runReadCounts.out.set {runReadCounts_Out_ch}
 
    // get VCFs
-  if (!(params.refGenomeCode==null) && (params.runSnpEff==true)) {
-   runSnpEff(align2ref_Out_ch, ref_gcode, ref_fa,
-            faIdx_ch)
+  if ((params.runSnpEff==true)) {
+    runSnpEff(align2ref_Out_ch,
+              ref_gcode,
+              ref_fa,
+              faIdx_ch)
   }
    //align consensus to ref
    alignConsensus2Ref(runIvar_Out_ch, ref_fa)
