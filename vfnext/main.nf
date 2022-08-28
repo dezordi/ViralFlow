@@ -20,7 +20,8 @@ include { processInputs } from './workflows/step0-input-handling.nf'
 include { runSnpEff } from './modules/runSnpEff.nf'
 include { genFaIdx } from './modules/genFaIdx.nf'
 include { getMappedReads } from './modules/getMappedReads.nf'
-
+include { getUnmappedReads } from './modules/getUnmappedReads.nf'
+include { bamTofastq } from './modules/bamToFastq.nf'
 // I got some of the code from the FASTQC PIPELINE
 // https://github.com/angelovangel/nxf-fastqc/blob/master/main.nf
 
@@ -90,9 +91,13 @@ workflow {
    align2ref(align2ref_In_ch, ref_fa)
    align2ref.out.set { align2ref_Out_ch }
   
-   // get mapped reads
+   // write mapped reads
    getMappedReads(align2ref_Out_ch) 
   
+   // write unmappped reads
+   getUnmappedReads(align2ref_Out_ch)
+   bamTofastq(getUnmappedReads.out)
+
    // ivar
    runIvar(align2ref_Out_ch, ref_fa)
    runIvar.out.set { runIvar_Out_ch }
