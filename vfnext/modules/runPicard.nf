@@ -6,7 +6,7 @@ process runPicard {
     path(ref_fa)
 
   output:
-    tuple val(sample_id), path("wgs")
+    tuple val(sample_id), path("wgs"), path("metrics.*")
 
   script:
   sorted_bam = "${sample_id}.sorted.bam"

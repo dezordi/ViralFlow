@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from ast import Assert
 import os
 import pandas as pd
@@ -75,6 +77,28 @@ def __parse_xsv(cod, xsv_path, sep=","):
     df["cod"] = [cod for i in range(0, len(df))]
     return df
 
+def __parse_metrics(cod, metrics_path):
+    """
+    get read counts from picard output
+    """
+    with open(metrics_path, "r") as metrics_fl:
+        for line in metrics_fl:
+            if line.startswith("#"):
+                continue
+            # get reads summary
+            if line.startswith("PAIR"):
+                d_line = line.split("\t")
+                dct = {
+                    "cod" : cod,
+                    "total_reads": int(d_line[1]),
+                    "pf_reads_aligned" : int(d_line[5]),
+                    "pct_pf_reads_aligned" : int(d_line[6])
+                    }
+                break
+
+    df = pd.DataFrame(dct, index=[0])
+    return df
+
 def get_mut(row):
     """
     get mutation data on a single string
@@ -110,6 +134,7 @@ def compile_output_fls(data_dir, out_dir, depth):
     pango_df_lst = []
     chrms_df_lst = []
     nxtcd_df_lst = []
+    mtrcs_df_lst = []
     ithst_df_lst = []
     mut_df_lst = []
     err_dct_lst = []
@@ -153,6 +178,7 @@ def compile_output_fls(data_dir, out_dir, depth):
                 multifas_fl.write(">" + cod + "\n")
                 multifas_fl.write(seq + "\n")
                 # continue
+                
                 # -- SET EXPECTED OUTPUT FILES --------------------------------
                 # depth data
                 depth_fl = f"{prfx}depth{depth}.fa.bc"
@@ -174,9 +200,11 @@ def compile_output_fls(data_dir, out_dir, depth):
                     assert os.path.isfile(nxtcl_fl)
                 except (AssertionError):
                     nxtcl_fl = f"{prfx}depth{depth}.all.fa.nextclade.csv"
+                # picard
+                pcrd_mtrcs_fl = f"{path}/metrics.alignment_summary_metrics"
 
                 # --- CHECK IF FILES EXIST ------------------------------------
-                out_fls_lst = [pango_fl, ithst_fl, mut_fl]#,depth_fl, chrms_fl]
+                out_fls_lst = [pango_fl, ithst_fl, mut_fl, pcrd_mtrcs_fl]#,depth_fl, chrms_fl]
                 err_dct_ = __check_if_outfls_exist(cod, out_fls_lst, mut_fl)
                 # if any file is missing, skip current sample
                 if len(err_dct_) > 0:
@@ -193,7 +221,8 @@ def compile_output_fls(data_dir, out_dir, depth):
                 nxtcd_df_lst.append(__parse_xsv(cod, nxtcl_fl, sep=";"))
                 # intrahost
                 ithst_df_lst.append(__parse_xsv(cod, ithst_fl, sep="\t"))
-
+                # metrics (picard)
+                mtrcs_df_lst.append(__parse_metrics(cod, pcrd_mtrcs_fl))
                 # Mutations
                 mut_df = pd.read_csv(mut_fl, sep="\t")
                 val_mut_df = mut_df.loc[mut_df["PASS"] == True]
@@ -212,7 +241,7 @@ def compile_output_fls(data_dir, out_dir, depth):
                 dpth_lst.append(dpth_df)
 
     print(f"  > Total {c} samples processed")
-
+    print()
     # mount compiled dataframes
     if c == 0:
         print("ERROR: No ViralFlow output files found")
@@ -243,6 +272,15 @@ def compile_output_fls(data_dir, out_dir, depth):
             print("  > mutations.csv")
         except(AssertionError):
             print("WARN: No mutation data")
+
+
+        try:
+            assert(len(mtrcs_df_lst)>0)
+            all_metrics_df = pd.concat(mtrcs_df_lst, ignore_index=True)
+            all_metrics_df.to_csv(out_dir + "/reads_count.csv", index=False)
+            print("  > reads_count.csv")
+        except(AssertionError):
+            print("WARN: No reads_count data")
 
         errors_df = pd.DataFrame(err_dct_lst)
         errors_df.to_csv(out_dir + "/errors_detected.csv", index=False)

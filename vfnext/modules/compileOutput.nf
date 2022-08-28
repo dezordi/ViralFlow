@@ -7,7 +7,7 @@ process compileOutputs{
     path("*")
   script:
     """
-    python /compileOutput.py -dD ${params.outDir} \
+    compileOutput.py -dD ${params.outDir} \
                             -oD ./ \
                             --depth ${params.depth}
     """
