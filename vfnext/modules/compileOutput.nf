@@ -1,5 +1,5 @@
 process compileOutputs{
-  publishDir "${params.outDir}/"
+  publishDir "${params.outDir}/COMPILED_OUTPUT/"
   input:
     val(go)
 

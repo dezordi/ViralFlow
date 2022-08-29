@@ -1,4 +1,4 @@
-process bamTofastq(){
+process bamToFastq(){
     publishDir "${params.outDir}/${sample_id}_results/"
 
     input:

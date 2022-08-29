@@ -21,7 +21,7 @@ include { runSnpEff } from './modules/runSnpEff.nf'
 include { genFaIdx } from './modules/genFaIdx.nf'
 include { getMappedReads } from './modules/getMappedReads.nf'
 include { getUnmappedReads } from './modules/getUnmappedReads.nf'
-include { bamTofastq } from './modules/bamToFastq.nf'
+include { bamToFastq } from './modules/bamToFastq.nf'
 // I got some of the code from the FASTQC PIPELINE
 // https://github.com/angelovangel/nxf-fastqc/blob/master/main.nf
 
@@ -96,7 +96,7 @@ workflow {
   
    // write unmappped reads
    getUnmappedReads(align2ref_Out_ch)
-   bamTofastq(getUnmappedReads.out)
+   bamToFastq(getUnmappedReads.out)
 
    // ivar
    runIvar(align2ref_Out_ch, ref_fa)
