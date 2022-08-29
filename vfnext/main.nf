@@ -51,7 +51,8 @@ log.info """
          --trimLen          : ${params.trimLen}
          --databaseDir      : ${params.databaseDir}
          --runSnpEff        : ${params.runSnpEff}
-
+         --writeMappedReads : ${params.writeMappedReads}
+        
         * Only required for "custom" virus
          Runtime data:
         -------------------------------------------
@@ -91,13 +92,14 @@ workflow {
    align2ref(align2ref_In_ch, ref_fa)
    align2ref.out.set { align2ref_Out_ch }
   
+  if ((params.writeMappedReads == true)){
    // write mapped reads
    getMappedReads(align2ref_Out_ch) 
   
    // write unmappped reads
    getUnmappedReads(align2ref_Out_ch)
    bamToFastq(getUnmappedReads.out)
-
+  }
    // ivar
    runIvar(align2ref_Out_ch, ref_fa)
    runIvar.out.set { runIvar_Out_ch }
