@@ -106,7 +106,7 @@ def get_mut(row):
     return row["REF"] + str(row["POS"]) + row["ALT"]
 
 
-def compile_output_fls(data_dir, out_dir, depth):
+def compile_output_fls(data_dir, out_dir, depth, virus_tag):
     """
     Compile Viralflow output data files on subdirs
     Parameters
@@ -161,6 +161,7 @@ def compile_output_fls(data_dir, out_dir, depth):
             # 2) parse and compiled results in single files
             if name.endswith(f"depth{depth}.fa"):
                 c += 1
+                out_fls_lst = []
                 print(f"  > {c} samples processed", end="\r")
                 fasta_path = os.path.join(path, name)
                 # sanity
@@ -182,29 +183,37 @@ def compile_output_fls(data_dir, out_dir, depth):
                 # -- SET EXPECTED OUTPUT FILES --------------------------------
                 # depth data
                 depth_fl = f"{prfx}depth{depth}.fa.bc"
-                # pangolin
-                try:
-                    pango_fl = f"{prfx}fa.pango.out.csv"
-                    assert os.path.isfile(pango_fl)
-                except (AssertionError):
-                    pango_fl = f"{prfx}all.fa.pango.out.csv"
-                # chromosomes
-                #chrms_fl = f"{path}/chromosomes.report"
+                if virus_tag == "sars-cov2":
+                    # pangolin
+                    try:
+                        pango_fl = f"{prfx}fa.pango.out.csv"
+                        assert os.path.isfile(pango_fl)
+                    except (AssertionError):
+                        pango_fl = f"{prfx}all.fa.pango.out.csv"
+                    out_fls_lst.append(pango_fl)
+
+                    # nextclade
+                    try:
+                        nxtcl_fl = f"{prfx}depth{depth}.fa.nextclade.csv"
+                        assert os.path.isfile(nxtcl_fl)
+                    except (AssertionError):
+                        nxtcl_fl = f"{prfx}depth{depth}.all.fa.nextclade.csv"
+                    
+                    out_fls_lst.append(nxtcl_fl)    
+                    # chromosomes
+                    #chrms_fl = f"{path}/chromosomes.report"
                 # intrahost
                 ithst_fl = f"{prfx}depth{depth}.fa.bc.intrahost.tsv"
+                out_fls_lst.append(ithst_fl)
                 # mutation
                 mut_fl = f"{prfx}tsv"
-                # nextclade
-                try:
-                    nxtcl_fl = f"{prfx}depth{depth}.fa.nextclade.csv"
-                    assert os.path.isfile(nxtcl_fl)
-                except (AssertionError):
-                    nxtcl_fl = f"{prfx}depth{depth}.all.fa.nextclade.csv"
+                out_fls_lst.append(mut_fl)
                 # picard
                 pcrd_mtrcs_fl = f"{path}/metrics.alignment_summary_metrics"
-
+                out_fls_lst.append(pcrd_mtrcs_fl)
+                
                 # --- CHECK IF FILES EXIST ------------------------------------
-                out_fls_lst = [pango_fl, ithst_fl, mut_fl, pcrd_mtrcs_fl]#,depth_fl, chrms_fl]
+                #out_fls_lst = [pango_fl, ithst_fl, mut_fl, pcrd_mtrcs_fl]#,depth_fl, chrms_fl]
                 err_dct_ = __check_if_outfls_exist(cod, out_fls_lst, mut_fl)
                 # if any file is missing, skip current sample
                 if len(err_dct_) > 0:
@@ -213,12 +222,14 @@ def compile_output_fls(data_dir, out_dir, depth):
                     break
 
                 # --- PARSE DATA ----------------------------------------------
-                # pangolin
-                pango_df_lst.append(__parse_xsv(cod, pango_fl, sep=","))
-                # chromossomes
-                #chrms_df_lst.append(__parse_xsv(cod, chrms_fl, sep="\t"))
-                # nextclade
-                nxtcd_df_lst.append(__parse_xsv(cod, nxtcl_fl, sep=";"))
+                if virus_tag == "sars-cov2":
+                    # pangolin
+                    pango_df_lst.append(__parse_xsv(cod, pango_fl, sep=","))
+                    # chromossomes
+                    #chrms_df_lst.append(__parse_xsv(cod, chrms_fl, sep="\t"))
+                    # nextclade
+                    nxtcd_df_lst.append(__parse_xsv(cod, nxtcl_fl, sep=";"))
+                
                 # intrahost
                 ithst_df_lst.append(__parse_xsv(cod, ithst_fl, sep="\t"))
                 # metrics (picard)
@@ -248,22 +259,22 @@ def compile_output_fls(data_dir, out_dir, depth):
         sys.exit(1)
     if c > 0:
         print("@ writing compiled data")
-
-        try:
-            assert(len(pango_df_lst)>0)
-            all_pango_df = pd.concat(pango_df_lst, ignore_index=True)
-            all_pango_df.to_csv(out_dir + "/pango.csv", index=False)
-            print("  > pango.csv")
-        except(AssertionError):
-            print("WARN: No data from pangolin")
+        if virus_tag == "sars-cov2":
+            try:
+                assert(len(pango_df_lst)>0)
+                all_pango_df = pd.concat(pango_df_lst, ignore_index=True)
+                all_pango_df.to_csv(out_dir + "/pango.csv", index=False)
+                print("  > pango.csv")
+            except(AssertionError):
+                print("WARN: No data from pangolin")
         
-        try:
-            assert(len(nxtcd_df_lst)>0)
-            all_nxtcd_df = pd.concat(nxtcd_df_lst, ignore_index=True)
-            all_nxtcd_df.to_csv(out_dir + "/nextclade.csv", index=False)
-            print("  > nextclade.csv")
-        except(AssertionError):
-            print("WARN: No data from Nextclade")
+            try:
+                assert(len(nxtcd_df_lst)>0)
+                all_nxtcd_df = pd.concat(nxtcd_df_lst, ignore_index=True)
+                all_nxtcd_df.to_csv(out_dir + "/nextclade.csv", index=False)
+                print("  > nextclade.csv")
+            except(AssertionError):
+                print("WARN: No data from Nextclade")
         
         try:
             assert(len(mut_df_lst)>0)
@@ -306,6 +317,11 @@ if __name__=="__main__":
     help="directory to output compiled files")
   parser.add_argument("-dp","--depth", type=int, default= 5,
     help="Minimum depth value to consider set as input to ViralFlow as minor variant, default = 5")
+  parser.add_argument("-virus_tag", type=str, help="viral tag provided" )
+  
   args = parser.parse_args()
+  # add check for virus tag
+  valid_virus = ["sars-cov2","custom"]
+  assert(args.virus_tag in valid_virus), f"{args.virus_tag}"
 
-  compile_output_fls(args.dataDir, args.outputDir, args.depth)
+  compile_output_fls(args.dataDir, args.outputDir, args.depth, args.virus_tag)

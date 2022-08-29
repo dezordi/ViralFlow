@@ -148,6 +148,7 @@ workflow {
    if (params.virus="custom"){
      // GAMBIARRA ALERT
      final_trigger = runIntraHostScript.out.collect()
+     compileOutputs(final_trigger, params.virus)
    }
 
 }
