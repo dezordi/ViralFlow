@@ -16,6 +16,7 @@ include { runNextClade } from './modules/runNextclade.nf'
 include { runPicard } from './modules/runPicard.nf'
 include { fixWGS } from './modules/fixWGS.nf'
 include { compileOutputs } from './modules/compileOutput.nf'
+include { compileOutputs as compileOutputs_SC2} from './modules/compileOutput.nf'
 include { processInputs } from './workflows/step0-input-handling.nf'
 include { runSnpEff } from './modules/runSnpEff.nf'
 include { genFaIdx } from './modules/genFaIdx.nf'
@@ -142,10 +143,10 @@ workflow {
      // for the final version, need to find a better way. Maybe split and set
      // as individual post analysis workflow
      final_trigger = runPangolin.out.collect()
-     compileOutputs(final_trigger)
+     compileOutputs_SC2(final_trigger, params.virus)
    }
 
-   if (params.virus="custom"){
+   if (params.virus=="custom"){
      // GAMBIARRA ALERT
      final_trigger = runIntraHostScript.out.collect()
      compileOutputs(final_trigger, params.virus)
