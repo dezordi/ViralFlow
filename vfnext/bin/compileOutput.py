@@ -92,7 +92,7 @@ def __parse_metrics(cod, metrics_path):
                     "cod" : cod,
                     "total_reads": int(d_line[1]),
                     "pf_reads_aligned" : int(d_line[5]),
-                    "pct_pf_reads_aligned" : int(d_line[6])
+                    "pct_pf_reads_aligned" : float(d_line[6])
                     }
                 break
 
@@ -151,7 +151,7 @@ def compile_output_fls(data_dir, out_dir, depth, virus_tag):
                 continue
 
             # get consensus
-            cod = sub_dir.split("_")[0]
+            cod = sub_dir.replace("_results", "") #sub_dir.split("_")[0]
             prfx = path + f"/{cod}."
             if cod in skip_lst:
                 continue
