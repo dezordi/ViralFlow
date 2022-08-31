@@ -4,7 +4,7 @@ process runFastp{
     tuple val(sample_id), path(reads)
 
   output:
-    tuple val(prfx), path('*.R{1,2}.fq.gz')
+    tuple val(prfx), path('*.R{1,2}.fq.gz'), path("${prfx}.fastp.html")
 
   script:
       prfx = reads[0].getSimpleName()
