@@ -3,10 +3,11 @@ process runSnpEff{
   publishDir "${params.outDir}/${sample_id}_results/"
 
   input:
-  tuple val(sample_id), path(bam_files)
-  val(genome_code)
-  path(refGenomeFasta)
-  path(refIndexFiles)
+    tuple val(sample_id), path(bam_files)
+    val(genome_code)
+    path(refGenomeFasta)
+    path(refIndexFiles)
+    path(entry_found_file) // here to assure runSnpEff will not start before DB was checked
   output:
   tuple val(sample_id), path("*.vcf"), path("snpEff_summary.html"), path("snpEff_genes.txt")
 

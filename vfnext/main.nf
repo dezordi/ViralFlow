@@ -17,12 +17,15 @@ include { runPicard } from './modules/runPicard.nf'
 include { fixWGS } from './modules/fixWGS.nf'
 include { compileOutputs } from './modules/compileOutput.nf'
 include { compileOutputs as compileOutputs_SC2} from './modules/compileOutput.nf'
-include { processInputs } from './workflows/step0-input-handling.nf'
 include { runSnpEff } from './modules/runSnpEff.nf'
 include { genFaIdx } from './modules/genFaIdx.nf'
 include { getMappedReads } from './modules/getMappedReads.nf'
 include { getUnmappedReads } from './modules/getUnmappedReads.nf'
 include { bamToFastq } from './modules/bamToFastq.nf'
+include { checkSnpEffDB } from './modules/checkSnpEffDB.nf'
+// import sub workflows
+include { processInputs } from './workflows/step0-input-handling.nf'
+
 // I got some of the code from the FASTQC PIPELINE
 // https://github.com/angelovangel/nxf-fastqc/blob/master/main.nf
 
@@ -111,10 +114,14 @@ workflow {
 
    // get VCFs
   if ((params.runSnpEff==true)) {
+    // check if genome code is on SnpEff database
+    checkSnpEffDB(params.refGenomeCode)
+    // runSnpEffDB
     runSnpEff(align2ref_Out_ch,
-              ref_gcode,
-              ref_fa,
-              faIdx_ch)
+                ref_gcode,
+                ref_fa,
+                faIdx_ch,
+                checkSnpEffDB.out)
   }
    //align consensus to ref
    alignConsensus2Ref(runIvar_Out_ch, ref_fa)
