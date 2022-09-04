@@ -25,6 +25,7 @@ include { bamToFastq } from './modules/bamToFastq.nf'
 include { checkSnpEffDB } from './modules/checkSnpEffDB.nf'
 // import sub workflows
 include { processInputs } from './workflows/step0-input-handling.nf'
+include { runVfReport } from './modules/runVfReport.nf'
 
 // I got some of the code from the FASTQC PIPELINE
 // https://github.com/angelovangel/nxf-fastqc/blob/master/main.nf
@@ -91,6 +92,12 @@ workflow {
    // run fastp
    runFastp(reads_ch)
 
+   // collect htmls for vf reports
+   runFastp.out
+        | map{ it -> it[2]}
+        | set {fastp_html_ch}
+   all_fastp_html_ch = fastp_html_ch.collect()
+   
    //align 2 reference
    align2ref_In_ch = reads_ch.combine(bwaidx_Output_ch)
    align2ref(align2ref_In_ch, ref_fa)
@@ -122,6 +129,11 @@ workflow {
                 ref_fa,
                 faIdx_ch,
                 checkSnpEffDB.out)
+    runSnpEff.out
+      | map {it -> it[2]}
+      | set { snpEff_html }
+    all_snpEff_html_ch = snpEff_html.collect()
+    runVfReport(all_fastp_html_ch, all_snpEff_html_ch)
   }
    //align consensus to ref
    alignConsensus2Ref(runIvar_Out_ch, ref_fa)

@@ -8,8 +8,9 @@ process runSnpEff{
     path(refGenomeFasta)
     path(refIndexFiles)
     path(entry_found_file) // here to assure runSnpEff will not start before DB was checked
+  
   output:
-  tuple val(sample_id), path("*.vcf"), path("snpEff_summary.html"), path("snpEff_genes.txt")
+  tuple val(sample_id), path("*.vcf"), path("${sample_id}_snpEff_summary.html"), path("snpEff_genes.txt")
 
   script:
   ref_fa = "${refGenomeFasta}"
@@ -20,5 +21,7 @@ process runSnpEff{
   snpEff download -v ${genome_code}
   snpEff ann -Xmx4g \
             ${genome_code} ${sample_id}.vcf > ${sample_id}.ann.vcf
+  # add sample id to htmls
+  mv snpEff_summary.html ${sample_id}_snpEff_summary.html
   """
 }
