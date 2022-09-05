@@ -122,7 +122,7 @@ workflow {
    // get VCFs
   if ((params.runSnpEff==true)) {
     // check if genome code is on SnpEff database
-    checkSnpEffDB(params.refGenomeCode)
+    checkSnpEffDB(ref_gcode)
     // runSnpEffDB
     runSnpEff(align2ref_Out_ch,
                 ref_gcode,
