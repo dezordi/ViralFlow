@@ -125,6 +125,30 @@ def validate_parameters() {
 
     }
 
+  // get number of cpus available for nextflow if running local
+  maxcpus = Runtime.runtime.availableProcessors()
+  // if cpus were not specified or higher than the available cpus, set it to use all cpus available
+  if ((params.nextflowSimCalls == null) || (params.nextflowSimCalls > maxcpus)){
+      log.warn("Number of requested simultaneous nextflow calls (${params.nextflowSimCalls}) was set to max cpus available (${maxcpus})")
+      params.nextflowSimCalls = maxcpus
+  }
+
+  // top multithread to maxcpus
+  if (params.fastp_threads > maxcpus){
+    log.warn("Number of threads to be used by fastp (${params.fastp_threads}) is higher than requested cpus (${maxcpus}). Setting it to ${maxcpus}.")
+    params.fastp_threads = maxcpus
+  }
+
+  if (params.bwa_threads > maxcpus){
+    log.warn("Number of threads to be used by bwa (${params.bwa_threads}) is higher than available threads (${maxcpus}). Setting it to ${maxcpus}.")
+    params.bwa_threads = maxcpus
+  }
+
+  if (params.mafft_threads > maxcpus){
+    log.warn("Number of threads to be used by mafft (${params.mafft_threads}) is higher than available threads (${maxcpus}). Setting it to ${maxcpus}.")
+    params.mafft_threads = maxcpus
+  }
+
     //TODO check if adapterFile exist
     //-------------------------------------------------------------------------
     // count errors and kill nextflow if any had been found

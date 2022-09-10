@@ -57,6 +57,11 @@ log.info """
          --databaseDir      : ${params.databaseDir}
          --runSnpEff        : ${params.runSnpEff}
          --writeMappedReads : ${params.writeMappedReads}
+         --nextflowSimCalls : ${params.nextflowSimCalls}
+         --fastp_threads    : ${params.fastp_threads}
+         --bwa_threads      : ${params.bwa_threads}
+         --mafft_threads    : ${params.mafft_threads}
+         
         
         * Only required for "custom" virus
          Runtime data:
@@ -73,8 +78,8 @@ log.info """
 
 //  The default workflow
 workflow {
-   //println "\nI want to do the genome indexing of $params.referenceGenome and put the output at $params.outDir"
    // STEP 0 ------------------------------------------------------------------
+
    // open input channels
    processInputs()
    reads_ch = processInputs.out.reads_ch

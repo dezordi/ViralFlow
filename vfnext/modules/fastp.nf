@@ -1,5 +1,8 @@
+
 process runFastp{
   publishDir "${params.outDir}/${sample_id}_results/"
+  label "multithread"
+
   input:
     tuple val(sample_id), path(reads)
 
@@ -11,7 +14,7 @@ process runFastp{
       if (params.adaptersFile==null)
       """
       fastp -i ${reads[0]} -I ${reads[1]} \
-            --thread ${params.threads} \
+            --thread ${params.fastp_threads} \
             -o ${reads[0].getSimpleName()}.R1.fq.gz \
             -O ${reads[0].getSimpleName()}.R2.fq.gz \
             -h ${reads[0].getSimpleName()}.fastp.html \
@@ -25,7 +28,7 @@ process runFastp{
       """
       fastp -i ${reads[0]} -I ${reads[1]} \
             --adapter_fasta ${params.adaptersFile} \
-            --thread ${params.threads} \
+            --thread ${params.fastp_threads} \
             -o ${reads[0].getSimpleName()}.R1.fq.gz -O ${reads[0].getSimpleName()}.R2.fq.gz -h ${reads[0].getSimpleName()}.fastp.html \
             -j ${reads[0].getSimpleName()}.fastp.json \
             -l ${params.minLen} -f ${params.trimLen} -t ${params.trimLen} \

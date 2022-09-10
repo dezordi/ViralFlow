@@ -1,5 +1,7 @@
 process alignConsensus2Ref {
-   publishDir "${params.outDir}/${sample_id}_results/"
+    publishDir "${params.outDir}/${sample_id}_results/"
+    label "multithread"
+
     input:
     tuple val(sample_id), path(consensus_fa), path(ivar_txt), path(mut_tsv)
     path(ref_fa)
@@ -10,7 +12,7 @@ process alignConsensus2Ref {
     script:
     """
     mafft --keeplength --add ${sample_id}.depth${params.depth}.fa \
-                       --thread ${params.threads} \
+                       --thread ${params.mafft_threads} \
                        ${ref_fa} \
     > ${sample_id}.depth${params.depth}.fa.algn
     """
