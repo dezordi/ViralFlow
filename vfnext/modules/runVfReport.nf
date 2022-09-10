@@ -1,5 +1,5 @@
 process runVfReport {
-    publishDir "${params.outDir}/"
+    publishDir "${params.outDir}/COMPILED_OUTPUT/"
 
     input:
         path(fastp_htmls)

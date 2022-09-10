@@ -28,9 +28,7 @@ def validate_parameters() {
         if (!adapter_fl.isFile()){
           log.error("${params.adaptersFile} is not a file.")
           errors += 1
-    }
-
-
+        }
       //errors +=1
     }
     // --- VIRUS FLAGS CHECK
