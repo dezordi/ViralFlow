@@ -334,6 +334,9 @@ def load_short_summary_df(wgs_df, pang_df):
     pang_slice = pang_df[["cod", "taxon", "lineage", "scorpio_call"]]
     # merge dataframes
     short_summary = pd.merge(wgs_slice, pang_slice, right_on="cod", left_on="cod")
+    short_summary = short_summary.rename(columns={"MEAN_COVERAGE":"mean_depth_coverage",
+                                                  "SD_COVERAGE":"sd_depth_coverage",
+                                                  "MEDIAN_COVERAGE":"median_depth_coverage"})
     # return df
     return short_summary
 
@@ -363,8 +366,8 @@ def loadCoverageDF(multifasta_path):
     for record in SeqIO.parse(multifasta_path, "fasta"):
         cod = record.id
         seq = record.seq
-        cov = computeCoverage(seq)
-        dct_lst.append({"cod": cod, "coverage": cov})
+        cov = "{:.4f}".format(computeCoverage(seq))
+        dct_lst.append({"cod": cod, "coverage_breadth": cov})
     return pd.DataFrame(dct_lst)
 
 # -------------------------------------------------------------------------------------
