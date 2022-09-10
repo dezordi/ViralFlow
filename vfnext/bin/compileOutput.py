@@ -17,6 +17,7 @@ __username__ = "amarinhosn"
 
 
 # --- FUNCTIONS ---------------------------------------------------------------
+# --- compile output 
 def get_consensus_seq(fasta_path, cod):
     """
     get sequence line from a single sequence fasta file
@@ -91,6 +92,7 @@ def __parse_metrics(cod, metrics_path):
                 dct = {
                     "cod" : cod,
                     "total_reads": int(d_line[1]),
+                    "me"
                     "pf_reads_aligned" : int(d_line[5]),
                     "pct_pf_reads_aligned" : float(d_line[6])
                     }
@@ -136,10 +138,12 @@ def compile_output_fls(data_dir, out_dir, depth, virus_tag):
     nxtcd_df_lst = []
     mtrcs_df_lst = []
     ithst_df_lst = []
+    wgs_df_lst = []
     mut_df_lst = []
     err_dct_lst = []
     skip_lst = []
     dpth_lst = []
+
     # iterate over subdirs on data dir
     c = 0
     for path, subdirs, files in os.walk(data_dir):
@@ -202,6 +206,7 @@ def compile_output_fls(data_dir, out_dir, depth, virus_tag):
                     out_fls_lst.append(nxtcl_fl)    
                     # chromosomes
                     #chrms_fl = f"{path}/chromosomes.report"
+                
                 # intrahost
                 ithst_fl = f"{prfx}depth{depth}.fa.bc.intrahost.tsv"
                 out_fls_lst.append(ithst_fl)
@@ -212,6 +217,10 @@ def compile_output_fls(data_dir, out_dir, depth, virus_tag):
                 pcrd_mtrcs_fl = f"{path}/metrics.alignment_summary_metrics"
                 out_fls_lst.append(pcrd_mtrcs_fl)
                 
+                # wgs
+                wgs_fl = f"{path}/wgs"
+                out_fls_lst.append(wgs_fl)
+
                 # --- CHECK IF FILES EXIST ------------------------------------
                 #out_fls_lst = [pango_fl, ithst_fl, mut_fl, pcrd_mtrcs_fl]#,depth_fl, chrms_fl]
                 err_dct_ = __check_if_outfls_exist(cod, out_fls_lst, mut_fl)
@@ -237,6 +246,9 @@ def compile_output_fls(data_dir, out_dir, depth, virus_tag):
                 # Mutations
                 mut_df = pd.read_csv(mut_fl, sep="\t")
                 val_mut_df = mut_df.loc[mut_df["PASS"] == True]
+                # wgs
+                wgs_df_lst.append(__parse_wgs(wgs_fl, cod))
+
                 # check if no mutation data
                 if len(val_mut_df) == 0:
                     print(f"WARNING: no mutation data for {cod}")
@@ -292,11 +304,17 @@ def compile_output_fls(data_dir, out_dir, depth, virus_tag):
             print("  > reads_count.csv")
         except(AssertionError):
             print("WARN: No reads_count data")
+        try:
+            assert(len(wgs_df_lst)>0)
+            all_wgs_df = pd.concat(wgs_df_lst, ignore_index=True)
+            all_wgs_df.to_csv(out_dir+"/wgs.csv")
+            print("  > wgs.csv")
+        except(AssertionError):
+            print("WARN: No wgs data")
 
         errors_df = pd.DataFrame(err_dct_lst)
         errors_df.to_csv(out_dir + "/errors_detected.csv", index=False)
         print("  > errors_detected.csv")
-
         # write csvs
         #all_chrms_df = pd.concat(chrms_df_lst, ignore_index=True)
         #all_dpth_df = pd.concat(dpth_lst, ignore_index=True)
@@ -306,6 +324,138 @@ def compile_output_fls(data_dir, out_dir, depth, virus_tag):
         #print("  > depth.csv")
         
     print(" :: DONE ::")
+
+# get lineage summary
+
+def load_short_summary_df(wgs_df, pang_df):
+    """ """
+    # get slices
+    wgs_slice = wgs_df[["cod", "MEAN_COVERAGE","SD_COVERAGE","MEDIAN_COVERAGE"]]
+    pang_slice = pang_df[["cod", "taxon", "lineage", "scorpio_call"]]
+    # merge dataframes
+    short_summary = pd.merge(wgs_slice, pang_slice, right_on="cod", left_on="cod")
+    # return df
+    return short_summary
+
+# --- coverage ------------------------------------------------------------------------
+def computeCoverage(seq):
+    """
+    (N - total bases) / total_bases
+    """
+    total_N = sum([1 for i in seq if i == "N"])
+    total_bases = len(seq)
+    return (total_bases - total_N) / total_bases
+
+
+def loadCoverageDF(multifasta_path):
+    """
+    Compute coverage for each sequence and return sample cod, sequence and
+    coverage.
+    Parameters
+    ----------
+    multifasta_path:<str>
+        path for fasta file containing samples consensus sequence
+    Returns
+    -------
+    pd.DataFrame
+    """
+    dct_lst = []
+    for record in SeqIO.parse(multifasta_path, "fasta"):
+        cod = record.id
+        seq = record.seq
+        cov = computeCoverage(seq)
+        dct_lst.append({"cod": cod, "coverage": cov})
+    return pd.DataFrame(dct_lst)
+
+# -------------------------------------------------------------------------------------
+def __parse_wgs(wgs_flpth,cod):
+
+    with open(wgs_flpth,"r") as wgs_fl:
+        for line in wgs_fl:
+            # skip lines
+            if line.startswith("#") or line.startswith("\n"):
+                continue
+            # get column names
+            if line.startswith("GENOME_TERRITORY"):
+                columns_name = line.replace("\n","").split("\t")
+                continue
+            # get values (wgs has only one line of data before histogram data) 
+            else:
+                values = line.replace("\n","").split("\t")
+                break
+    assert(len(columns_name) == len(values))
+    dct = {}
+    dct["cod"] = cod
+
+    for i, col_i in enumerate(columns_name):
+        dct[col_i] = [values[i]]
+
+    df = pd.DataFrame.from_dict(dct)
+    return df
+
+def get_lineages_summary(wgs_csv, outdir, multifasta, virus_tag, pango_csv=None):
+    """
+    count lineages on a given pangolin dataframe
+    """
+    def isMinor(row):
+        """
+        locate minor row on short summary
+        """
+        if row["taxon"].endswith("_minor"):
+            return True
+        else:
+            return False
+    
+    # Lineage summary is currently only supported for sars-cov2, for other viruses only
+    # mean depth and covarage will be provided
+
+    if virus_tag == "sars-cov2":
+        # load pango df
+        print("@ compute lineage summary ")
+        pango_df = pd.read_csv(pango_csv, index_col=False)
+
+        print(f"  > {len(pango_df)} total samples")
+        lineage_df = pango_df["lineage"].value_counts()
+        lineage_df = lineage_df.rename_axis("lineage")
+        lineage_df = lineage_df.rename("count")
+        # lineage_df =  lineage_df.Series.rename(index='lineage')
+        lineage_df.to_csv(outdir + "/lineage_summary.csv", index=True)
+        print(f"  > {outdir}lineage_summary.csv")
+        print(lineage_df)
+
+    # short summary
+    print("@ generating short summary [sample, depth, coverage, lineage]...")
+    wgs_df = pd.read_csv(wgs_csv)
+    wgs_slice = wgs_df[["cod", "MEAN_COVERAGE","SD_COVERAGE","MEDIAN_COVERAGE"]]
+    
+    if virus_tag == "sars-cov2":
+        short_summary_df = load_short_summary_df(wgs_df, pango_df)
+        # split minors from majors data
+        minor_btable = short_summary_df.apply(isMinor, axis=1)
+        minors_df = short_summary_df.loc[minor_btable]
+        major_df = short_summary_df.loc[~minor_btable]
+        # write csvs
+        major_df.to_csv(outdir + "major_summary.csv", index=False)
+        print(f"  > {outdir}major_summary.csv")
+        minors_df.to_csv(outdir + "minor_summary.csv", index=False)
+        print(f"  > {outdir}minor_summary.csv")
+        # check for empty dataframes
+        if len(minors_df) == 0:
+            print("  NOTE: No minor sequences available")
+        if len(major_df) == 0:
+            print("  WARNING: No major sequence available.")
+
+    if virus_tag == "custom":
+        short_summary_df = wgs_slice
+    
+    # multifasta_path = outdir + "seqbatch.fa"
+    cov_df = loadCoverageDF(multifasta)
+    short_summary_df = short_summary_df.merge(cov_df, on="cod")
+    short_summary_df.to_csv(f"{outdir}short_summary.csv")
+    if virus_tag == "sars-cov-2":
+        return lineage_df, short_summary_df
+    else:
+        return short_summary_df
 # -----------------------------------------------------------------------------
 
 if __name__=="__main__":
@@ -322,6 +472,10 @@ if __name__=="__main__":
   args = parser.parse_args()
   # add check for virus tag
   valid_virus = ["sars-cov2","custom"]
-  assert(args.virus_tag in valid_virus), f"{args.virus_tag}"
+  assert(args.virus_tag in valid_virus), f"{args.virus_tag} not a valid virus tag"
 
   compile_output_fls(args.dataDir, args.outputDir, args.depth, args.virus_tag)
+  if args.virus_tag == "sars-cov2":
+    get_lineages_summary("./wgs.csv", args.outputDir, "./seqbatch.fa", args.virus_tag, pango_csv='./pango.csv')
+  if args.virus_tag == "custom":
+    get_lineages_summary("./wgs.csv", args.outputDir, "./seqbatch.fa", args.virus_tag)

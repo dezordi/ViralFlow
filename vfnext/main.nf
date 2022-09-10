@@ -166,13 +166,13 @@ workflow {
      // the output compilation/
      // for the final version, need to find a better way. Maybe split and set
      // as individual post analysis workflow
-     final_trigger = runPangolin.out.collect()
+     final_trigger = runPangolin.out.concat(fixWGS.out).collect()
      compileOutputs_SC2(final_trigger, params.virus)
    }
 
    if (params.virus=="custom"){
      // GAMBIARRA ALERT
-     final_trigger = runIntraHostScript.out.collect()
+     final_trigger = runIntraHostScript.out.concat(fixWGS.out).collect()
      compileOutputs(final_trigger, params.virus)
    }
 
