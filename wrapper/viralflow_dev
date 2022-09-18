@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+import os
+import argparse
+import wrapper
+#from pathlib import Path
+from sys import exit
+#import subprocess
+#import shlex
+
+
+__author__ = "Antonio Marinho da Silva Neto"
+__license__ = "GPL"
+__version__ = "0.1"
+__maintainer__ = "Antonio Marinho da Silva Neto"
+__email__ = "ad45@sanger.ac.uk"
+__status__ = "Beta"
+
+dsc = '''
+This is just a wrapper for a nextflow pipeline. 
+For users familiar with nextflow, the directory vfnext holds the pipeline
+and usage directly via nextflow is strongly recommended.
+
+this wrapper was designed to make vfnext acessible for non technical user.
+'''
+
+"""
+USAGE:
+viralflow -help
+
+viralflow -setup_dependencies (install nextflow)
+
+viralflow -build_containers
+
+
+viralflow -run --in_params my_input_params (get params to feed nextflow from a txt file)
+
+# To add
+viralflow -add_entry_to_snpeff genome_code (add new entry to snpEff database)
+
+
+"""
+
+
+# get root paths
+script_file = _path = os.path.realpath(__file__)
+VF_ROOT_PATH = "/".join(script_file.split("/")[0:-2]) + "/"
+LAUNCH_DIR = os.getcwd()
+
+# ---- INPUT ------------------------------------------------------------------
+parser = argparse.ArgumentParser(description=dsc)
+
+# --- setup modes --------------------------------------------------------------
+parser.add_argument("-setup_dependencies", action="store_true", default=False,
+                    help="setup dependencies (nextflow and singularity)")
+
+parser.add_argument("-build_containers", action="store_true", default=False,
+                    help="build containers for vfnext")
+
+parser.add_argument("-run", action="store_true", default=False,
+                    help="run vfnext using nextflow")
+# --- run mode ----------------------------------------------------------------
+parser.add_argument(
+    "--params_file",
+    type=str,
+    default=None,
+    help="path to a input parameters file",
+)
+
+# get arguments
+args = parser.parse_args()
+
+if args.build_containers == True:
+    wrapper.build_containers(VF_ROOT_PATH)
+    exit(0)
+if args.setup_dependencies == True:
+    wrapper.install_dependencies(VF_ROOT_PATH)
+    exit(0)
+
+if args.run == True:
+    if args.params_file == None:
+        print("ERROR: no params_file was provided")
+        exit(1)
+    wrapper.run_vfnext(VF_ROOT_PATH, args.params_file)
+    exit(0)
+
+print(":: DONE ::")
