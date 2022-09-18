@@ -1,0 +1,17 @@
+virus sars-cov2
+adaptersFile ./input/ART_adapters.fa
+outDir ./output/
+inDir ./input/
+runSnpEff true
+writeMappedReads true
+minLen 75
+depth 5
+minDpIntrahost 100
+trimLen 0
+refGenomeCode null
+referenceGFF null
+referenceGenome null
+nextflowSimCalls null
+fastp_threads 1
+bwa_threads 1
+mafft_threads 1
