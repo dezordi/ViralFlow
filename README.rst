@@ -18,8 +18,6 @@ You can install viralflow wrapper via pip
 
   git clone https://github.com/dezordi/ViralFlow.git
   cd ViralFlow/
-  conda env create -f envs/viralflow.yml
-  conda activate viralflow
   pip install -e ./
 
 
@@ -43,7 +41,7 @@ How to run (quick and dirty)
 
 .. code:: bash
 
-  viralflow_dev -run -params_file my.params
+  viralflow_dev -run --params_file test_files/test.params
 
 
 An example of what the '.params' can be found at ./test_files/.
