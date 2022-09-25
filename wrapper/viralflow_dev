@@ -35,7 +35,7 @@ viralflow -build_containers
 viralflow -run --in_params my_input_params (get params to feed nextflow from a txt file)
 
 # To add
-viralflow -add_entry_to_snpeff genome_code (add new entry to snpEff database)
+viralflow -add_entry_to_snpeff -org_name -genome_code (add new entry to snpEff database)
 
 
 """
@@ -56,6 +56,9 @@ parser.add_argument("-setup_dependencies", action="store_true", default=False,
 parser.add_argument("-build_containers", action="store_true", default=False,
                     help="build containers for vfnext")
 
+parser.add_argument("-add_entry_to_snpeff", action="store_true", default=False,
+                    help="add new entry to SnpEff database")
+
 parser.add_argument("-run", action="store_true", default=False,
                     help="run vfnext using nextflow")
 # --- run mode ----------------------------------------------------------------
@@ -64,6 +67,20 @@ parser.add_argument(
     type=str,
     default=None,
     help="path to a input parameters file",
+)
+
+parser.add_argument(
+    "--org_name",
+    type=str,
+    default=None,
+    help="organism name"
+)
+
+parser.add_argument(
+    "--genome_code",
+    type=str,
+    default=None,
+    help="organism reference genome code"
 )
 
 # get arguments
@@ -75,6 +92,22 @@ if args.build_containers == True:
 if args.setup_dependencies == True:
     wrapper.install_dependencies(VF_ROOT_PATH)
     exit(0)
+
+if args.add_entry_to_snpeff == True:
+    try:
+        assert(args.org_name != None)
+    except(AssertionError):
+        print("ERROR: no organism name provided")
+        exit(1)
+    try:
+        assert(args.genome_code != None)
+    except(AssertionError):
+        print("ERROR: no genome code provided")
+        exit(1)
+    
+    wrapper.add_entries_to_DB(VF_ROOT_PATH,
+                              args.org_name,
+                              args.genome_code)
 
 if args.run == True:
     if args.params_file == None:

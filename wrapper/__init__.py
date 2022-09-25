@@ -1,20 +1,52 @@
+from distutils.command.build_scripts import first_line_re
 from logging import root
 import os
+
+
+def add_entries_to_DB(root_path, org_name, refseq_code):
+    """
+    add entries provided to snpeff database
+    """
+    run_bash = f"bash {root_path}/vfnext/containers/add_entries_SnpeffDB.sh"
+    print(f"{run_bash} {org_name} {refseq_code}")
+    os.system(f"{run_bash} {org_name} {refseq_code}")
+
+def parse_csv(csv_flpath):
+    with open(csv_flpath, "r") as csv_fl:
+        first_line = True
+        entries_lst = []
+        for line in csv_fl:
+            # skip header
+            if first_line == True:
+                first_line = False
+                continue
+            ln_data = line.split(",")
+            entry = [ln_data[0], ln_data[1].replace("\n","")]
+            entries_lst.append(entry)
+    return entries_lst
 
 def build_containers(root_path):
     """
     run script to build container for vfnext
     """
+    # build containers
     cd_to_dir= f"cd {root_path}/vfnext/containers/" 
-    rm_old_cntnrs = "rm *.sif"
+    rm_old_cntnrs = "rm -rf *.sif"
     run_bash = f"bash ./setupContainers.sh"
     print(cd_to_dir+';'+rm_old_cntnrs+';'+run_bash)
     os.system(cd_to_dir+';'+rm_old_cntnrs+';'+run_bash)
-
+    # add new entries to snpeff
+    entries = parse_csv(f"{root_path}/vfnext/databases/add_to_snpeff_db.csv")
+    print("@ add entries to SnpEff DB")
+    for entry in entries:
+        print(f"..> {entry[0]}:{entry[1]}")
+        add_entries_to_DB(root_path, entry[0], entry[1])
+    
 def install_dependencies(root_path):
     """
     install nextflow and singularity via conda
     """
+    # install software dependencies
     run_bash = f"bash {root_path}/wrapper/install_dep.sh"
     print(run_bash)
     os.system(run_bash)
