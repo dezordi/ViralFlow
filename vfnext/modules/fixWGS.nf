@@ -1,5 +1,5 @@
 process fixWGS {
-  
+  label "singlethread"
   errorStrategy 'ignore'
   publishDir "${params.outDir}/${sample_id}_results/"
 

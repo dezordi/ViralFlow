@@ -1,6 +1,7 @@
 process checkSnpEffDB{
     publishDir "${params.outDir}"
-
+    label "singlethread"
+    
     input:
         val(genome_code)
 

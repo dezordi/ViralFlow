@@ -5,7 +5,8 @@ process indexReferenceBWA {
     * Indexes reference fasta file using bwa.
     */
     //publishDir "${params.outDir}/"
-
+    label "singlethread"
+    
     input:
         path(ref_fa)
 

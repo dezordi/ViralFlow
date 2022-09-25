@@ -4,7 +4,7 @@ process prepareDatabase {
     * Indexes reference fasta file using bwa.
     */
     publishDir "${params.databaseDir}/", mode:"copy"
-
+    label "singlethread"
     input:
         val(genome_code)
 

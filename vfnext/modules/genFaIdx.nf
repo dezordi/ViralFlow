@@ -3,7 +3,7 @@ process genFaIdx {
     * Indexes reference fasta file using bwa.
     */
     //publishDir "${params.outDir}/"
-
+    label "singlethread"
     input:
         path(reference_fasta)
 

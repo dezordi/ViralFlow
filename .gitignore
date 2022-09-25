@@ -12,6 +12,7 @@ viralflow_container/
 vfnext/.nextflow*
 vfnext/work
 out_dir
+sandbox/*
 
 # Distribution / packaging
 .Python
