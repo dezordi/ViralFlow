@@ -36,17 +36,20 @@ Build containers
 
 
 =====
-How to run (quick and dirty)
+How to run sars-cov-2 (quick and dirty)
 =====
 
 .. code:: bash
 
-  viralflow_dev -run --params_file test_files/test.params
+  viralflow_dev -run --params_file test_files/sars-cov-2.params
 
+=====
+How to run denv (custom) (quick and dirty)
+=====
 
-An example of what the '.params' can be found at ./test_files/.
+.. code:: bash
 
-
+  viralflow_dev -run --params_file test_files/denv.params
 
 =====
 Dependencies
