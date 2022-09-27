@@ -68,7 +68,6 @@ singularity build --fakeroot singularity_samtools.sif docker://staphb/samtools:1
 echo "@ Building vfreport.sif..."
 singularity build --fakeroot vfreport.sif Singularity_vfreport
 
-
 echo "@ Downloading snpeff database catalog..."
 singularity exec ./singularity_snpeff.sif snpEff databases > snpEff_DB.catalog
 
