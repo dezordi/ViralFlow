@@ -23,11 +23,11 @@ mkdir -p $SNPEFF_CTNR/$SNPEFF_PATH/data/$organism_refseq_code
 
 # download fasta
 echo "@ downloading fasta..."
-singularity exec $EFETCH_CTNR efetch -db nucleotide -id $organism_refseq_code -format gb > $SNPEFF_CTNR/$SNPEFF_PATH/data/$organism_refseq_code/genes.gbk
+sudo singularity exec $EFETCH_CTNR efetch -db nucleotide -id $organism_refseq_code -format gb > $SNPEFF_CTNR/$SNPEFF_PATH/data/$organism_refseq_code/genes.gbk
 
 # build database
 echo "@ rebuild database"
-singularity exec $SNPEFF_CTNR snpEff build -genbank -v $organism_refseq_code
+sudo singularity exec --writable $SNPEFF_CTNR snpEff build -genbank -v $organism_refseq_code
 
 # update catalog
 echo "@ update snpeff database catalog..."
