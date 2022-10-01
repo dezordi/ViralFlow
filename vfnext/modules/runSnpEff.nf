@@ -15,13 +15,23 @@ process runSnpEff{
   script:
   ref_fa = "${refGenomeFasta}"
   sorted_bam = "${bam_files[0].getSimpleName()}.sorted.bam"
-  """
-  freebayes -p 1 --reference-quality 30 \
+  if (params.virus == "custom")
+    """
+    freebayes -p 1 --reference-quality 30 \
             -f ${ref_fa} ${sorted_bam} > ${sample_id}.vcf
-  snpEff download -v ${genome_code}
-  snpEff ann -Xmx4g \
+    snpEff ann -Xmx4g \
+            -v ${genome_code} ${sample_id}.vcf > ${sample_id}.ann.vcf
+    # add sample id to htmls
+    mv snpEff_summary.html ${sample_id}_snpEff_summary.html
+    """
+  else
+    """
+    freebayes -p 1 --reference-quality 30 \
+            -f ${ref_fa} ${sorted_bam} > ${sample_id}.vcf
+    snpEff download -v ${genome_code}
+    snpEff ann -Xmx4g \
             ${genome_code} ${sample_id}.vcf > ${sample_id}.ann.vcf
-  # add sample id to htmls
-  mv snpEff_summary.html ${sample_id}_snpEff_summary.html
-  """
+    # add sample id to htmls
+    mv snpEff_summary.html ${sample_id}_snpEff_summary.html
+    """
 }
