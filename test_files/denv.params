@@ -1,7 +1,7 @@
 virus custom
 outDir test_files/denv/outputs/
 inDir test_files/denv/input/
-runSnpEff false
+runSnpEff true
 writeMappedReads false
 minLen 75
 depth 5
