@@ -6,7 +6,7 @@ process align2ref{
     path(ref_fa)
 
   output:
-    tuple val(sample_id), path("*.bam")
+    tuple val(sample_id), path("*.bam"), path("*.bai")
 
   script:
     """
