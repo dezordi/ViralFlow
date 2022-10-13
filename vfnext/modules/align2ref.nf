@@ -1,12 +1,13 @@
 
 process align2ref{
-  publishDir "${params.outDir}/${sample_id}_results/"
+  publishDir "${params.outDir}/${sample_id}_results/", mode: "copy", pattern: "*.{sorted.bam, bai}"
+  
   input:
     tuple val(sample_id), path(reads), path(fasta_amb), path(fasta_ann), path(fasta_bwt), path(fasta_pac), path(fasta_sa)
     path(ref_fa)
 
   output:
-    tuple val(sample_id), path("*.bam"), path("*.bai")
+    tuple val(sample_id), path("*.sorted.bam"), path("*.bai")
 
   script:
     """

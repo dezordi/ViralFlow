@@ -1,6 +1,6 @@
 process runPicard {
-  publishDir "${params.outDir}/${sample_id}_results/"
-
+  publishDir "${params.outDir}/${sample_id}_results/", mode: "copy", pattern: "{wgs,metrics.alignment*}"
+  
   input:
     tuple val(sample_id), path(bams)
     path(ref_fa)

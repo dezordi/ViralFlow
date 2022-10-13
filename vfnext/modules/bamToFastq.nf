@@ -1,5 +1,5 @@
 process bamToFastq(){
-    publishDir "${params.outDir}/${sample_id}_results/"
+    publishDir "${params.outDir}/${sample_id}_results/", mode: "copy"
     label "singlethread"
     input:
         tuple val(sample_id), path(unmapped_bam)

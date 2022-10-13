@@ -1,7 +1,7 @@
 process fixWGS {
   label "singlethread"
   errorStrategy 'ignore'
-  publishDir "${params.outDir}/${sample_id}_results/"
+  publishDir "${params.outDir}/${sample_id}_results/", mode : "copy"
 
   input:
      tuple val(sample_id), path(wgs), path(metrics), path(consensus), path(ivar_txt), path(mut_tsv)

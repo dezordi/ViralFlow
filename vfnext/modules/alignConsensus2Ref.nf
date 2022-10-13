@@ -1,5 +1,5 @@
 process alignConsensus2Ref {
-    publishDir "${params.outDir}/${sample_id}_results/"
+    publishDir "${params.outDir}/${sample_id}_results/", mode: "copy"
     label "multithread"
 
     input:

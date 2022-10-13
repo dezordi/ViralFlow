@@ -1,5 +1,5 @@
 process compileOutputs{
-  publishDir "${params.outDir}/COMPILED_OUTPUT/"
+  publishDir "${params.outDir}/COMPILED_OUTPUT/", mode: "copy"
   label "singlethread"
   
   input:

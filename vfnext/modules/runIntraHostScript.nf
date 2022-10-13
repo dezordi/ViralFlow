@@ -1,5 +1,5 @@
 process runIntraHostScript{
-  publishDir "${params.outDir}/${sample_id}_results/"
+  publishDir "${params.outDir}/${sample_id}_results/", mode: "copy"
 
   input:
      tuple val(sample_id), path(fa_bc), path(fa_algn)

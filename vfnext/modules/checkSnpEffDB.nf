@@ -1,5 +1,5 @@
 process checkSnpEffDB{
-    publishDir "${params.outDir}"
+    publishDir "${params.outDir}", mode: "copy"
     label "singlethread"
     
     input:

@@ -1,6 +1,6 @@
 process runSnpEff{
   errorStrategy 'ignore'
-  publishDir "${params.outDir}/${sample_id}_results/"
+  publishDir "${params.outDir}/${sample_id}_results/", mode: "copy"
 
   input:
     tuple val(sample_id), path(bam_files)

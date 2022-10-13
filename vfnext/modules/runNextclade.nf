@@ -1,6 +1,5 @@
 process runNextClade {
-  publishDir "${params.outDir}/${sample_id}_results/"
-
+  publishDir "${params.outDir}/${sample_id}_results/", mode: "copy", pattern: "{*nextclade.csv,*.errors.csv,*.translation.fasta}"
   input:
   tuple val(sample_id), path(intrahost_tsvs), path(algn_fasta), path(consensus_fa), path(ivar_txt), path(mut_tsv)
   path(ref_fa)
