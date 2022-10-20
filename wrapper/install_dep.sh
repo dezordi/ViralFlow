@@ -5,10 +5,10 @@ bash Miniconda3-py39_4.12.0-Linux-x86_64.sh -b
 
 echo "@ Config Miniconda..."
 $HOME/miniconda3/bin/conda init
-source $HOME/.bashrc
-conda update conda -y
-conda create -n viralflow python=3.9 -y
-conda activate viralflow
+exec bash
+$HOME/miniconda3/bin/conda update conda -y
+$HOME/miniconda3/bin/conda create -n viralflow python=3.9 -y
+$HOME/miniconda3/bin/conda activate viralflow
 
 # install singularity 
 echo "@ install singularity"
