@@ -124,7 +124,7 @@ workflow {
    runIvar.out.set { runIvar_Out_ch }
 
    // readcounts
-   runReadCounts(align2ref_Out_ch)
+   runReadCounts(align2ref_Out_ch, ref_fa)
    runReadCounts.out.set {runReadCounts_Out_ch}
 
    // get VCFs
