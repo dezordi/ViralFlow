@@ -124,6 +124,10 @@ def parse_params(in_flpath):
     args_str += "-resume"
     return args_str
 
+def update_pangolin(root_path):
+    cd_to_dir= f"cd {root_path}/vfnext/containers/" 
+    run_update = "singularity exec ./pangolin_latest.sif pangolin --update"
+    os.system(cd_to_dir+';'+run_update)
 
 def run_vfnext(root_path, params_fl):
     # get nextflow arguments
