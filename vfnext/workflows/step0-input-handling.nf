@@ -125,12 +125,14 @@ def validate_parameters() {
 
     }
 
-  // get number of cpus available for nextflow if running local
-  maxcpus = Runtime.runtime.availableProcessors()
-  // if cpus were not specified or higher than the available cpus, set it to use all cpus available
-  if ((params.nextflowSimCalls == null) || (params.nextflowSimCalls > maxcpus)){
-      log.warn("Number of requested simultaneous nextflow calls (${params.nextflowSimCalls}) was set to max cpus available (${maxcpus})")
-      params.nextflowSimCalls = maxcpus
+  if (workflow.profile == "standard"){
+    // get number of cpus available for nextflow if running local
+    maxcpus = Runtime.runtime.availableProcessors()
+    // if cpus were not specified or higher than the available cpus, set it to use all cpus available
+    if ((params.nextflowSimCalls == null) || (params.nextflowSimCalls > maxcpus)){
+        log.warn("Number of requested simultaneous nextflow calls (${params.nextflowSimCalls}) was set to max cpus available (${maxcpus})")
+        params.nextflowSimCalls = maxcpus
+    }
   }
 
   // top multithread to maxcpus
