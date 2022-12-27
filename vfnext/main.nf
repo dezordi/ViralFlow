@@ -61,6 +61,8 @@ log.info """
          --fastp_threads    : ${params.fastp_threads}
          --bwa_threads      : ${params.bwa_threads}
          --mafft_threads    : ${params.mafft_threads}
+         --mapping_quality  : ${params.mapping_quality}
+         --base_quality     : ${params.base_quality}
          
         
         * Only required for "custom" virus

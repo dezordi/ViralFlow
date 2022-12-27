@@ -14,7 +14,9 @@ process runPicard {
   """
   ${java_cmd} CollectWgsMetrics -I ${sorted_bam} \
                                 -R ${ref_fa}\
-                                -O wgs -CAP 99999
+                                -O wgs -CAP 99999 \
+                                -Q ${params.base_quality} \
+                                -MQ ${params.mapping_quality}
 
   ${java_cmd} CollectMultipleMetrics -I ${sorted_bam} \
                                      -R ${ref_fa}\
