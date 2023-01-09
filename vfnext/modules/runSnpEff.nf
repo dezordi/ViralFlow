@@ -17,7 +17,7 @@ process runSnpEff{
   sorted_bam = "${bam_files[0].getSimpleName()}.sorted.bam"
   if (params.virus == "custom")
     """
-    freebayes -p 1 --reference-quality 30 \
+    freebayes -p 1 --reference-quality ${params.mapping_quality},${params.base_quality} \
             -f ${ref_fa} ${sorted_bam} > ${sample_id}.vcf
     snpEff ann -Xmx4g \
             -v ${genome_code} ${sample_id}.vcf > ${sample_id}.ann.vcf
@@ -26,7 +26,7 @@ process runSnpEff{
     """
   else
     """
-    freebayes -p 1 --reference-quality 30 \
+    freebayes -p 1 --reference-quality ${params.mapping_quality},${params.base_quality} \
             -f ${ref_fa} ${sorted_bam} > ${sample_id}.vcf
     snpEff download -v ${genome_code}
     snpEff ann -Xmx4g \

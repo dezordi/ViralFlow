@@ -75,7 +75,9 @@ def parse_params(in_flpath):
         "fastp_threads",
         "bwa_threads",
         "mafft_threads",
-        "nxtclade_jobs"
+        "nxtclade_jobs",
+        "mapping_quality",
+        "base_quality"
     ]
     path_params = ["inDir", "outDir", "referenceGFF", "referenceGenome", "adaptersFile"]
     in_file = open(in_flpath, "r")
