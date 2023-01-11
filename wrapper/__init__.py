@@ -131,6 +131,11 @@ def update_pangolin(root_path):
     run_update = "singularity exec ./pangolin_latest.sif pangolin --update"
     os.system(cd_to_dir+';'+run_update)
 
+def update_pangolin_data(root_path):
+    cd_to_dir= f"cd {root_path}/vfnext/containers/" 
+    run_update_data = "singularity exec ./pangolin_latest.sif pangolin --update-data"
+    os.system(cd_to_dir+';'+run_update_data)
+
 def run_vfnext(root_path, params_fl):
     # get nextflow arguments
     args_str = parse_params(params_fl)
