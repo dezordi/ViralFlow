@@ -62,6 +62,9 @@ parser.add_argument("-add_entry_to_snpeff", action="store_true", default=False,
 parser.add_argument("-update_pangolin", action="store_true", default=False,
                     help="update pangolin container to the latest pangolin version")
 
+parser.add_argument("-update_pangolin_data", action="store_true", default=False,
+                    help="update pangolin container with the latest pangolin version databases")
+
 parser.add_argument("-run", action="store_true", default=False,
                     help="run vfnext using nextflow")
 # --- run mode ----------------------------------------------------------------
@@ -98,6 +101,10 @@ if args.setup_dependencies == True:
 
 if args.update_pangolin == True:
     wrapper.update_pangolin(VF_ROOT_PATH)
+    exit(0)
+
+if args.update_pangolin_data == True:
+    wrapper.update_pangolin_data(VF_ROOT_PATH)
     exit(0)
 
 if args.add_entry_to_snpeff == True:
