@@ -431,6 +431,8 @@ def get_lineages_summary(wgs_csv, outdir, multifasta, virus_tag, pango_csv=None)
 
     # short summary
     print("@ generating short summary [sample, depth, coverage, lineage]...")
+
+    # if wgs csv does not exist, not short summary can be writen
     if doFileExists(wgs_csv) == True:
         wgs_df = pd.read_csv(wgs_csv)
         wgs_slice = wgs_df[["cod", "MEAN_COVERAGE","SD_COVERAGE","MEDIAN_COVERAGE"]]
@@ -451,25 +453,20 @@ def get_lineages_summary(wgs_csv, outdir, multifasta, virus_tag, pango_csv=None)
                 print("  NOTE: No minor sequences available")
             if len(major_df) == 0:
                 print("  WARNING: No major sequence available.")
+            
+            if doFileExists(multifasta) == True:
+                cov_df = loadCoverageDF(multifasta)
+                short_summary_df = short_summary_df.merge(cov_df, on="cod")
+                short_summary_df.to_csv(f"{outdir}short_summary.csv")
+            else:
+                print(f"WARN: {multifasta} was not found. No short_summary will be written.")
 
         if virus_tag == "custom":
             short_summary_df = wgs_slice
+    
     else:
         print(f"WARN: {wgs_csv} was not found. No lineage summary will be written.")
     
-    # multifasta_path = outdir + "seqbatch.fa"
-    if doFileExists(multifasta) == True:
-        cov_df = loadCoverageDF(multifasta)
-        short_summary_df = short_summary_df.merge(cov_df, on="cod")
-        short_summary_df.to_csv(f"{outdir}short_summary.csv")
-    
-    else:
-        print(f"WARN: {multifasta} was not found. No short_summary will be written.")
-
-    #if virus_tag == "sars-cov-2":
-    #    return lineage_df, short_summary_df
-    #else:
-    #    return short_summary_df
 
 def doFileExists(file_path):
     return os.path.exists(file_path)
