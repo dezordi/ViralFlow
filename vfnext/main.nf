@@ -49,7 +49,6 @@ log.info """
          --referenceGenome *: ${params.referenceGenome}
          --referenceGFF    *: ${params.referenceGFF}
          --adaptersFile     : ${params.adaptersFile}
-         --threads          : ${params.threads}
          --minLen           : ${params.minLen}
          --depth            : ${params.depth}
          --minDpIntrahost   : ${params.minDpIntrahost}
