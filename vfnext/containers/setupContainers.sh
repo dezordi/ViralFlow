@@ -49,7 +49,7 @@ echo "@ Building singularity_fastp_v0201.sif..."
 singularity build --fakeroot --sandbox singularity_fastp_v0201.sif Singularity_fastp_v0201
 echo "  > Done <"
 
-echo "@ Building singularity_bwa_v0717.sif..."
+echo "@ Building ivar_latest.sif..."
 singularity build --fakeroot --sandbox ivar_latest.sif Singularity_ivar
 echo "  > Done <"
 

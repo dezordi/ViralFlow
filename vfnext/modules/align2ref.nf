@@ -13,7 +13,7 @@ process align2ref{
     """
     # run aligner -------------------------------------------------------------
     #ln -s ${ref_fa} ./${fasta_amb.getSimpleName()}.fasta
-    bwa mem -t ${params.threads} ./${ref_fa} ${reads[0]} ${reads[1]} \
+    bwa mem ./${ref_fa} ${reads[0]} ${reads[1]} \
             -o ${sample_id}.bam -t ${params.bwa_threads}
 
     # Sort alignments by leftmost coordinates ---------------------------------
