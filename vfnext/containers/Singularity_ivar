@@ -15,16 +15,16 @@ apt-get install -y build-essential autoconf zlib1g-dev python3 wget libbz2-dev l
 mkdir /software/
 
 # HTSlib
-cd /software/ &&\
-wget https://github.com/samtools/htslib/releases/download/1.9/htslib-1.9.tar.bz2 &&\
-tar xvf htslib-1.9.tar.bz2 &&\
-cd htslib-1.9/ &&\
-./configure &&\
-make &&\
-make install &&\
-cd ../ &&\
-rm htslib-1.9.tar.bz2
-LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+#cd /software/ &&\
+#wget https://github.com/samtools/htslib/releases/download/1.9/htslib-1.9.tar.bz2 &&\
+#tar xvf htslib-1.9.tar.bz2 &&\
+#cd htslib-1.9/ &&\
+#./configure &&\
+#make &&\
+#make install &&\
+#cd ../ &&\
+#rm htslib-1.9.tar.bz2
+#LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
 # SAMtools
 cd /software/ &&\
@@ -39,12 +39,40 @@ rm samtools-1.9.tar.bz2
 
 # iVar
 cd /software/ &&\
-git clone https://github.com/andersen-lab/ivar.git &&\
-cd ivar/ &&\
-./autogen.sh &&\
-./configure &&\
-make &&\
-make install
+wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.1.0-1-Linux-x86_64.sh
+bash Miniconda3-py310_23.1.0-1-Linux-x86_64.sh -b -p /software/miniconda
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/software/miniconda/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/software/miniconda/etc/profile.d/conda.sh" ]; then
+        . "/software/miniconda/etc/profile.d/conda.sh"
+    else
+        export PATH="/software/miniconda/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+conda install -c "bioconda/label/cf201901" ivar
+
+#cleanup
+conda clean -y --all
+rm -f /software/Miniconda3-py310_23.1.0-1-Linux-x86_64.sh
+apt autoremove --purge
+apt clean
+
+#git clone https://github.com/andersen-lab/ivar.git &&\
+#cd ivar/ &&\
+#./autogen.sh &&\
+#./configure &&\
+#make &&\
+#make install
 
 # bwa
 cd /software/ &&\
@@ -61,8 +89,10 @@ pip3 install pandas snakemake
 %environment
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 export PATH=/software/bwa-0.7.17:$PATH
+export PATH=/software/miniconda/bin/:$PATH
 
 %runscript
 exec /bin/bash "$@"
+
 %startscript
 exec /bin/bash "$@"
