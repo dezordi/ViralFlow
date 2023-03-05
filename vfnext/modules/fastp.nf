@@ -14,6 +14,7 @@ process runFastp{
       if (params.adaptersFile==null)
       """
       fastp -i ${reads[0]} -I ${reads[1]} \
+            --detect_adapter_for_pe \ 
             --thread ${params.fastp_threads} \
             -o ${reads[0].getSimpleName()}.R1.fq.gz \
             -O ${reads[0].getSimpleName()}.R2.fq.gz \
@@ -27,7 +28,7 @@ process runFastp{
       else if (!(params.adaptersFile==null))
       """
       fastp -i ${reads[0]} -I ${reads[1]} \
-            --adapter_fasta ${params.adaptersFile} \
+            --detect_adapter_for_pe \
             --thread ${params.fastp_threads} \
             -o ${reads[0].getSimpleName()}.R1.fq.gz -O ${reads[0].getSimpleName()}.R2.fq.gz -h ${reads[0].getSimpleName()}.fastp.html \
             -j ${reads[0].getSimpleName()}.fastp.json \

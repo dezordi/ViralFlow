@@ -22,5 +22,17 @@ process align2ref{
     # Index a coordinate-sorted BGZIP-compressed SAM, BAM or CRAM file for fast
     # random access.
     samtools index ${sample_id}.sorted.bam
+    
+    #TRIM PRIMERS OF SORTED BAM
+
+    samtools ampliconclip --both-ends --hard-clip --filter-len ${params.minLen} -b ${bed} ${sample_id}.sorted.bam > ${trim_bam}
+    # Sort alignments by leftmost coordinates ---------------------------------
+    samtools sort -o ${trim_bam}.sorted.bam ${trim_bam}
+    samtools index ${trim_bam}.sorted.bam
+    mv ${sample_id}.sorted.bam ${sample_id}.sorted.raw.bam
+    mv ${sample_id}.sorted.bam.bai ${sample_id}.sorted.raw.bam.bai
+    mv ${trim_bam}.sorted.bam ${sample_id}.sorted.bam
+    mv ${trim_bam}.sorted.bam.bai ${sample_id}.sorted.bam.bai
+    
     """
 }
