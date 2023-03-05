@@ -8,8 +8,11 @@ process align2ref{
 
   output:
     tuple val(sample_id), path("*.sorted.bam"), path("*.bai")
-
+  
   script:
+    trim_bam = "${sample_id}.trimmed"
+    bed = "${params.adaptersFile}"
+    if (params.adaptersFile==null)
     """
     # run aligner -------------------------------------------------------------
     #ln -s ${ref_fa} ./${fasta_amb.getSimpleName()}.fasta
@@ -21,18 +24,32 @@ process align2ref{
 
     # Index a coordinate-sorted BGZIP-compressed SAM, BAM or CRAM file for fast
     # random access.
-    samtools index ${sample_id}.sorted.bam
+    samtools index ${sample_id}.sorted.bam    
+    """
+
+    else if (!(params.adaptersFile==null))
+    """
+    # run aligner -------------------------------------------------------------
+    #ln -s ${ref_fa} ./${fasta_amb.getSimpleName()}.fasta
+    bwa mem ./${ref_fa} ${reads[0]} ${reads[1]} \
+            -o ${sample_id}.bam -t ${params.bwa_threads}
+
+    # Sort alignments by leftmost coordinates ---------------------------------
+    samtools sort -o ${sample_id}.sorted.bam ${sample_id}.bam
+
+    # Index a coordinate-sorted BGZIP-compressed SAM, BAM or CRAM file for fast
+    # random access.
+    samtools index ${sample_id}.sorted.bam    
     
     #TRIM PRIMERS OF SORTED BAM
 
-    samtools ampliconclip --both-ends --hard-clip --filter-len ${params.minLen} -b ${bed} ${sample_id}.sorted.bam > ${trim_bam}
+    samtools ampliconclip --both-ends --hard-clip --filter-len ${params.minLen} -b ${bed} ${sample_id}.sorted.bam -f ${sample_id}.trimmed_reads.txt > ${trim_bam}
     # Sort alignments by leftmost coordinates ---------------------------------
     samtools sort -o ${trim_bam}.sorted.bam ${trim_bam}
     samtools index ${trim_bam}.sorted.bam
-    mv ${sample_id}.sorted.bam ${sample_id}.sorted.raw.bam
-    mv ${sample_id}.sorted.bam.bai ${sample_id}.sorted.raw.bam.bai
+    mv ${sample_id}.sorted.bam ${sample_id}.raw.sorted.bam
+    mv ${sample_id}.sorted.bam.bai ${sample_id}.raw.sorted.bam.bai
     mv ${trim_bam}.sorted.bam ${sample_id}.sorted.bam
     mv ${trim_bam}.sorted.bam.bai ${sample_id}.sorted.bam.bai
-    
     """
 }
