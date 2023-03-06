@@ -15,7 +15,7 @@ def validate_parameters() {
 
     if (params.adaptersFile==null){
       //make adapter file optional, usefull for metagenomics
-      log.warn("An adapter file path was not provided. The pipeline will run fastp without considering adapters.")
+      log.warn("An adapter file path was not provided. The pipeline will not run samtools clip to remove primer regions")
       }
     // if only the flag is provided withou any value, it is considered as true
     else if (params.adaptersFile==true){
