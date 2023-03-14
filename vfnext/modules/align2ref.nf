@@ -8,11 +8,11 @@ process align2ref{
 
   output:
     tuple val(sample_id), path("*.sorted.bam"), path("*.bai")
-  
+
   script:
     trim_bam = "${sample_id}.trimmed"
-    bed = "${params.adaptersFile}"
-    if (params.adaptersFile==null)
+    bed = "${params.primersBED}"
+    if (params.primersBED==null)
     """
     # run aligner -------------------------------------------------------------
     #ln -s ${ref_fa} ./${fasta_amb.getSimpleName()}.fasta
@@ -27,7 +27,7 @@ process align2ref{
     samtools index ${sample_id}.sorted.bam    
     """
 
-    else if (!(params.adaptersFile==null))
+    else if (!(params.primersBED==null))
     """
     # run aligner -------------------------------------------------------------
     #ln -s ${ref_fa} ./${fasta_amb.getSimpleName()}.fasta

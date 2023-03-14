@@ -13,20 +13,20 @@ def validate_parameters() {
     def errors = 0
     // check if required params were provided and if files provided exists
 
-    if (params.adaptersFile==null){
+    if (params.primersBED==null){
       //make adapter file optional, usefull for metagenomics
       log.warn("An adapter file path was not provided. The pipeline will not run samtools clip to remove primer regions")
       }
     // if only the flag is provided withou any value, it is considered as true
-    else if (params.adaptersFile==true){
+    else if (params.primersBED==true){
       log.error("the adapters file flag was set but no value provided")
       errors +=1
     }
     // if a path is provided, check if is valid
-    else if (!(params.adaptersFile==null)){
-        adapter_fl = file(params.adaptersFile)
+    else if (!(params.primersBED==null)){
+        adapter_fl = file(params.primersBED)
         if (!adapter_fl.isFile()){
-          log.error("${params.adaptersFile} is not a file.")
+          log.error("${params.primersBED} is not a file.")
           errors += 1
         }
       //errors +=1

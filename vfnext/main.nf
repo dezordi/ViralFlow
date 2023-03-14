@@ -48,7 +48,7 @@ log.info """
          --refGenomeCode   *: ${params.refGenomeCode}
          --referenceGenome *: ${params.referenceGenome}
          --referenceGFF    *: ${params.referenceGFF}
-         --adaptersFile     : ${params.adaptersFile}
+         --primersBED       : ${params.primersBED}
          --minLen           : ${params.minLen}
          --depth            : ${params.depth}
          --minDpIntrahost   : ${params.minDpIntrahost}
