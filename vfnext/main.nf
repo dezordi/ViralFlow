@@ -108,7 +108,7 @@ workflow {
    align2ref_In_ch = reads_ch.combine(bwaidx_Output_ch)
    align2ref(align2ref_In_ch, ref_fa)
    // remove bai file (not used downstream, but usefull as a pipeline output)
-   align2ref.out // tuple (sample_id, bam_file, bai_file)
+   align2ref.out.regular_output // tuple (sample_id, bam_file, bai_file)
       | map { it -> tuple(it[0], it[1]) } // tuple(sample_id, bam_file)
       | set { align2ref_Out_ch }
 

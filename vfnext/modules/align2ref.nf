@@ -7,8 +7,8 @@ process align2ref{
     path(ref_fa)
 
   output:
-    tuple val(sample_id), path("*.sorted.bam"), path("*.bai")
-
+    tuple val(sample_id), path("*.sorted.bam"), path("*.bai"), emit: regular_output
+    path("${sample_id}.trimmed_reads.txt"), emit:trimmed_reads, optional: true
   script:
     trim_bam = "${sample_id}.trimmed"
     bed = "${params.primersBED}"
