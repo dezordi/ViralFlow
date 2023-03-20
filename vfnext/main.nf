@@ -5,7 +5,7 @@ nextflow.enable.dsl = 2
 
 // import modules
 include { indexReferenceBWA } from './modules/bwaIndex.nf'
-include { runFastp } from './modules/fastp.nf'
+include { runFastp } from './modules/runFastp.nf'
 include { align2ref } from './modules/align2ref.nf'
 include { runIvar } from './modules/runIvar.nf'
 include { runReadCounts } from './modules/runReadCounts.nf'
@@ -99,13 +99,18 @@ workflow {
    runFastp(reads_ch)
 
    // collect htmls for vf reports
-   runFastp.out
+   runFastp.out //tuple (filename_prefix, [fq.gz pair], fastp_html)
         | map{ it -> it[2]}
         | set {fastp_html_ch}
    all_fastp_html_ch = fastp_html_ch.collect()
-   
+   // collect output reads
+   runFastp.out // tuple (filename_prefix, [fq.gz pair], fastp_html)
+        | map {it -> tuple(it[0],it[1])} //tuple (filename_prefix, [fq.gz pair])
+        | set {fastp_fqgz_ch}
    //align 2 reference
-   align2ref_In_ch = reads_ch.combine(bwaidx_Output_ch)
+   //align2ref_In_ch = reads_ch.combine(bwaidx_Output_ch)
+   align2ref_In_ch = fastp_fqgz_ch.combine(bwaidx_Output_ch)
+   
    align2ref(align2ref_In_ch, ref_fa)
    // remove bai file (not used downstream, but usefull as a pipeline output)
    align2ref.out.regular_output // tuple (sample_id, bam_file, bai_file)
