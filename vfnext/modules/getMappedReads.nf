@@ -9,7 +9,7 @@ process getMappedReads{
   script:
     """
     samtools sort -n ${sample_id}.sorted.bam | \
-    samtools fastq -1 ${sample_id}.mapped.R1.fq.gz -2 ${sample_id}.mapped.R2.fq.gz
+    samtools fastq -F 4 -1 ${sample_id}.mapped.R1.fq.gz -2 ${sample_id}.mapped.R2.fq.gz
     """
 }
 

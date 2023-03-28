@@ -28,14 +28,14 @@ mkdir /software/
 
 # SAMtools
 cd /software/ &&\
-wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2 &&\
-tar xvf samtools-1.9.tar.bz2 &&\
-cd samtools-1.9/ &&\
+wget https://github.com/samtools/samtools/releases/download/1.11/samtools-1.11.tar.bz2 &&\
+tar xvf samtools-1.11.tar.bz2 &&\
+cd samtools-1.11/ &&\
 ./configure &&\
 make &&\
 make install &&\
 cd ../ &&\
-rm samtools-1.9.tar.bz2
+rm samtools-1.11.tar.bz2
 
 # iVar
 cd /software/ &&\

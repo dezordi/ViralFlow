@@ -58,7 +58,7 @@ def parse_params(in_flpath):
     """
     valid_args = [
         "virus",
-        "adaptersFile",
+        "primersBED",
         "outDir",
         "inDir",
         "runSnpEff",
@@ -79,7 +79,7 @@ def parse_params(in_flpath):
         "mapping_quality",
         "base_quality"
     ]
-    path_params = ["inDir", "outDir", "referenceGFF", "referenceGenome", "adaptersFile"]
+    path_params = ["inDir", "outDir", "referenceGFF", "referenceGenome", "primersBED"]
     in_file = open(in_flpath, "r")
     dct = {}
     for l in in_file:
