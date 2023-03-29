@@ -463,8 +463,12 @@ def get_lineages_summary(wgs_csv, outdir, multifasta, virus_tag, pango_csv=None)
 
         if virus_tag == "custom":
             short_summary_df = wgs_slice
-            short_summary_df.to_csv(f"{outdir}short_summary.csv")
-
+            if doFileExists(multifasta) == True:
+                cov_df = loadCoverageDF(multifasta)
+                short_summary_df = short_summary_df.merge(cov_df, on="cod")
+                short_summary_df.to_csv(f"{outdir}short_summary.csv")
+            else:
+                print(f"WARN: {multifasta} was not found. No short_summary will be written.")
     else:
         print(f"WARN: {wgs_csv} was not found. No lineage summary will be written.")
     
