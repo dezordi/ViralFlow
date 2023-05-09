@@ -41,7 +41,7 @@ Usage:
     exec /opt/miniconda/bin/bwa "$@"
 
 %post
-
+    echo "deb http://archive.debian.org/debian stretch main contrib non-free" > /etc/apt/sources.list
     #essential stuff but minimal
     apt update
     #for security fixe:
