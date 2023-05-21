@@ -466,7 +466,17 @@ def get_lineages_summary(wgs_csv, outdir, multifasta, virus_tag, pango_csv=None)
             if doFileExists(multifasta) == True:
                 cov_df = loadCoverageDF(multifasta)
                 short_summary_df = short_summary_df.merge(cov_df, on="cod")
+                short_summary_df = short_summary_df.rename(
+                                columns={"MEAN_COVERAGE":"mean_depth_coverage",
+                                         "SD_COVERAGE":"sd_depth_coverage",
+                                         "MEDIAN_COVERAGE":"median_depth_coverage"}
+                                         )
+                
+                if "lineage" not in short_summary_df.columns:
+                    short_summary_df["lineage"] = None
+
                 short_summary_df.to_csv(f"{outdir}short_summary.csv")
+
             else:
                 print(f"WARN: {multifasta} was not found. No short_summary will be written.")
     else:
