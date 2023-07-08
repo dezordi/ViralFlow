@@ -62,6 +62,7 @@ log.info """
          --mafft_threads    : ${params.mafft_threads}
          --mapping_quality  : ${params.mapping_quality}
          --base_quality     : ${params.base_quality}
+         --minBamSize       : ${params.minBamSize}
          
         
         * Only required for "custom" virus
@@ -117,6 +118,13 @@ workflow {
       | map { it -> tuple(it[0], it[1]) } // tuple(sample_id, bam_file)
       | set { align2ref_Out_ch }
 
+    // remove bam files which are too small (necessary for Picard)
+    align2ref_Out_filtered_ch = align2ref_Out_ch.filter(it -> (it[1][0].size() > params.minBamSize ) && (it[1][1].size() > params.minBamSize))
+    // raise warning in case anyfile is excluded
+    align2ref_Out_ch
+        | filter(it -> (it[1][0].size() <= params.minBamSize ) && (it[1][1].size() <= params.minBamSize))
+        | view(it -> log.warn("Excluding ${it[0]} bam files as input for Picard due to small size (< ${params.minBamSize} bytes)"))
+
   if ((params.writeMappedReads == true)){
    // write mapped reads
    getMappedReads(align2ref_Out_ch) 
@@ -149,9 +157,9 @@ workflow {
     all_snpEff_html_ch = snpEff_html.collect()
     runVfReport(all_fastp_html_ch, all_snpEff_html_ch)
   }
-   //align consensus to ref
-   alignConsensus2Ref(runIvar_Out_ch, ref_fa)
-   alignConsensus2Ref.out.set {alignCon_Out_ch}
+    //align consensus to ref
+    alignConsensus2Ref(runIvar_Out_ch, ref_fa)
+    alignConsensus2Ref.out.set {alignCon_Out_ch}
 
    // Assembly Metrics
    runPicard(align2ref_Out_ch, ref_fa)
