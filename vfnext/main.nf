@@ -166,7 +166,7 @@ workflow {
   alignConsensus2Ref.out.set {alignCon_Out_ch}
 
   // Assembly Metrics
-  runPicard(align2ref_Out_ch, ref_fa)
+  runPicard(align2ref_Out_filtered_ch, ref_fa)
   runPicard.out.set {runPicard_Out_ch}
   fixWGS_In_ch = runPicard_Out_ch.join(runIvar_Out_ch)
   fixWGS(fixWGS_In_ch)
