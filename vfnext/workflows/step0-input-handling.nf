@@ -204,12 +204,10 @@ workflow processInputs {
     reads_channel_raw = reads_channel_fagz.concat(reads_channel_fqgz)
     // remove empty fastqs
     reads_channel= reads_channel_raw.filter(it -> (it[1][0].size()>0) && (it[1][1].size()>0))
-    
-    // TODO: raise warning if empty files are present
-    //empty_files_ch = reads_channel_raw.filter(it -> (it[1][0].size()==0) || (it[1][1].size()==0))
-    //if (empty_files_ch.count()>0){
-    //  log.warn(String.format("A total of %d empty fastqs are present and will be ignored", empty_ch.count()))
-    //}
+    // raise warning if there is any empty file
+    reads_channel_raw.filter(it -> (it[1][0].size()==0) && (it[1][1].size()==0))
+        | view(it -> log.warn("Excluding ${it[0]} fastq files due to 0 bytes size)"))
+
     if (reads_channel.count()==0){
       log.error("No fastq files found. Be sure your fastq can be found by '*_R{1,2}*.fq.gz'(or fasta.gz) wildcard.")
       exit 1
