@@ -7,6 +7,7 @@ copyright = '2023, FioCruz Genomic Network'
 author = 'Filipe Dezordi'
 
 release = '0.1.0'
+version = '1.0.0'
 
 # -- General configuration
 
