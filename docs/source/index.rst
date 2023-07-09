@@ -14,7 +14,6 @@ Contents
 
 .. toctree::
 
-
-   install
+   usage
    dependencies
    tasks
