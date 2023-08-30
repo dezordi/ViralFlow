@@ -5,7 +5,7 @@ inDir test_files/sars-cov-2/input/
 runSnpEff true
 writeMappedReads true
 minLen 75
-depth 5
+depth 25
 minDpIntrahost 100
 trimLen 0
 refGenomeCode null
