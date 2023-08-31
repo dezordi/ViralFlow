@@ -16,6 +16,7 @@ cd ViralFlow
 git checkout vfnext
 cd ./vfnext/containers/
 /bin/bash setupContainers.sh
+/bin/bash add_entries_SnpeffDB.sh 
 ```
 
 * How to run (on SARS-CoV-2)?
