@@ -123,14 +123,12 @@ workflow {
   align2ref_Out_ch
     | filter(it -> 
       // filter if unix paths
-      (it[1].getClass() == sun.nio.fs.UnixPath) && (it[1].size() <= params.minBamSize )
+      ((it[1].getClass() == sun.nio.fs.UnixPath) && (it[1].size() >= params.minBamSize )) 
+      ||
+      ((it[1].getClass() == java.util.ArrayList) && (it[1][0].size() >= params.minBamSize ) && (it[1][1].size() >= params.minBamSize))
     )
-    | filter (it ->
-      // filter if is a list with two bam file paths
-      (it[1].getClass() == java.util.ArrayList) && (it[1][0].size() <= params.minBamSize ) && (it[1][1].size() <= params.minBamSize)
-     )
     | set {align2ref_Out_filtered_ch}
-  
+
   // raise warning in case anyfile is excluded
   align2ref_Out_ch
     | filter(it -> 
@@ -140,7 +138,8 @@ workflow {
     | filter (it ->
       // filter if is a list with two bam file paths
       (it[1].getClass() == java.util.ArrayList) && (it[1][0].size() <= params.minBamSize ) && (it[1][1].size() <= params.minBamSize)
-     )| view(it -> log.warn("Excluding ${it[0]} bam files as input for Picard due to small size (< ${params.minBamSize} bytes)"))
+     )
+    | view(it -> log.warn("Excluding ${it[0]} bam files as input for Picard due to small size (< ${params.minBamSize} bytes)"))
 
   if ((params.writeMappedReads == true)){
     // write mapped reads
