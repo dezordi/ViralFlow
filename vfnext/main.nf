@@ -108,6 +108,7 @@ workflow {
   runFastp.out // tuple (filename_prefix, [fq.gz pair], fastp_html)
     | map {it -> tuple(it[0],it[1])} //tuple (filename_prefix, [fq.gz pair])
     | set {fastp_fqgz_ch}
+  
   //align 2 reference
   //align2ref_In_ch = reads_ch.combine(bwaidx_Output_ch)
   align2ref_In_ch = fastp_fqgz_ch.combine(bwaidx_Output_ch)
@@ -119,10 +120,25 @@ workflow {
     | set { align2ref_Out_ch }
 
   // remove bam files which are too small (necessary for Picard)
-  align2ref_Out_filtered_ch = align2ref_Out_ch.filter(it -> (it[1][0].size() > params.minBamSize ) && (it[1][1].size() > params.minBamSize))
+  align2ref_Out_ch
+    | filter(it -> 
+      // filter if unix paths
+      ((it[1].getClass() == sun.nio.fs.UnixPath) && (it[1].size() >= params.minBamSize )) 
+      ||
+      ((it[1].getClass() == java.util.ArrayList) && (it[1][0].size() >= params.minBamSize ) && (it[1][1].size() >= params.minBamSize))
+    )
+    | set {align2ref_Out_filtered_ch}
+
   // raise warning in case anyfile is excluded
   align2ref_Out_ch
-    | filter(it -> (it[1][0].size() <= params.minBamSize ) && (it[1][1].size() <= params.minBamSize))
+    | filter(it -> 
+      // filter if unix paths
+      (it[1].getClass() == sun.nio.fs.UnixPath) && (it[1].size() <= params.minBamSize )
+    )
+    | filter (it ->
+      // filter if is a list with two bam file paths
+      (it[1].getClass() == java.util.ArrayList) && (it[1][0].size() <= params.minBamSize ) && (it[1][1].size() <= params.minBamSize)
+     )
     | view(it -> log.warn("Excluding ${it[0]} bam files as input for Picard due to small size (< ${params.minBamSize} bytes)"))
 
   if ((params.writeMappedReads == true)){
