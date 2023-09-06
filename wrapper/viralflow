@@ -2,10 +2,8 @@
 import os
 import argparse
 import wrapper
-#from pathlib import Path
 from sys import exit
-#import subprocess
-#import shlex
+
 
 
 __author__ = "Antonio Marinho da Silva Neto"
@@ -13,7 +11,6 @@ __license__ = "GPL"
 __version__ = "0.1"
 __maintainer__ = "Antonio Marinho da Silva Neto"
 __email__ = "ad45@sanger.ac.uk"
-__status__ = "Beta"
 
 dsc = '''
 This is just a wrapper for a nextflow pipeline. 
