@@ -5,6 +5,14 @@ __pycache__/
 
 # C extensions
 *.so
+# container
+
+viralflow_container/
+
+vfnext/.nextflow*
+vfnext/work
+out_dir
+sandbox/*
 
 # Distribution / packaging
 .Python
@@ -131,3 +139,18 @@ dmypy.json
 # dev_stuff
 test.py
 test/
+
+# mounted containers
+
+vfnext/containers/*.sif
+vfnext/containers/*temp*
+vfnext/containers/singularity_snpeff.sif/*
+vfnext/containers/nextclade_dataset/sars-cov-2/*
+!vfnext/containers/nextclade_dataset/sars-cov-2/README
+Miniconda3*
+work/*
+.nextflow/*
+**/outputs/**
+vfnext/containers/snpEff_DB.catalog
+vfnext/databases/*
+!vfnext/databases/*.csv

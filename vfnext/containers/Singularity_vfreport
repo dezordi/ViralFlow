@@ -1,0 +1,27 @@
+Bootstrap: docker
+From: python:3.8-slim-bullseye
+Stage: spython-base
+
+%post
+# Copy sample_vcf_to_zarr.py to WORKDIR
+DEBIAN_FRONTEND=noninteractive
+
+# Install OS dependencies
+apt-get update -qq -y && \
+apt install git -y 
+
+# Install Python dependencies
+pip install --upgrade pip
+
+# install vf report
+git clone https://github.com/dezordi/viralflow-report.git
+cd viralflow-report
+pip install .
+
+%runscript
+cd /
+exec /bin/bash "$@"
+
+%startscript
+cd /
+exec /bin/bash "$@"

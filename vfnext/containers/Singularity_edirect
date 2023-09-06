@@ -1,0 +1,15 @@
+Bootstrap: docker
+From: ncbi/edirect
+
+%post
+# install wget
+apt update
+apt upgrade -y
+apt install wget
+
+
+
+%runscript
+exec /bin/bash "$@"
+%startscript
+exec /bin/bash "$@"

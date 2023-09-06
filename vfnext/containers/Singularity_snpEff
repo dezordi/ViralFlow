@@ -1,0 +1,16 @@
+Bootstrap: docker
+From: continuumio/miniconda3:4.7.12
+
+%post
+conda install -c bioconda samtools=1.9 --force-reinstall
+conda install -c bioconda freebayes
+conda install -c bioconda snpeff=5.0
+conda install -c bioconda entrez-direct
+
+%runscript
+cd /
+exec /bin/bash "$@"
+
+%startscript
+cd /
+exec /bin/bash "$@"

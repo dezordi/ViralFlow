@@ -1,0 +1,83 @@
+Bootstrap: docker
+From: ubuntu:20.04
+Stage: spython-base
+
+%labels
+VERSION 1.0
+
+%post
+
+apt-get update
+apt-get install -y build-essential autoconf zlib1g-dev python3 wget libbz2-dev liblzma-dev libncurses-dev git bedtools python3-pip vim nano
+
+mkdir /software/
+
+# iVar
+cd /software/ &&\
+wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.1.0-1-Linux-x86_64.sh
+bash Miniconda3-py310_23.1.0-1-Linux-x86_64.sh -b -p /software/miniconda
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/software/miniconda/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/software/miniconda/etc/profile.d/conda.sh" ]; then
+        . "/software/miniconda/etc/profile.d/conda.sh"
+    else
+        export PATH="/software/miniconda/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+conda config --add channels bioconda
+conda config --add channels conda-forge
+conda config --set channel_priority strict
+conda update conda
+conda install ivar
+
+
+# SAMtools
+cd /software/ &&\
+wget https://github.com/samtools/samtools/releases/download/1.11/samtools-1.11.tar.bz2 &&\
+tar xvf samtools-1.11.tar.bz2 &&\
+cd samtools-1.11/ &&\
+./configure &&\
+make &&\
+make install &&\
+cd ../ &&\
+rm samtools-1.11.tar.bz2
+
+
+#cleanup
+conda clean -y --all
+rm -f /software/Miniconda3-py310_23.1.0-1-Linux-x86_64.sh
+apt autoremove --purge
+apt clean
+
+# bwa
+cd /software/ &&\
+wget https://github.com/lh3/bwa/archive/v0.7.17.tar.gz &&\
+tar xvf v0.7.17.tar.gz &&\
+cd bwa-0.7.17/ &&\
+make &&\
+cd ../ &&\
+rm v0.7.17.tar.gz
+PATH=/software/bwa-0.7.17:$PATH
+
+# Snakemake
+pip3 install pandas snakemake
+
+%environment
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+export PATH=/software/bwa-0.7.17:$PATH
+export PATH=/software/miniconda/bin/:$PATH
+
+%runscript
+echo "running on a container"
+exec /bin/bash "$@"
+
+%startscript
+echo "running on a container"
+exec /bin/bash "$@"

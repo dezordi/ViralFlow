@@ -1,0 +1,74 @@
+# Recipe obtained from https://forgemia.inra.fr/gafl/singularity/bwa
+# distribution based on: debian 9.8
+Bootstrap:docker
+From:debian:9.8-slim
+
+# container for bwa v0.7.17
+# Build:
+# sudo singularity build bwa_v0.7.17.sif Singularity.bwa_v0.7.17
+
+%environment
+export LC_ALL=C
+export LC_NUMERIC=en_GB.UTF-8
+export PATH="/opt/miniconda/bin:$PATH"
+
+#%labels
+#COPYRIGHT INRAe GAFL 2020
+#AUTHOR I2B team
+#VERSION 1.1
+#LICENSE MIT
+#DATE_MODIF MYDATEMODIF
+#bwa (v0.7.17)
+
+%help
+Container for bwa
+BWA is a software package for mapping DNA sequences against a large reference genome, such as the human genome. It consists of three algorithms: BWA-backtrack, BWA-SW and BWA-MEM. The first algorithm is designed for Illumina sequence reads up to 100bp, while the rest two for longer sequences ranged from 70bp to a few megabases
+https://github.com/lh3/bwa
+
+Version: 0.7.17
+Package installation using Miniconda3-4.7.12
+All packages are in /opt/miniconda/bin & are in PATH
+Default runscript: bwa
+
+Usage:
+    bwa_v0.7.17.sif --help
+    or:
+    singularity exec bwa_v0.7.17.sif bwa --help
+
+
+%runscript
+    #default runscript: bwa passing all arguments from cli: $@
+    exec /opt/miniconda/bin/bwa "$@"
+
+%post
+    echo "deb http://archive.debian.org/debian stretch main contrib non-free" > /etc/apt/sources.list
+    #essential stuff but minimal
+    apt update
+    #for security fixe:
+    #apt upgrade -y
+    apt install -y wget bzip2
+
+    #install conda
+    cd /opt
+    rm -fr miniconda
+
+    #miniconda3: get miniconda3 version 4.7.12
+    wget https://repo.continuum.io/miniconda/Miniconda3-4.7.12-Linux-x86_64.sh -O miniconda.sh
+
+    #install conda
+    bash miniconda.sh -b -p /opt/miniconda
+    export PATH="/opt/miniconda/bin:$PATH"
+    #add channels
+    conda config --add channels defaults
+    conda config --add channels bioconda
+    conda config --add channels conda-forge
+
+    #install bwa
+
+    conda install -y -c bioconda bwa=0.7.17
+
+    #cleanup
+    conda clean -y --all
+    rm -f /opt/miniconda.sh
+    apt autoremove --purge
+    apt clean

@@ -1,0 +1,16 @@
+virus custom
+outDir test_files/denv/outputs/
+inDir test_files/denv/input/
+runSnpEff true
+writeMappedReads false
+minLen 75
+depth 25
+minDpIntrahost 100
+trimLen 0
+refGenomeCode NC_001474.2
+referenceGFF null
+referenceGenome null
+nextflowSimCalls null
+fastp_threads 1
+bwa_threads 1
+mafft_threads 1

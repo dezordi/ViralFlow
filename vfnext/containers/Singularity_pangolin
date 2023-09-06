@@ -1,0 +1,84 @@
+Bootstrap: docker
+From: ubuntu:xenial
+Stage: spython-base
+
+%labels
+base.image="ubuntu:xenial"
+dockerfile.version="1"
+software="pangolin"
+software.version=${PANGOLIN_VER}
+description="Conda environment for Pangolin. Pangolin: Software package for assigning SARS-CoV-2 genome sequences to global lineages."
+website="https://github.com/cov-lineages/pangolin"
+license="GNU General Public License v3.0"
+license.url="https://github.com/cov-lineages/pangolin/blob/master/LICENSE.txt"
+maintainer="Erin Young"
+maintainer.email="eriny@utah.gov"
+maintainer2="Anders Goncalves da Silva"
+maintainer2.email="andersgs@gmail.com"
+maintainer3="Curtis Kapsak"
+maintainer3.email="kapsakcj@gmail.com"
+%post
+
+# ARG variables only persist during build time
+# had to include the v for some of these due to GitHub tags. 
+# thankfully pangolearn github tag is simply a date
+PANGOLIN_VER="v4.1.3"
+PANGOLEARN_VER="2022-02-02"
+SCORPIO_VER="v0.3.17"
+CONSTELLATIONS_VER="v0.1.10"
+USHER_VER="0.5.6"
+PANGO_DESIGNATION_VER="v1.2.127"
+
+
+# install needed software for conda install; cleanup apt garbage
+apt-get update && apt-get install -y \
+wget \
+git \
+build-essential && \
+apt-get autoclean && rm -rf /var/lib/apt/lists/*
+
+# get miniconda and the pangolin repo
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+bash ./Miniconda3-latest-Linux-x86_64.sh -p /miniconda -b  && \
+rm Miniconda3-latest-Linux-x86_64.sh && \
+wget "https://github.com/cov-lineages/pangolin/archive/${PANGOLIN_VER}.tar.gz" && \
+tar -xf ${PANGOLIN_VER}.tar.gz && \
+rm ${PANGOLIN_VER}.tar.gz && \
+mv -v pangolin-* pangolin
+
+# set the environment
+PATH="/miniconda/bin:$PATH"
+LC_ALL=C
+
+# modify environment.yml to pin specific versions during install
+# create the conda environment using modified environment.yml and set as default
+sed -i "s|usher.*|usher=${USHER_VER}|" /pangolin/environment.yml && \
+sed -i "s|pangoLEARN.git|pangoLEARN.git@${PANGOLEARN_VER}|" /pangolin/environment.yml && \
+sed -i "s|scorpio.git|scorpio.git@${SCORPIO_VER}|" /pangolin/environment.yml && \
+sed -i "s|constellations.git|constellations.git@${CONSTELLATIONS_VER}|" /pangolin/environment.yml && \
+sed -i "s|pango-designation.git|pango-designation.git@${PANGO_DESIGNATION_VER}|" /pangolin/environment.yml && \
+conda env create -f /pangolin/environment.yml && \
+echo "source activate pangolin" > /etc/bash.bashrc
+PATH=/miniconda/envs/pangolin/bin:$PATH
+
+# final pip install steps; cleanup conda garbage; print versions of pangolin & dependencies
+cd pangolin && \
+pip install . && \
+conda clean -a -y && \
+mkdir /data && \
+pangolin --all-versions && \
+usher --version
+
+mkdir -p /data
+cd /data
+%environment
+export PATH="/miniconda/bin:$PATH"
+export LC_ALL=C
+export PATH=/miniconda/envs/pangolin/bin:$PATH
+%runscript
+cd /data
+exec /bin/bash "$@"
+%startscript
+cd /data
+exec /bin/bash "$@"
+
