@@ -23,7 +23,7 @@ nextflow run /path/to/vfnext/main.nf \
         --inDir /path/to/input_dir/ \
         --outDir /path/to/output_dir/ \
         --virus sars-cov2
-        --primersBED /path/to/adapters.fa
+        --primersBED /path/to/bed_file.bed
 ```
 
 * How to run on a arbitrary virus?
