@@ -13,7 +13,6 @@ Current development stage (alpha) requires investigation on real world scenarios
 ```{bash}
 git clone https://github.com/dezordi/ViralFlow.git
 cd ViralFlow
-git checkout vfnext
 cd ./vfnext/containers/
 /bin/bash setupContainers.sh
 /bin/bash add_entries_SnpeffDB.sh 
