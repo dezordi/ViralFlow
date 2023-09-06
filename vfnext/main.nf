@@ -39,8 +39,8 @@ ANSI_RESET = "\033[0m"
 
 log.info """
   ===========================================
-  VFNEXT_0.1 (dev : alpha)
-  Used parameters:
+  VFNEXT_0.1.0
+  parameters:
   -------------------------------------------
   --inDir            : ${params.inDir}
   --outDir           : ${params.outDir}
