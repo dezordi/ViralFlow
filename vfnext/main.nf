@@ -27,7 +27,8 @@ include { checkSnpEffDB } from './modules/checkSnpEffDB.nf'
 include { processInputs } from './workflows/step0-input-handling.nf'
 include { runVfReport } from './modules/runVfReport.nf'
 
-// I got some of the code from the FASTQC PIPELINE
+
+// The code for the inital log info is based on the one found at FASTQC PIPELINE
 // https://github.com/angelovangel/nxf-fastqc/blob/master/main.nf
 
 /*
@@ -39,7 +40,7 @@ ANSI_RESET = "\033[0m"
 
 log.info """
   ===========================================
-  VFNEXT_0.1.0
+  VFNEXT v0.1.0
   parameters:
   -------------------------------------------
   --inDir            : ${params.inDir}
