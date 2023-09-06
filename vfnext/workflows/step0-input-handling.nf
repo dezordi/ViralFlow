@@ -19,7 +19,7 @@ def validate_parameters() {
       }
     // if only the flag is provided withou any value, it is considered as true
     else if (params.primersBED==true){
-      log.error("the adapters file flag was set but no value provided")
+      log.error("the BED file flag was set but no value provided")
       errors +=1
     }
     // if a path is provided, check if is valid
