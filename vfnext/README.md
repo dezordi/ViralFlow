@@ -2,11 +2,7 @@
 
 Implementation of ViralFlow on Nextflow.
 
-## current dev stage: alpha
-A first version to run Viralflow under Nextflow framework was developed, tested on small dataset and everything works as expected.
-Current development stage (alpha) requires investigation on real world scenarios to guarantee that VFNext implementation is equivalent to the first version of the pipeline.
-
-## quick and dirty guide (only for dev purpose)
+## quick start guide
 
 * How to setup vfnext?
 
@@ -54,13 +50,4 @@ Paths provided for the parameters **must be absolute paths**
 Pangolin, Nextclade and compile output steps will only run when virus tag is set to 'sars-cov2'
 
 ---
-## Future Features
-- [ ] Add an auto install procedure
-- [ ] add CLI integration (similar to previous ViralFlow version)
-- [ ] Add support for other virus (currently only 'sars-cov2' and 'custom' mode are supported)
 
-## Roadmap
-1. [x] ~Prototype~ (06/06/22)
-2. [ ] Alpha
-3. [ ] Beta
-4. [ ] Release - ViralFlow v1.0
