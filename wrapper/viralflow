@@ -124,6 +124,7 @@ if args.run == True:
     if args.params_file == None:
         print("ERROR: no params_file was provided")
         exit(1)
+    print("ViralFlow v0.1.0")
     wrapper.run_vfnext(VF_ROOT_PATH, args.params_file)
     exit(0)
 
