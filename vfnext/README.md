@@ -1,10 +1,10 @@
 # VFNext
 
-Implementation of ViralFlow on Nextflow.
+ViralFlow constitutes a computational workflow implemented in Nextflow. Below, you will discover guidance on configuring and executing the workflow independently, without reliance on the supplied wrapper. For further elaboration, please refer to the [documentation](https://viralflow.github.io/index-en.html).
 
 ## quick start guide
 
-* How to setup vfnext?
+* How to setup vfnext ?
 
 ```{bash}
 git clone https://github.com/dezordi/ViralFlow.git
@@ -46,8 +46,6 @@ nextflow run ../vfnext/main.nf \
 ---
 ## NOTES
 Paths provided for the parameters **must be absolute paths**
-
-Pangolin, Nextclade and compile output steps will only run when virus tag is set to 'sars-cov2'
 
 ---
 
