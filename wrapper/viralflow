@@ -8,7 +8,7 @@ from sys import exit
 
 __author__ = "Antonio Marinho da Silva Neto"
 __license__ = "GPL"
-__version__ = "0.1"
+__version__ = "0.1.0"
 __maintainer__ = "Antonio Marinho da Silva Neto"
 __email__ = "ad45@sanger.ac.uk"
 
