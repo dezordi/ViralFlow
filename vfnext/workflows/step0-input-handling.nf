@@ -15,7 +15,7 @@ def validate_parameters() {
 
     if (params.primersBED==null){
       //make adapter file optional, usefull for metagenomics
-      log.warn("An adapter file path was not provided. The pipeline will not run samtools clip to remove primer regions")
+      log.warn("An BED file with primer positions was not provided. The pipeline will not run samtools clip to remove primer regions")
       }
     // if only the flag is provided withou any value, it is considered as true
     else if (params.primersBED==true){
