@@ -37,7 +37,7 @@ nextflow run ../vfnext/main.nf \
         --inDir /path/to/input_dir/ \
         --outDir /path/to/output_dir/ \
         --virus custom \
-        --primersBED /path/to/adapters.fa \
+        --primersBED /path/to/bed_file.bed \
         --referenceGFF /path/to/reference.gff3
         --referenceGenome /path/to/reference.fasta
         --refGenomeCode my_genome_code
