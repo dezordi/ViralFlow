@@ -48,3 +48,4 @@ nextflow run ../vfnext/main.nf \
 Paths provided for the parameters **must be absolute paths**
 
 ---
+
