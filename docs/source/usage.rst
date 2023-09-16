@@ -66,7 +66,7 @@ If you already have the aforementioned dependencies and conda installed, you can
 
 .. code-block:: console
 
-   git clone https://github.com/dezordi/ViralFlow.git -b vfnext
+   git clone https://github.com/dezordi/ViralFlow.git
    cd ViralFlow/
    conda env create -f envs/env.yml
    conda activate viralflow
@@ -79,7 +79,7 @@ All steps of ViralFlow are performed in controlled environments, where each tool
 
 .. code-block:: console
 
-   viralflow_dev -build_containers
+   viralflow -build_containers
 
 .. _running:
 
@@ -95,7 +95,7 @@ By default, the snpEff tool in ViralFlow is configured with the NC_045512.2 geno
 
 .. code-block:: console
 
-   viralflow_dev -add_entry_to_snpeff --org_name Dengue --genome_code NC_001474.2
+   viralflow -add_entry_to_snpeff --org_name Dengue --genome_code NC_001474.2
 
 SARS-CoV-2
 ~~~~~~~~~~
@@ -104,7 +104,7 @@ In this model, the analysis is performed based on the reference genome NC_045512
 
 .. code-block:: console
 
-   viralflow_dev -run --params_file test_files/sars-cov-2.params
+   viralflow -run --params_file test_files/sars-cov-2.params
 
 
 Custom
@@ -114,7 +114,7 @@ In this model, the analysis is performed based on the files for the virus that t
 
 .. code-block:: console
 
-   viralflow_dev -run --params_file test_files/denv.params
+   viralflow -run --params_file test_files/denv.params
 
 Pangolin update
 ~~~~~~~~~~~~~~~
@@ -124,7 +124,7 @@ Periodically the pangolin tool updates the lineage database, as well as the ushe
 .. code-block:: console
 
    #update the tool and databases
-   viralflow_dev -update_pangolin
+   viralflow -update_pangolin
 
    #update only the tool
-   viralflow_dev -update_pangolin_data
+   viralflow -update_pangolin_data
