@@ -43,7 +43,10 @@ process align2ref{
     
     #TRIM PRIMERS OF SORTED BAM
 
-    samtools ampliconclip --both-ends --hard-clip --filter-len ${params.minLen} -b ${bed} ${sample_id}.sorted.bam -f ${sample_id}.trimmed_reads.txt > ${trim_bam}
+    samtools ampliconclip --both-ends --hard-clip \
+      --filter-len ${params.minLen} \
+      -b ${bed} ${sample_id}.sorted.bam \
+      -f ${sample_id}.trimmed_reads.txt > ${trim_bam}
     # Sort alignments by leftmost coordinates ---------------------------------
     samtools sort -o ${trim_bam}.sorted.bam ${trim_bam}
     samtools index ${trim_bam}.sorted.bam
