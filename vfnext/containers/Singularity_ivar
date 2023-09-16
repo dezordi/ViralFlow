@@ -68,6 +68,7 @@ PATH=/software/bwa-0.7.17:$PATH
 
 # Snakemake
 pip3 install pandas snakemake
+
 %environment
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 export PATH=/software/bwa-0.7.17:$PATH
