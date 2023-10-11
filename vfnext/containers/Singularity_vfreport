@@ -8,7 +8,7 @@ DEBIAN_FRONTEND=noninteractive
 
 # Install OS dependencies
 apt-get update -qq -y && \
-apt install git -y 
+apt install git -y procps
 
 # Install Python dependencies
 pip install --upgrade pip

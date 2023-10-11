@@ -10,11 +10,14 @@ Stage: spython-base
 DEBIAN_FRONTEND=noninteractive
 
 # Install OS dependencies
-apt-get update -qq -y && \
+apt-get update -qq -y && apt install -y procps &&\
 
 # Install Python dependencies
 pip install --upgrade pip
 pip install -r requirements.txt
+
+# Explicitly add /bin to the PATH
+echo 'export PATH=$PATH:/bin' >> /root/.bashrc
 
 %runscript
 cd /
