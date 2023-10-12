@@ -7,8 +7,8 @@ process bamToFastq(){
         tuple val(sample_id), path("${sample_id}.unmapped.*.bam.fq")
     script:
     """
-    bedtools bamtofastq -i unmapped.R1.bam -fq ${sample_id}.unmapped.R1.bam.fq
-    bedtools bamtofastq -i unmapped.R2.bam -fq ${sample_id}.unmapped.R2.bam.fq
+    bedtools bamtofastq -i unmapped.bam -fq ${sample_id}.unmapped.R1.bam.fq\
+    -fq2 ${sample_id}.unmapped.R2.bam.fq
     """
 
 }
