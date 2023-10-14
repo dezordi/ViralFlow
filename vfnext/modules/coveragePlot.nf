@@ -11,7 +11,7 @@ process coveragePlot {
 
     script:
     
-    bam = bam_files[0].toString() // Certifique-se de que o índice [0] seja apropriado para o seu caso
+    bam = bam_files[0].toString()
     genomecode = genome_code.toString()
     depth = params.depth
 
