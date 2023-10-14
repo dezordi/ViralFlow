@@ -13,11 +13,18 @@ process coveragePlot {
     bam = bam_files[0].toString()
     genomecode = genome_code.toString()
     depth = params.depth
+    html = "${sample_id}_coveragePlot.html"
+    png = "${sample_id}_coveragePlot.png"
+    svg = "${sample_id}_coveragePlot.svg"
 
     """
-    bamdash -b ${bam} -r ${genomecode} -c ${depth}
-    mv ${genomecode}_plot.html ${sample_id}_coveragePlot.html
     bamdash -b ${bam} -r ${genomecode} -c ${depth} -e svg
-    mv ${genomecode}_plot.svg ${sample_id}_coveragePlot.svg  
+    mv ${genomecode}_plot.svg ${svg}
+
+    bamdash -b ${bam} -r ${genomecode} -c ${depth} -e png
+    mv ${genomecode}_plot.png ${png}
+
+    bamdash -b ${bam} -r ${genomecode} -c ${depth}
+    mv ${genomecode}_plot.html ${html}
     """
 }
