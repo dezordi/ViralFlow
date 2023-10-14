@@ -5,7 +5,6 @@ process coveragePlot {
 
       tuple val(sample_id), path(bam_files), path(bai_files)
       val(genome_code)
-      path(refIndexFiles)
     output:
         path("*coveragePlot*")
 

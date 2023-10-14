@@ -145,8 +145,7 @@ workflow {
 
   //Rendering the depth coverage plot
   coveragePlot(align2ref.out.regular_output,
-              ref_gcode,
-              faIdx_ch)
+              ref_gcode)
 
   if ((params.writeMappedReads == true)){
     // write mapped reads
