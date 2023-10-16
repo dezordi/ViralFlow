@@ -11,6 +11,5 @@ process getUnmappedReads {
     """
     samtools view -b -f 4 ${sample_id}.sorted.bam > unmapped.bam
     samtools sort -n -o unmapped.bam unmapped.bam
-#    samtools view -hbf 128 unmapped.bam > unmapped.R2.bam
     """
 }
