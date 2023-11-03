@@ -53,9 +53,6 @@ echo "@ Building ivar_latest.sif..."
 singularity build --fakeroot --sandbox ivar_latest.sif Singularity_ivar
 echo "  > Done <"
 
-echo "@ Building singularity_pythonScripts.sif..."
-singularity build --fakeroot --sandbox singularity_pythonScripts.sif Singularity_pythonScripts
-
 echo "@ Building singularity_edirect.sif..."
 singularity build --fakeroot --sandbox singularity_edirect.sif Singularity_edirect
 
