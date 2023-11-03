@@ -46,7 +46,7 @@ Usage:
     apt update
     #for security fixe:
     #apt upgrade -y
-    apt install -y wget bzip2
+    apt install -y wget bzip2 procps
 
     #install conda
     cd /opt

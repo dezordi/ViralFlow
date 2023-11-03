@@ -6,6 +6,7 @@ conda install -c bioconda samtools=1.9 --force-reinstall
 conda install -c bioconda freebayes
 conda install -c bioconda snpeff=5.0
 conda install -c bioconda entrez-direct
+conda install -c conda-forge procps-ng
 
 %runscript
 cd /
