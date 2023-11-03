@@ -7,6 +7,7 @@ nextflow.enable.dsl = 2
 include { indexReferenceBWA } from './modules/bwaIndex.nf'
 include { runFastp } from './modules/runFastp.nf'
 include { align2ref } from './modules/align2ref.nf'
+include { coveragePlot } from './modules/coveragePlot.nf'
 include { runIvar } from './modules/runIvar.nf'
 include { runReadCounts } from './modules/runReadCounts.nf'
 include { alignConsensus2Ref } from './modules/alignConsensus2Ref.nf'
@@ -40,7 +41,7 @@ ANSI_RESET = "\033[0m"
 
 log.info """
   ===========================================
-  VFNEXT v0.1.0
+  VFNEXT v0.2.0
   parameters:
   -------------------------------------------
   --inDir            : ${params.inDir}
@@ -141,6 +142,10 @@ workflow {
       (it[1].getClass() == java.util.ArrayList) && (it[1][0].size() <= params.minBamSize ) && (it[1][1].size() <= params.minBamSize)
      )
     | view(it -> log.warn("Excluding ${it[0]} bam files as input for Picard due to small size (< ${params.minBamSize} bytes)"))
+
+  //Rendering the depth coverage plot
+  coveragePlot(align2ref.out.regular_output,
+              ref_gcode)
 
   if ((params.writeMappedReads == true)){
     // write mapped reads
