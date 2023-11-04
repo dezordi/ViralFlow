@@ -1,0 +1,24 @@
+Bootstrap: docker
+From: python:3.9-bookworm
+Stage: spython-base
+
+%post
+DEBIAN_FRONTEND=noninteractive
+
+# Install OS dependencies
+apt-get update -qq -y && \
+apt install -y procps
+
+# Install Python dependencies
+pip install --upgrade pip
+
+# install bamdash
+pip install bamdash
+
+%runscript
+cd /
+exec /bin/bash "$@"
+
+%startscript
+cd /
+exec /bin/bash "$@"
