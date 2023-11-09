@@ -32,7 +32,8 @@ def build_containers(root_path):
     # build containers
     cd_to_dir= f"cd {root_path}/vfnext/containers/" 
     build_sandbox = f"python ./build_containers.py"
-    pull_containers = f"python ./pull_containers.py" 
+    pull_containers = f"python ./pull_containers.py"
+    os.system(cd_to_dir+';'+pull_containers) 
     print(cd_to_dir+';'+build_sandbox)
     os.system(cd_to_dir+';'+build_sandbox)
     # add new entries to snpeff
@@ -41,7 +42,6 @@ def build_containers(root_path):
     for entry in entries:
         print(f"..> {entry[0]}:{entry[1]}")
         add_entries_to_DB(root_path, entry[0], entry[1])
-    os.system(cd_to_dir+';'+pull_containers)
     
 def install_dependencies(root_path):
     """
