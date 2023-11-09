@@ -15,7 +15,7 @@ def get_repository(repository_list):
 
 def container_pull(containers_dir, containers_name_list):
     for container in containers_name_list:
-        Client.pull(f"library://wallau_lab/{container[0]}/{container[1]}", name=f"{container[1]}.sif",
+        Client.pull(f"library://wallaulabs/{container[0]}/{container[1]}", name=f"{container[1]}.sif",
                     pull_folder=containers_dir, force=True)
 
 
