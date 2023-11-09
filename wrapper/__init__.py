@@ -31,16 +31,17 @@ def build_containers(root_path):
     """
     # build containers
     cd_to_dir= f"cd {root_path}/vfnext/containers/" 
-    rm_old_cntnrs = "rm -rf *.sif"
-    run_bash = f"bash ./setupContainers.sh"
-    print(cd_to_dir+';'+rm_old_cntnrs+';'+run_bash)
-    os.system(cd_to_dir+';'+rm_old_cntnrs+';'+run_bash)
+    build_sandbox = f"python ./build_containers.py"
+    pull_containers = f"python ./pull_containers.py" 
+    print(cd_to_dir+';'+build_sandbox)
+    os.system(cd_to_dir+';'+build_sandbox)
     # add new entries to snpeff
     entries = parse_csv(f"{root_path}/vfnext/databases/add_to_snpeff_db.csv")
     print("@ add entries to SnpEff DB")
     for entry in entries:
         print(f"..> {entry[0]}:{entry[1]}")
         add_entries_to_DB(root_path, entry[0], entry[1])
+    os.system(cd_to_dir+';'+pull_containers)
     
 def install_dependencies(root_path):
     """
