@@ -15,8 +15,9 @@ def get_repository(repository_list):
 
 def container_pull(containers_dir, containers_name_list):
     for container in containers_name_list:
-        Client.pull(f"library://wallaulabs/{container[0]}/{container[1]}", name=f"{container[1]}.sif",
-                    pull_folder=containers_dir, force=True)
+        print(f"Downloading container {container[1]}. This could be take a while. Please Wait ...")
+        os.system(f"singularity pull {container[1]}.sif library://wallaulabs/viralflow/{container[1]}")  
+
 
 
 def check_containers(containers_name_list, downloaded_list):
@@ -39,3 +40,4 @@ def containers_routine_pull(missing_containers_list, containers_dir, containers_
         attempts -= 1
         if len(lost_containers) == 0:
             break
+
