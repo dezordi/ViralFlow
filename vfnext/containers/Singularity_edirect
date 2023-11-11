@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: ncbi/edirect
+From: ncbi/edirect:12.5
 
 %post
 # install wget
