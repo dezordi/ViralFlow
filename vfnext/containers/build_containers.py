@@ -2,12 +2,10 @@ import subprocess
 import os
 
 containers = [
-    "singularity_nextclade.sif",
     "pangolin_latest.sif",
     "singularity_snpeff.sif"]
 
 container_commands = [
-    "singularity build -F --fakeroot --sandbox singularity_nextclade.sif Singularity_nextclade",
     "singularity build -F --fakeroot --sandbox pangolin_latest.sif Singularity_pangolin",
     "singularity build -F --fakeroot --sandbox singularity_snpeff.sif Singularity_snpEff"
     ]
@@ -56,7 +54,7 @@ else:
 print("\nExecuting additional steps:")
 
 print("  > Loading sars-cov2 nextclade dataset...")
-nextclade_command = "singularity exec -B nextclade_dataset/sars-cov-2:/tmp singularity_nextclade.sif nextclade dataset get --name 'sars-cov-2' --output-dir '/tmp'"
+nextclade_command = "singularity exec -B nextclade_dataset/sars-cov-2:/tmp nextclade:2.4.sif nextclade dataset get --name 'sars-cov-2' --output-dir '/tmp'"
 try:
     subprocess.check_call(nextclade_command, shell=True)
     print("    > Done <")
