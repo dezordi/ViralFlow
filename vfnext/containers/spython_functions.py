@@ -16,7 +16,7 @@ def get_repository(repository_list):
 def container_pull(containers_dir, containers_name_list):
     for container in containers_name_list:
         print(f"Downloading container {container[1]}. This could be take a while. Please Wait ...")
-        os.system(f"singularity pull {container[1]}.sif library://wallaulabs/viralflow/{container[1]}")  
+        os.system(f"singularity pull -F {container[1]}.sif library://wallaulabs/viralflow/{container[1]}")  
 
 
 
