@@ -20,7 +20,8 @@ def build_container(container, command):
     print(f"@ Building {container}...")
     
     if container_exists(container):
-        print(f"  > Already exists <")
+        print(f"  > Container already exists. To rebuild the container, use the following command on 'ViralFlow/vfnext/containers/' directory:")
+        print(f"    > {command}")
         already_built.append(container)
         return True
     
@@ -39,7 +40,7 @@ print("Building containers:")
 for container, command in zip(containers, container_commands):
     if not build_container(container, command):
         pass
-
+    
 print("\nSummary:")
 
 if failed_containers:
