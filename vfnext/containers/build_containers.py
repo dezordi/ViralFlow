@@ -83,7 +83,7 @@ if success:
     # Check if unsquashfs is in the correct location
     unsquashfs_desired_location = "/usr/local/bin/unsquashfs"
     if not os.path.exists(unsquashfs_desired_location):
-        print("\nError:\n  > unsquashfs executable not found at expected location. You should create a symbolic link using the following command:")
+        print("\n\033[91mError:\n  > unsquashfs executable not found at expected location. You should create a symbolic link using the following command:\033[0m")
         unsquashfs_location = os.path.join(os.environ["HOME"], "miniconda3/envs/viralflow/bin/unsquashfs")
         print(f"    > sudo ln -s {unsquashfs_location} /usr/local/bin/unsquashfs")
         # Print a message indicating the unsquashfs location
