@@ -12,7 +12,7 @@ container_commands = [
 
 failed_containers = []
 already_built = []
-success = True  # Variável de controle
+success = True  # Control variable
 
 def container_exists(container):
     return os.path.isdir(container)
