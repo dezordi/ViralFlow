@@ -60,13 +60,6 @@ SNP Plot
 
 In this step, a plot is generated to visualize the positions of the variants found in samples. This provides an overview of the distribution of single nucleotide polymorphisms (SNPs) across the genome. The tool `snipit` is used for this purpose.
 
-.. _vf_report:
-
-Get ViralFlow report
---------------------
-
-In this step, an HTML report is created with fastp, snpEff results, coverage plot, and SNP plot using the `ViralFlow-Report <https://github.com/dezordi/viralflow-report>`_ script.
-
 .. _variant_annotation:
 
 Variant Annotation
