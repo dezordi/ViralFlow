@@ -1,0 +1,12 @@
+wallaulabs/viralflow/edirect:latest
+wallaulabs/viralflow/bedtools:2.30.0
+wallaulabs/viralflow/mafft:7.505
+wallaulabs/viralflow/samtools:1.15
+wallaulabs/viralflow/picard:2.27.2
+wallaulabs/viralflow/intrahost_analysis:1.0.0
+wallaulabs/viralflow/generate_report:1.0.0
+wallaulabs/viralflow/generate_consensus:1.0.0
+wallaulabs/viralflow/mapping_reference:1.0.0
+wallaulabs/viralflow/fastp:0.20.1
+wallaulabs/viralflow/generate_plots:1.0.0
+wallaulabs/viralflow/nextclade:2.4

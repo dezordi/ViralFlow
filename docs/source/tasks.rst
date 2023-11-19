@@ -46,6 +46,20 @@ In this step, the consensus files are generated with `Samtools <https://github.c
 * **-t 0/0.6**: Minimum frequency threshold, one consensus is generated with major allele frequencies (-t 0) and a ambiguoues consensus is generated with IUPAC Ambiguity Codes for loci with 2 alleles in ~0.6 and ~0.4 alleles.
 * **-m <depth>**: Minimum depth to call consensus, loci without the minimum depth is hard-masked with N.
 
+.. _coverage_plot:
+
+Coverage Plot
+-------------
+
+In this step, a genomic map showing the coverage depth is generated using the sorted BAM file produced in the `Mapping to Reference` step. The tool `BAMdash` is used for this purpose.
+
+.. _snp_plot:
+
+SNP Plot
+--------
+
+In this step, a plot is generated to visualize the positions of the variants found in samples. This provides an overview of the distribution of single nucleotide polymorphisms (SNPs) across the genome. The tool `snipit` is used for this purpose.
+
 .. _variant_annotation:
 
 Variant Annotation
