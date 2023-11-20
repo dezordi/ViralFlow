@@ -7,6 +7,8 @@ nextflow.enable.dsl = 2
 include { indexReferenceBWA } from './modules/bwaIndex.nf'
 include { runFastp } from './modules/runFastp.nf'
 include { align2ref } from './modules/align2ref.nf'
+include { coveragePlot } from './modules/generatePlots.nf'
+include { snpPlot } from './modules/generatePlots.nf'
 include { runIvar } from './modules/runIvar.nf'
 include { runReadCounts } from './modules/runReadCounts.nf'
 include { alignConsensus2Ref } from './modules/alignConsensus2Ref.nf'
@@ -40,7 +42,7 @@ ANSI_RESET = "\033[0m"
 
 log.info """
   ===========================================
-  VFNEXT v0.1.0
+  VFNEXT v1.0.0
   parameters:
   -------------------------------------------
   --inDir            : ${params.inDir}
@@ -142,6 +144,10 @@ workflow {
      )
     | view(it -> log.warn("Excluding ${it[0]} bam files as input for Picard due to small size (< ${params.minBamSize} bytes)"))
 
+  //Rendering the depth coverage plot
+  coveragePlot(align2ref.out.regular_output,
+              ref_gcode)
+
   if ((params.writeMappedReads == true)){
     // write mapped reads
     getMappedReads(align2ref_Out_ch) 
@@ -181,6 +187,9 @@ workflow {
   //align consensus to ref
   alignConsensus2Ref(runIvar_Out_ch, ref_fa)
   alignConsensus2Ref.out.set {alignCon_Out_ch}
+
+  //Rendering snp plot
+  snpPlot(alignCon_Out_ch)
 
   // Assembly Metrics
   runPicard(align2ref_Out_filtered_ch, ref_fa)

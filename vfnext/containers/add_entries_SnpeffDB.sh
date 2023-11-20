@@ -12,7 +12,7 @@ organism_refseq_code=$2 # NC_001474.2
 # hardcoded paths
 SNPEFF_CTNR="singularity_snpeff.sif"
 SNPEFF_PATH="/opt/conda/share/snpeff-5.0-1/"
-EFETCH_CTNR="singularity_edirect.sif"
+EFETCH_CTNR="edirect:latest.sif"
 
 echo "@ adding new entry..."
 # add line to snpeff config

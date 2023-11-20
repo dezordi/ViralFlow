@@ -13,7 +13,7 @@ process fixWGS {
   script:
      consensus_fa = "${sample_id}.depth${params.depth}.fa"
      """
-     #!/usr/local/bin/python
+     #!/usr/bin/env python
      # ----- import libraries -------------------------------------------------
      import pandas as pd
      from Bio import SeqIO
