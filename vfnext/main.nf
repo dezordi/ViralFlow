@@ -149,7 +149,7 @@ workflow {
               ref_gcode)
   // Check if there are mapped reads
   coveragePlot_out_ch = coveragePlot.out.result
-  coveragePlot_out
+  coveragePlot_out_ch
     | view(it -> log.warn("${it.text}"))
 
   if ((params.writeMappedReads == true)){
