@@ -58,13 +58,13 @@ else:
     print("\nSome containers failed to build. Please check the error messages above.")
 
 if success:
-    print("\nExecuting additional steps:")
+    print("\nExecuting additional steps:\n")
 
-    print("  > Loading sars-cov2 nextclade dataset...")
+    print("  > Loading sars-cov2 nextclade dataset...\n")
     nextclade_command = "singularity exec -B nextclade_dataset/sars-cov-2:/tmp nextclade:2.4.sif nextclade dataset get --name 'sars-cov-2' --output-dir '/tmp'"
     try:
         subprocess.check_call(nextclade_command, shell=True)
-        print("    > Done <")
+        print("    > Done <\n")
     except subprocess.CalledProcessError as e:
         print("    > Failed <")
         print(f"Error: {e}")
@@ -85,10 +85,14 @@ if success:
     if not os.path.exists(unsquashfs_desired_location):
         print("\n\033[91mError:\n  > unsquashfs executable not found at expected location. You should create a symbolic link using the following command:\033[0m")
         unsquashfs_location = os.path.join(os.environ["HOME"], "miniconda3/envs/viralflow/bin/unsquashfs")
-        print(f"    > sudo ln -s {unsquashfs_location} /usr/local/bin/unsquashfs")
+        print(f"   >  sudo ln -s {unsquashfs_location} /usr/local/bin/unsquashfs\n")
+        print(f"  > If the first symbolic link does not solve the error you can alternatively create a symbolic link using the following command:")
+        print(f"   >  sudo ln -s /usr/bin/unsquashfs /usr/local/bin/unsquashfs\n")
+
         # Print a message indicating the unsquashfs location
-        print(f"  > unsquashfs executable is located at {unsquashfs_location}.")
+        print(f"  > unsquashfs executable is located at {unsquashfs_location} or at /usr/bin/unsquashfs\n")
+        print(f"  > After create the symbolic link for unsquashfs, please run 'viralflow -build_containers' command again to finish the additional steps necessary to run ViralFlow correctly.")
 
 if success:
     print("\nAll steps from '-build_containers' completed successfully. You can test ViralFlow using the following command:")
-    print("  > viralflow -run --params_file test_files/sars-cov-2.params")
+    print("   > viralflow -run --params_file test_files/sars-cov-2.params")
