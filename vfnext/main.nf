@@ -42,7 +42,7 @@ ANSI_RESET = "\033[0m"
 
 log.info """
   ===========================================
-  VFNEXT v1.0.0
+  VFNEXT v1.0.1
   parameters:
   -------------------------------------------
   --inDir            : ${params.inDir}
@@ -147,6 +147,10 @@ workflow {
   //Rendering the depth coverage plot
   coveragePlot(align2ref.out.regular_output,
               ref_gcode)
+  // Check if there are mapped reads
+  coveragePlot_out_ch = coveragePlot.out.result
+  coveragePlot_out_ch
+    | view(it -> log.warn("${it.text}"))
 
   if ((params.writeMappedReads == true)){
     // write mapped reads
