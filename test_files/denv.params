@@ -10,7 +10,7 @@ trimLen 0
 refGenomeCode NC_001474.2
 referenceGFF null
 referenceGenome null
-nextflowSimCalls null
+nextflowSimCalls 6
 fastp_threads 1
 bwa_threads 1
 mafft_threads 1
