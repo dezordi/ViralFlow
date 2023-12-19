@@ -5,7 +5,8 @@ This repository contains the code of Viralflow, a workflow to performs a referen
 
 If you use this workflow for academic purposes, please cite: `ViralFlow: A Versatile Automated Workflow for SARS-CoV-2 Genome Assembly, Lineage Assignment, Mutations and Intrahost Variant Detection <https://www.mdpi.com/1999-4915/14/2/217>`_.
 
-## Documentation
+Documentation
+########
 
 The official documentation could be accessed `here <https://viralflow.github.io/index-en.html>`_ in English or `here <https://viralflow.github.io/>`_ in Portuguese.
 
